@@ -9,11 +9,9 @@
 #define MIN_CHOICE 1
 #define MAX_CHOICE 3
 
-int validate_user_id(char* id);
-int validate_input_pwd(char* pwd);
 int validate_choice(const char* expr);
-void ask_terminated_input_str(char* const src, size_t src_size,
-                              const char* question);
+void ask_null_terminated_input_str(char* const src, size_t src_size,
+                                   const char* question);
 
 static inline void colorize(const char* color) { printf("%s", color); };
 

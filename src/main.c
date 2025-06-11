@@ -44,18 +44,25 @@ void app_loop() {
       case 1: {
         char tmp_id[NAME_MAX_CHAR_CONSTRAINT];
         char tmp_pwd[PWD_MAX_CHAR_CONSTRAINT];
-        ask_terminated_input_str(tmp_id, sizeof(tmp_id), "Enter your ID -> ");
-        ask_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
-                                 "Enter your password -> ");
+        ask_null_terminated_input_str(tmp_id, sizeof(tmp_id),
+                                      "Enter your ID -> ");
+        ask_null_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
+                                      "Enter your password -> ");
 
-        AuthCredentials c;
-        strcpy(c.id, tmp_id);
-        strcpy(c.password, tmp_pwd);
-        login(c);
+        const AuthCredentials user = make_in_mem_user(tmp_id, tmp_pwd);
+        try_login(user);
         break;
       }
       case 2: {
-        printf("Logging out");
+        char new_id[NAME_MAX_CHAR_CONSTRAINT];
+        char new_pwd[PWD_MAX_CHAR_CONSTRAINT];
+        ask_null_terminated_input_str(new_id, sizeof(new_id),
+                                      "Your registration ID -> ");
+        ask_null_terminated_input_str(new_pwd, sizeof(new_pwd),
+                                      "Your password -> ");
+
+        const AuthCredentials user = make_in_mem_user(new_id, new_pwd);
+        create_user(user);
         break;
       }
       case 3: {

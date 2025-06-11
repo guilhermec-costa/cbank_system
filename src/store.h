@@ -12,5 +12,7 @@ typedef struct _stores {
 FILE* db_instance(const char* f);
 
 void setup_stores();
+void terminate_stores();
+void get_user_by_id(const char* id);
 
 #endif /* CBANK_STORE_H */
