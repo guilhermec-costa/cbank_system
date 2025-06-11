@@ -14,5 +14,37 @@
     "directory": "/home/guichina/dev/CLanguage/cbank_system",
     "file": "/home/guichina/dev/CLanguage/cbank_system/src/main.c",
     "output": "/home/guichina/dev/CLanguage/cbank_system/bin/main.o"
+  },
+  {
+    "arguments": [
+      "/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-g",
+      "-c",
+      "-o",
+      "bin/auth.o",
+      "src/auth.c"
+    ],
+    "directory": "/home/guichina/dev/CLanguage/cbank_system",
+    "file": "/home/guichina/dev/CLanguage/cbank_system/src/auth.c",
+    "output": "/home/guichina/dev/CLanguage/cbank_system/bin/auth.o"
+  },
+  {
+    "arguments": [
+      "/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-g",
+      "-c",
+      "-o",
+      "bin/utils.o",
+      "src/utils.c"
+    ],
+    "directory": "/home/guichina/dev/CLanguage/cbank_system",
+    "file": "/home/guichina/dev/CLanguage/cbank_system/src/utils.c",
+    "output": "/home/guichina/dev/CLanguage/cbank_system/bin/utils.o"
   }
 ]
