@@ -1,0 +1,18 @@
+[
+  {
+    "arguments": [
+      "/sbin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-g",
+      "-c",
+      "-o",
+      "bin/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/guichina/dev/CLanguage/cbank_system",
+    "file": "/home/guichina/dev/CLanguage/cbank_system/src/main.c",
+    "output": "/home/guichina/dev/CLanguage/cbank_system/bin/main.o"
+  }
+]
