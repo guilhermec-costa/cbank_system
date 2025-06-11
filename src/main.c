@@ -1,20 +1,24 @@
-#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "auth.h"
+#include "store.h"
 #include "utils.h"
 
-void menu() {
-  printf("\033[1;36m");
+#define AQUAMARINE "\033[1;36m"
+#define GOLD "\033[1;33m"
+#define RESET_COLOR "\033[0m"
+
+void show_menu() {
+  colorize(AQUAMARINE);
   printf("----- Welcome to CBank System -----\n");
-  printf("\033[1;33m");
+  colorize(GOLD);
   printf("1 - Login to my account\n");
   printf("2 - Register account\n");
   printf("3 - Quit system\n");
-  printf("\033[1;36m");
+  colorize(AQUAMARINE);
   printf("-----------------------------------\n");
-  printf("\033[0m");
+  colorize(RESET_COLOR);
 }
 
 int get_opt_input() {
@@ -27,35 +31,31 @@ int get_opt_input() {
 
 void app_loop() {
   bool running = true;
-  menu();
-  int opt = 0;
+  show_menu();
+  int selected_opt = 0;
 
   while (running) {
-    opt = get_opt_input();
-    switch (opt) {
+    selected_opt = get_opt_input();
+    switch (selected_opt) {
       case INVALID_CHOICE: {
         printf("Invalid option! Try again\n");
         break;
       }
       case 1: {
         char tmp_id[NAME_MAX_CHAR_CONSTRAINT];
-        printf("Enter your ID -> ");
-        fgets(tmp_id, sizeof(tmp_id), stdin);
-        tmp_id[strcspn(tmp_id, "\n")] = '\0';
-        validate_user_id(tmp_id);
-
         char tmp_pwd[PWD_MAX_CHAR_CONSTRAINT];
-        printf("Enter your password -> ");
-        fgets(tmp_pwd, sizeof(tmp_pwd), stdin);
-        tmp_pwd[strcspn(tmp_pwd, "\n")] = '\0';
+        ask_terminated_input_str(tmp_id, sizeof(tmp_id), "Enter your ID -> ");
+        ask_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
+                                 "Enter your password -> ");
 
-        struct AuthCredentials c = {};
+        AuthCredentials c;
         strcpy(c.id, tmp_id);
         strcpy(c.password, tmp_pwd);
         login(c);
         break;
       }
       case 2: {
+        printf("Logging out");
         break;
       }
       case 3: {
@@ -68,6 +68,7 @@ void app_loop() {
 };
 
 int main() {
+  setup_stores();
   app_loop();
   return 0;
 };

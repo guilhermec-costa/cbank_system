@@ -3,7 +3,7 @@
 
 #include "models.h"
 
-void login(struct AuthCredentials cred);
+void login(AuthCredentials cred);
 void logout();
 
 #endif /* CBANK_AUTH_H */
