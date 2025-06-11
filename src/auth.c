@@ -1,6 +1,8 @@
-#include <stdio.h>
 #include "auth.h"
 
+#include <stdio.h>
+
 void login(struct AuthCredentials c) {
-  printf("%s", c.name);
+  printf("Id: %s", c.id);
+  printf("Password: %s", c.password);
 }
