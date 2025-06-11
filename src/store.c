@@ -1,5 +1,7 @@
 #include "store.h"
+#include "models.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -11,18 +13,39 @@ FILE* db_instance(const char* f) {
 }
 
 void setup_stores() {
-  stores.user_store = db_instance(DB_USER_SECTION);
-  if (stores.user_store == NULL) {
+  stores.user_store.store_name = "user.db";
+  stores.user_store.storage = db_instance(DB_USER_SECTION);
+
+  if (stores.user_store.storage == NULL) {
     printf("Failed to initialize user store");
     exit(-1);
   }
 }
 
-void get_user_by_id(const char* id) {
-  char query_container[50];
-  while (fscanf(stores.user_store, "%s", query_container) == 1) {
-    if (strstr(query_container, id) != 0) {
-      printf("Query container: %s", query_container);
+void reset_store_cursor_pos(const char* store_name) {
+  if(strcmp(store_name, stores.user_store.store_name)) {
+    fseek(stores.user_store.storage, 0, SEEK_SET);
+  } 
+  return;
+}
+
+BankUser get_user_by_id(const char* id) {
+  char line_buf[256];
+  BankUser user;
+  reset_store_cursor_pos(stores.user_store.store_name);
+  fseek(stores.user_store.storage, 0, SEEK_SET);
+
+  char* id_token = NULL;
+  char* pwd_token = NULL;
+  while (fgets(line_buf, sizeof(line_buf), stores.user_store.storage)) {
+    id_token = strstr(line_buf, "id=");
+    pwd_token = strstr(line_buf, "pwd=");
+
+    if(!id_token || !pwd_token) {
+      continue;
     }
+    
+    char _tmp_id[REGISTRATION_ID_MAX_CHAR_CONSTRAINT];
+    sscanf(id_token, "id=%34[^;];", _tmp_id); 
   }
 }

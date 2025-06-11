@@ -6,7 +6,10 @@
 #define DB_USER_SECTION "user.db"
 
 typedef struct _stores {
-  FILE* user_store;
+  struct UserStore {
+    const char* store_name;
+    FILE* storage;
+  } user_store;
 } Stores;
 
 FILE* db_instance(const char* f);

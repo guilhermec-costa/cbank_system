@@ -2,8 +2,9 @@
 #define CBANK_AUTH_H
 
 #include <stdbool.h>
-
 #include "models.h"
+
+#define MAX_LOGIN_TRIES 3
 
 bool try_login(AuthCredentials cred);
 void create_user(AuthCredentials cred);

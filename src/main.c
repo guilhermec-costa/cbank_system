@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "auth.h"
+#include "models.h"
 #include "store.h"
 #include "utils.h"
 
@@ -42,19 +43,32 @@ void app_loop() {
         break;
       }
       case 1: {
-        char tmp_id[NAME_MAX_CHAR_CONSTRAINT];
+        char tmp_id[REGISTRATION_ID_MAX_CHAR_CONSTRAINT];
         char tmp_pwd[PWD_MAX_CHAR_CONSTRAINT];
-        ask_null_terminated_input_str(tmp_id, sizeof(tmp_id),
-                                      "Enter your ID -> ");
-        ask_null_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
-                                      "Enter your password -> ");
+        bool logged = false;
+        int login_tries = 0;
 
-        const AuthCredentials user = make_in_mem_user(tmp_id, tmp_pwd);
-        try_login(user);
+        while(!logged && login_tries < MAX_LOGIN_TRIES) {
+          colorize(GOLD);
+          printf("====================\n");
+          colorize(RESET_COLOR);
+          ask_null_terminated_input_str(tmp_id, sizeof(tmp_id),
+                                        "Enter your ID -> ");
+          ask_null_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
+                                        "Enter your password -> ");
+
+          const AuthCredentials user = make_in_mem_user(tmp_id, tmp_pwd);
+          logged = try_login(user);
+          if(!logged) {
+            login_tries++;
+            printf("Failed to login. Try again"); 
+            continue;
+          }
+        }
         break;
       }
       case 2: {
-        char new_id[NAME_MAX_CHAR_CONSTRAINT];
+        char new_id[REGISTRATION_ID_MAX_CHAR_CONSTRAINT];
         char new_pwd[PWD_MAX_CHAR_CONSTRAINT];
         ask_null_terminated_input_str(new_id, sizeof(new_id),
                                       "Your registration ID -> ");

@@ -1,6 +1,6 @@
 CC = gcc
 BINARY = bin/bank
-CFLAGS = -Wall -Wextra -std=c99 -g -lncurses
+CFLAGS = -Wall -Wextra -std=c99 -g -lcrypt
 
 SRCS = src/main.c src/auth.c src/utils.c src/store.c
 OBJS_NAMES = $(notdir $(SRCS:.c=.o)) 
