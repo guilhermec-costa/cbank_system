@@ -5,10 +5,18 @@
 
 #include "store.h"
 #include "auth.h"
+#include "utils.h"
 
 extern Stores stores;
 
 bool try_login(AuthCredentials c) {
+  BankUser user = get_user_by_id(c.id);
+  if(strcmp(user.id, NON_EXISTING_USER_ID_FLAG) == 0) return false;
+
+  const char* ck_pwd_hash = hash_str(c.password, PWD_HASH_SALT);
+  const char* stored_pwd_hash = hash_str(user.password, PWD_HASH_SALT); 
+  if(strcmp(ck_pwd_hash, stored_pwd_hash) != 0) return false;
+
   return true;
 }
 
@@ -20,7 +28,9 @@ AuthCredentials make_in_mem_user(const char* id, const char* pwd) {
 }
 
 bool check_existing_user(const char* const id) {
-  return get_user_by_id(id) == NULL;
+  BankUser user = get_user_by_id(id);
+  if(strcmp(user.id, NON_EXISTING_USER_ID_FLAG) == 0) return false;
+  return true;
 }
 
 void create_user(AuthCredentials c) {
@@ -29,8 +39,10 @@ void create_user(AuthCredentials c) {
     printf("Could not create user. User already exists");
     return;
   }
-  const char* pwd_salt = "$6$somesalt";
-  const char* const hashed_pwd = crypt(c.password, pwd_salt);
-  fprintf(stores.user_store.storage, "id=%s;pwd=%s", c.id, hashed_pwd);
-  printf("User created!");
+
+  const char* const pwd_hash = hash_str(c.password, PWD_HASH_SALT);
+  fseek(stores.user_store.storage, 0, SEEK_END);
+  fprintf(stores.user_store.storage, "id=%s;pwd=%s\n", c.id, pwd_hash);
+  fflush(stores.user_store.storage);
+  printf("Your account has been created!");
 };

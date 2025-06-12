@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <crypt.h>
+#include <unistd.h>
 
 int validate_choice(const char* choice) {
   int choice_to_i = atoi(choice);
@@ -20,6 +22,11 @@ void ask_null_terminated_input_str(char* const src, size_t src_size,
 
 void reset_entity_attr_mem(void* ent, size_t ent_s) {
   memset(ent, 0, ent_s);
+}
+
+const char* hash_str(const char* const str, const char* const salt) {
+  const char* const hash = crypt(str, salt);
+  return hash;
 }
 
 #define RESET_ENTITY(entity) reset_entity_attr_mem(entity, sizeof(entity))

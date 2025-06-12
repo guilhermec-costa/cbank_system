@@ -14,5 +14,6 @@ void ask_null_terminated_input_str(char* const src, size_t src_size,
                                    const char* question);
 
 static inline void colorize(const char* color) { printf("%s", color); };
+const char* hash_str(const char* const str, const char* const salt);
 
 #endif /* CBANK_UTILS_H */

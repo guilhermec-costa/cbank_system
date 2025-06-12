@@ -64,6 +64,8 @@ void app_loop() {
             printf("Failed to login. Try again"); 
             continue;
           }
+          printf("Logged id!");
+          break;
         }
         break;
       }
