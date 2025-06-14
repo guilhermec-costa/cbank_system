@@ -36,7 +36,6 @@ void create_user(CreateUserDTO payload) {
   }
 
   const char* const pwd_hash = hash_str(payload.password, PWD_HASH_SALT);
-  mov_store_cursor(stores.user_store.store_name, SEEK_END);
 
   const char* acc_id = gen_acc_id();
   const int next_user_id = NEXT_USER_IDENTITY;
@@ -45,14 +44,15 @@ void create_user(CreateUserDTO payload) {
   char date_buf[100];
   const char* formatted_now = fmt_date(date_buf, sizeof(date_buf), at_now);
 
+  mov_store_cursor(stores.user_store.store_name, SEEK_END);
   fprintf(stores.user_store.storage,
           "id=%d;acc_id=%s;email=%s;pwd=%s;created_at=%s;updated_at=%s\n",
           next_user_id, acc_id, payload.email, pwd_hash, formatted_now,
           "NULL");
 
-  fflush(stores.user_store.storage);
-
   updt_next_identity(stores.user_store.store_name);
+
+  fflush(stores.user_store.storage);
   printf("Your account has been created!");
 };
 

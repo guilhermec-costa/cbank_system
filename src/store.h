@@ -40,6 +40,7 @@ typedef struct CreateUserDTO {
 } CreateUserDTO;
 
 bool id_tracker_has_store(const char* store_name);
+FILE* get_storage(const char* store_name);
 
 #define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))
 

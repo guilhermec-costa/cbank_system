@@ -3,7 +3,7 @@
 #include "store.h"
 
 bool id_tracker_has_store(const char* store_name) {
-  FILE* id_storage = db_instance(DB_ID_TRACKER_SECTION);
+  FILE* id_storage = get_storage(DB_ID_TRACKER_SECTION);
   if (id_storage == NULL) return false;
 
   char line_buf[256];
@@ -15,12 +15,10 @@ bool id_tracker_has_store(const char* store_name) {
       char _tmp_store_name[50];
       sscanf(store_token, "store=%49[^;];", _tmp_store_name);
       if (strcmp(_tmp_store_name, store_name) == 0) {
-        fclose(id_storage);
         return true;
       }
     }
   }
 
-  fclose(id_storage);
   return false;
 }

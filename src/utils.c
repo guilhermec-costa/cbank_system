@@ -28,7 +28,13 @@ const char* hash_str(const char* const str, const char* const salt) {
   return hash;
 }
 
-const char* gen_acc_id() { return "235234"; }
+const char* gen_acc_id() {
+  static char buf[20];
+  static int counter = 0;
+  snprintf(buf, sizeof(buf), "ACC%05d", ++counter);
+
+  return buf;
+}
 
 struct tm now() {
   time_t t = time(NULL);

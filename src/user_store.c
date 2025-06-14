@@ -7,14 +7,14 @@ BankUser get_user_by_account_id(const char* id) {};
 extern Stores stores;
 
 BankUser get_user_by_id(const char* id) {
+  FILE* user_store = get_storage(DB_USER_SECTION);
   char line_buf[256];
   BankUser user;
   RESET_ENTITY(user);
-  mov_store_cursor(stores.user_store.store_name, SEEK_SET);
 
   char* id_token = NULL;
   char* pwd_token = NULL;
-  while (fgets(line_buf, sizeof(line_buf), stores.user_store.storage)) {
+  while (fgets(line_buf, sizeof(line_buf), user_store)) {
     id_token = strstr(line_buf, "id=");
     pwd_token = strstr(line_buf, "pwd=");
 
@@ -41,11 +41,11 @@ BankUser get_user_by_id(const char* id) {
 }
 
 bool email_already_registered(const char* email) {
+  FILE* user_store = get_storage(DB_USER_SECTION);
   char line_buf[256];
-  mov_store_cursor(stores.user_store.store_name, SEEK_SET);
 
   char* email_token = NULL;
-  while (fgets(line_buf, sizeof(line_buf), stores.user_store.storage)) {
+  while (fgets(line_buf, sizeof(line_buf), user_store)) {
     email_token = strstr(line_buf, "email=");
     if (!email_token) continue;
 
