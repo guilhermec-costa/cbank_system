@@ -2,11 +2,9 @@
 
 #include "store.h"
 
-BankUser get_user_by_account_id(const char* id) {};
-
 extern Stores stores;
 
-BankUser get_user_by_id(const char* id) {
+BankUser get_user_by_acc_id(const char* acc_id) {
   FILE* user_store = get_storage(DB_USER_SECTION);
   char line_buf[256];
   BankUser user;
@@ -15,7 +13,7 @@ BankUser get_user_by_id(const char* id) {
   char* id_token = NULL;
   char* pwd_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), user_store)) {
-    id_token = strstr(line_buf, "id=");
+    id_token = strstr(line_buf, "acc_id=");
     pwd_token = strstr(line_buf, "pwd=");
 
     if (!id_token || !pwd_token) {
@@ -23,9 +21,9 @@ BankUser get_user_by_id(const char* id) {
     }
 
     char _tmp_id[ACC_ID_MAX_CHAR_CONSTRAINT];
-    sscanf(id_token, "id=%9[^;];", _tmp_id);
+    sscanf(id_token, "acc_id=%9[^;];", _tmp_id);
 
-    if (strcmp(_tmp_id, id) == 0) {
+    if (strcmp(_tmp_id, acc_id) == 0) {
       strcpy(user.id, _tmp_id);
 
       char _tmp_pwd[PWD_MAX_CHAR_CONSTRAINT];

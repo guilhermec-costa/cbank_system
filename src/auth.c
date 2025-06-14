@@ -12,7 +12,7 @@
 extern Stores stores;
 
 bool try_login(AuthCredentials c) {
-  BankUser user = get_user_by_account_id(c.account_id);
+  BankUser user = get_user_by_acc_id(c.account_id);
   if (strcmp(user.id, NON_EXISTING_USER_ID_FLAG) == 0) return false;
 
   const char* ck_pwd_hash = hash_str(c.password, PWD_HASH_SALT);
