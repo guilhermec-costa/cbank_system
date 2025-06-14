@@ -31,7 +31,7 @@ void terminate_stores();
 
 BankUser get_user_by_id(const char* id);
 BankUser get_user_by_account_id(const char* account_id);
-BankUser get_user_by_email(const char* email);
+bool email_already_registered(const char* email);
 
 void reset_entity_attr_mem(void* ent, size_t ent_s);
 void updt_next_identity(const char* store_name);

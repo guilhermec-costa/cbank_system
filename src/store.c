@@ -76,31 +76,23 @@ BankUser get_user_by_id(const char* id) {
   return user;
 }
 
-BankUser get_user_by_email(const char* id) {
+bool email_already_registered(const char* email) {
   char line_buf[256];
-  BankUser user;
-  RESET_ENTITY(user);
   mov_store_cursor(stores.user_store.store_name, START);
 
   char* email_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), stores.user_store.storage)) {
     email_token = strstr(line_buf, "email=");
-
-    if (!email_token) {
-      continue;
-    }
+    if (!email_token) continue;
 
     char _tmp_email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
     sscanf(email_token, "email=%49[^;];", _tmp_email);
 
-    if (strcmp(_tmp_email, id) == 0) {
-      strcpy(user.id, _tmp_email);
-      return user;
+    if (strcmp(_tmp_email, email) == 0) {
+      return true;
     }
   }
-
-  strcpy(user.id, "");
-  return user;
+  return false;
 }
 
 FILE* get_storage(const char* store_name) {

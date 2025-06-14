@@ -27,18 +27,12 @@ AuthCredentials make_in_mem_user(const char* acc_id, const char* pwd) {
   return c;
 }
 
-bool check_existing_user(const char* const email) {
-  BankUser user = get_user_by_email(email);
-  if (strcmp(user.id, NON_EXISTING_USER_ID_FLAG) == 0) return false;
-  return true;
-}
-
 void create_user(CreateUserDTO payload) {
-  /* const bool existing_user = check_existing_user(payload.email); */
-  /* if (existing_user) { */
-  /*   printf("Could not create user. User already exists"); */
-  /*   return; */
-  /* } */
+  const bool existing_email = email_already_registered(payload.email);
+  if (existing_email) {
+    printf("Could not create user. Email already exists");
+    return;
+  }
 
   const char* const pwd_hash = hash_str(payload.password, PWD_HASH_SALT);
   mov_store_cursor(stores.user_store.store_name, END);
@@ -51,8 +45,8 @@ void create_user(CreateUserDTO payload) {
   const char* formatted_now = fmt_date(date_buf, sizeof(date_buf), at_now);
 
   fprintf(stores.user_store.storage,
-          "id=%d;acc_id=%s;pwd=%s;created_at=%s;updated_at=%s\n",
-          next_user_id, acc_id, pwd_hash, formatted_now, "NULL");
+          "id=%d;acc_id=%s;email=%s;pwd=%s;created_at=%s;updated_at=%s\n",
+          next_user_id, acc_id, payload.email, pwd_hash, formatted_now, "NULL");
 
   fflush(stores.user_store.storage);
   printf("Your account has been created!");
