@@ -43,25 +43,25 @@ void app_loop() {
         break;
       }
       case 1: {
-        char tmp_id[REGISTRATION_ID_MAX_CHAR_CONSTRAINT];
+        char tmp_id[ACC_ID_MAX_CHAR_CONSTRAINT];
         char tmp_pwd[PWD_MAX_CHAR_CONSTRAINT];
         bool logged = false;
         int login_tries = 0;
 
-        while(!logged && login_tries < MAX_LOGIN_TRIES) {
+        while (!logged && login_tries < MAX_LOGIN_TRIES) {
           colorize(GOLD);
           printf("====================\n");
           colorize(RESET_COLOR);
           ask_null_terminated_input_str(tmp_id, sizeof(tmp_id),
-                                        "Enter your ID -> ");
+                                        "Enter your account ID -> ");
           ask_null_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
                                         "Enter your password -> ");
 
           const AuthCredentials user = make_in_mem_user(tmp_id, tmp_pwd);
           logged = try_login(user);
-          if(!logged) {
+          if (!logged) {
             login_tries++;
-            printf("Failed to login. Try again"); 
+            printf("Failed to login. Try again");
             continue;
           }
           printf("Logged id!");
@@ -70,14 +70,21 @@ void app_loop() {
         break;
       }
       case 2: {
-        char new_id[REGISTRATION_ID_MAX_CHAR_CONSTRAINT];
+        char new_email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
+        char new_name[REGISTRATION_NAME_MAX_CHAR_CONSTRAINT];
         char new_pwd[PWD_MAX_CHAR_CONSTRAINT];
-        ask_null_terminated_input_str(new_id, sizeof(new_id),
-                                      "Your registration ID -> ");
+
+        ask_null_terminated_input_str(new_email, sizeof(new_email),
+                                      "Your email -> ");
+        ask_null_terminated_input_str(new_name, sizeof(new_name),
+                                      "Your name -> ");
         ask_null_terminated_input_str(new_pwd, sizeof(new_pwd),
                                       "Your password -> ");
 
-        const AuthCredentials user = make_in_mem_user(new_id, new_pwd);
+        CreateUserDTO user = {};
+        strcpy(user.email, new_email);
+        strcpy(user.password, new_pwd);
+        strcpy(user.name, new_name);
         create_user(user);
         break;
       }

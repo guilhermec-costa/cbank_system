@@ -2,31 +2,51 @@
 #define CBANK_STORE_H
 
 #include <stdio.h>
+
 #include "models.h"
 
 #define DB_USER_SECTION "user.db"
+#define DB_ID_TRACKER_SECTION "id_tracker.db"
 
 typedef struct _stores {
   struct UserStore {
     const char* store_name;
     FILE* storage;
   } user_store;
+
+  struct IdTrackerStore {
+    const char* store_name;
+    FILE* storage;
+  } id_tracker_store;
 } Stores;
-
-FILE* db_instance(const char* f);
-
-void setup_stores();
-void terminate_stores();
-BankUser get_user_by_id(const char* id);
-void reset_entity_attr_mem(void* ent, size_t ent_s);
-void updt_next_identity(const char* store_name);
-
-#define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))
-#define UPDATE_ENTITY_NEXT_IDENTIY(store) updt_next_identity(store);
 
 typedef enum storage_file_pos {
   START = SEEK_SET,
   END = SEEK_END
 } StorageFilePos;
+
+FILE* db_instance(const char* f);
+void setup_stores();
+void terminate_stores();
+
+BankUser get_user_by_id(const char* id);
+BankUser get_user_by_account_id(const char* account_id);
+BankUser get_user_by_email(const char* email);
+
+void reset_entity_attr_mem(void* ent, size_t ent_s);
+void updt_next_identity(const char* store_name);
+void mov_store_cursor(const char* store_name, StorageFilePos pos);
+int get_next_identity(const char* store_name);
+
+typedef struct CreateUserDTO {
+  char name[50];
+  char email[50];
+  char password[PWD_MAX_CHAR_CONSTRAINT];
+} CreateUserDTO;
+
+#define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))
+#define UPDATE_ENTITY_NEXT_IDENTIY(store) updt_next_identity(store);
+
+#define NEXT_USER_IDENTITY get_next_identity(DB_USER_SECTION);
 
 #endif /* CBANK_STORE_H */
