@@ -39,6 +39,8 @@ typedef struct CreateUserDTO {
   char password[PWD_MAX_CHAR_CONSTRAINT];
 } CreateUserDTO;
 
+bool id_tracker_has_store(const char* store_name);
+
 #define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))
 
 #define NEXT_USER_IDENTITY get_next_identity(DB_USER_SECTION);

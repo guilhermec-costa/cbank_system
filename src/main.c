@@ -9,17 +9,18 @@ static int pre_login_loop_controller = 0;
 static int post_login_loop_controller = 0;
 
 void pre_login_menu() {
-    printf("\n%s=========================================\n", COLOR_CYAN);
-    printf("         💰 Welcome to CBank System\n");
-    printf("=========================================%s\n\n", COLOR_RESET);
+  printf("\n%s=========================================\n", COLOR_CYAN);
+  printf("         💰 Welcome to CBank System\n");
+  printf("=========================================%s\n\n", COLOR_RESET);
 
-    printf("%s👉 Select an option:%s\n\n", COLOR_GREEN, COLOR_RESET);
+  printf("%s👉 Select an option:%s\n\n", COLOR_GREEN, COLOR_RESET);
 
-    printf("%s1%s - 🔐 Login to my account\n", COLOR_YELLOW, COLOR_RESET);
-    printf("%s2%s - 📝 Register a new account\n", COLOR_YELLOW, COLOR_RESET);
-    printf("%s3%s - 🚪 Quit system\n", COLOR_YELLOW, COLOR_RESET);
+  printf("%s1%s - 🔐 Login to my account\n", COLOR_YELLOW, COLOR_RESET);
+  printf("%s2%s - 📝 Register a new account\n", COLOR_YELLOW, COLOR_RESET);
+  printf("%s3%s - 🚪 Quit system\n", COLOR_YELLOW, COLOR_RESET);
 
-    printf("\n%s-----------------------------------------%s\n", COLOR_CYAN, COLOR_RESET);
+  printf("\n%s-----------------------------------------%s\n", COLOR_CYAN,
+         COLOR_RESET);
 }
 
 void post_login_menu() {
@@ -40,7 +41,7 @@ int get_opt_input() {
   return validate_choice(action_opt);
 }
 
-void pre_login_loop() {
+bool pre_login_loop() {
   bool running = true;
   pre_login_menu();
   int selected_opt = 0;
@@ -57,11 +58,11 @@ void pre_login_loop() {
         bool logged = trigger_login_process();
         if (!logged) {
           printf("Failed to perform login");
-          exit(-1);
+          return false;
         }
         pre_login_loop_controller = 0;
         post_login_loop_controller = 1;
-        break;
+        return true;
       }
       case 2: {
         const CreateUserDTO user = register_user_form();
@@ -70,12 +71,11 @@ void pre_login_loop() {
       }
       case 3: {
         printf("Thanks for using the system\n");
-        running = false;
-        break;
+        return false;
       }
     }
   }
-};
+}
 
 void post_login_loop() {
   bool running = true;
@@ -96,7 +96,7 @@ void post_login_loop() {
 
 int main() {
   setup_stores();
-  pre_login_loop();
+  const bool loop_success = pre_login_loop();
   post_login_loop();
   return 0;
 }

@@ -51,6 +51,8 @@ void create_user(CreateUserDTO payload) {
           "NULL");
 
   fflush(stores.user_store.storage);
+
+  updt_next_identity(stores.user_store.store_name);
   printf("Your account has been created!");
 };
 
@@ -109,12 +111,14 @@ bool trigger_login_process() {
     logged = try_login(user);
     if (!logged) {
       login_tries++;
-      printf("\n%s❌ Failed to login. Please try again.%s\n\n", COLOR_RED, COLOR_RESET);
+      printf("\n%s❌ Failed to login. Please try again.%s\n\n", COLOR_RED,
+             COLOR_RESET);
       continue;
     }
 
     printf("\n%s✅ Login successful! Welcome!%s\n", COLOR_GREEN, COLOR_RESET);
-    printf("%s--------------------------------------%s\n\n", COLOR_CYAN, COLOR_RESET);
+    printf("%s--------------------------------------%s\n\n", COLOR_CYAN,
+           COLOR_RESET);
     return true;
   }
 
