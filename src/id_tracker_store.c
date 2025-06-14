@@ -1,10 +1,11 @@
-#include <string.h>
-
 #include "store.h"
+
+#include <string.h>
 
 bool id_tracker_has_store(const char* store_name) {
   FILE* id_storage = get_storage(DB_ID_TRACKER_SECTION);
-  if (id_storage == NULL) return false;
+  if (id_storage == NULL)
+    return false;
 
   char line_buf[256];
 

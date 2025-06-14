@@ -1,11 +1,11 @@
-#include <stdio.h>
-
 #include "auth.h"
 #include "colorization.h"
 #include "store.h"
 #include "utils.h"
 
-static int pre_login_loop_controller = 0;
+#include <stdio.h>
+
+static int pre_login_loop_controller  = 0;
 static int post_login_loop_controller = 0;
 
 void pre_login_menu() {
@@ -19,8 +19,7 @@ void pre_login_menu() {
   printf("%s2%s - 📝 Register a new account\n", COLOR_YELLOW, COLOR_RESET);
   printf("%s3%s - 🚪 Quit system\n", COLOR_YELLOW, COLOR_RESET);
 
-  printf("\n%s-----------------------------------------%s\n", COLOR_CYAN,
-         COLOR_RESET);
+  printf("\n%s-----------------------------------------%s\n", COLOR_CYAN, COLOR_RESET);
 }
 
 void post_login_menu() {
@@ -44,7 +43,7 @@ int get_opt_input() {
 bool pre_login_loop() {
   bool running = true;
   pre_login_menu();
-  int selected_opt = 0;
+  int selected_opt          = 0;
   pre_login_loop_controller = 1;
 
   while (running && pre_login_loop_controller) {
@@ -60,7 +59,7 @@ bool pre_login_loop() {
           printf("Failed to perform login");
           return false;
         }
-        pre_login_loop_controller = 0;
+        pre_login_loop_controller  = 0;
         post_login_loop_controller = 1;
         return true;
       }

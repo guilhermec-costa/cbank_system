@@ -12,6 +12,8 @@
 
 #include <stdio.h>
 
-static inline void colorize(const char* color) { printf("%s", color); };
+static inline void colorize(const char* color) {
+  printf("%s", color);
+};
 
 #endif /* CBANK_COLORIZATION_H */

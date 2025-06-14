@@ -1,19 +1,19 @@
-#include <string.h>
-
 #include "store.h"
+
+#include <string.h>
 
 extern Stores stores;
 
 BankUser get_user_by_acc_id(const char* acc_id) {
-  FILE* user_store = get_storage(DB_USER_SECTION);
-  char line_buf[256];
+  FILE*    user_store = get_storage(DB_USER_SECTION);
+  char     line_buf[256];
   BankUser user;
   RESET_ENTITY(user);
 
-  char* id_token = NULL;
+  char* id_token  = NULL;
   char* pwd_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), user_store)) {
-    id_token = strstr(line_buf, "acc_id=");
+    id_token  = strstr(line_buf, "acc_id=");
     pwd_token = strstr(line_buf, "pwd=");
 
     if (!id_token || !pwd_token) {
@@ -40,12 +40,13 @@ BankUser get_user_by_acc_id(const char* acc_id) {
 
 bool email_already_registered(const char* email) {
   FILE* user_store = get_storage(DB_USER_SECTION);
-  char line_buf[256];
+  char  line_buf[256];
 
   char* email_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), user_store)) {
     email_token = strstr(line_buf, "email=");
-    if (!email_token) continue;
+    if (!email_token)
+      continue;
 
     char _tmp_email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
     sscanf(email_token, "email=%49[^;];", _tmp_email);
