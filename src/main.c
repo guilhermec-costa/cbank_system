@@ -1,41 +1,52 @@
 #include <stdio.h>
-#include <string.h>
 
 #include "auth.h"
-#include "models.h"
+#include "colorization.h"
 #include "store.h"
 #include "utils.h"
 
-#define AQUAMARINE "\033[1;36m"
-#define GOLD "\033[1;33m"
-#define RESET_COLOR "\033[0m"
+static int pre_login_loop_controller = 0;
+static int post_login_loop_controller = 0;
 
-void show_menu() {
-  colorize(AQUAMARINE);
+void pre_login_menu() {
+    printf("\n%s=========================================\n", COLOR_CYAN);
+    printf("         💰 Welcome to CBank System\n");
+    printf("=========================================%s\n\n", COLOR_RESET);
+
+    printf("%s👉 Select an option:%s\n\n", COLOR_GREEN, COLOR_RESET);
+
+    printf("%s1%s - 🔐 Login to my account\n", COLOR_YELLOW, COLOR_RESET);
+    printf("%s2%s - 📝 Register a new account\n", COLOR_YELLOW, COLOR_RESET);
+    printf("%s3%s - 🚪 Quit system\n", COLOR_YELLOW, COLOR_RESET);
+
+    printf("\n%s-----------------------------------------%s\n", COLOR_CYAN, COLOR_RESET);
+}
+
+void post_login_menu() {
+  colorize(COLOR_AQUAMARINE);
   printf("----- Welcome to CBank System -----\n");
-  colorize(GOLD);
-  printf("1 - Login to my account\n");
-  printf("2 - Register account\n");
-  printf("3 - Quit system\n");
-  colorize(AQUAMARINE);
+  colorize(COLOR_YELLOW);
+  printf("1 - See balance\n");
+  colorize(COLOR_AQUAMARINE);
   printf("-----------------------------------\n");
-  colorize(RESET_COLOR);
+  colorize(COLOR_RESET);
 }
 
 int get_opt_input() {
   char action_opt[10];
-  printf("\nEnter your choice -> ");
+  printf("\n%s👉 Enter your choice:%s ", COLOR_GREEN, COLOR_RESET);
   fgets(action_opt, sizeof(action_opt), stdin);
-  action_opt[strcspn(action_opt, "\n")] = '\0';
+  terminate_str_by_newline(action_opt);
   return validate_choice(action_opt);
 }
 
-void app_loop() {
+void pre_login_loop() {
   bool running = true;
-  show_menu();
+  pre_login_menu();
   int selected_opt = 0;
+  pre_login_loop_controller = 1;
 
-  while (running) {
+  while (running && pre_login_loop_controller) {
     selected_opt = get_opt_input();
     switch (selected_opt) {
       case INVALID_CHOICE: {
@@ -43,48 +54,17 @@ void app_loop() {
         break;
       }
       case 1: {
-        char tmp_id[ACC_ID_MAX_CHAR_CONSTRAINT];
-        char tmp_pwd[PWD_MAX_CHAR_CONSTRAINT];
-        bool logged = false;
-        int login_tries = 0;
-
-        while (!logged && login_tries < MAX_LOGIN_TRIES) {
-          colorize(GOLD);
-          printf("====================\n");
-          colorize(RESET_COLOR);
-          ask_null_terminated_input_str(tmp_id, sizeof(tmp_id),
-                                        "Enter your account ID -> ");
-          ask_null_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
-                                        "Enter your password -> ");
-
-          const AuthCredentials user = make_in_mem_user(tmp_id, tmp_pwd);
-          logged = try_login(user);
-          if (!logged) {
-            login_tries++;
-            printf("Failed to login. Try again");
-            continue;
-          }
-          printf("Logged id!");
-          break;
+        bool logged = trigger_login_process();
+        if (!logged) {
+          printf("Failed to perform login");
+          exit(-1);
         }
+        pre_login_loop_controller = 0;
+        post_login_loop_controller = 1;
         break;
       }
       case 2: {
-        char new_email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
-        char new_name[REGISTRATION_NAME_MAX_CHAR_CONSTRAINT];
-        char new_pwd[PWD_MAX_CHAR_CONSTRAINT];
-
-        ask_null_terminated_input_str(new_email, sizeof(new_email),
-                                      "Your email -> ");
-        ask_null_terminated_input_str(new_name, sizeof(new_name),
-                                      "Your name -> ");
-        ask_null_terminated_input_str(new_pwd, sizeof(new_pwd),
-                                      "Your password -> ");
-
-        CreateUserDTO user = {};
-        strcpy(user.email, new_email);
-        strcpy(user.password, new_pwd);
-        strcpy(user.name, new_name);
+        const CreateUserDTO user = register_user_form();
         create_user(user);
         break;
       }
@@ -97,8 +77,26 @@ void app_loop() {
   }
 };
 
+void post_login_loop() {
+  bool running = true;
+  post_login_menu();
+  int selected_opt = 0;
+
+  while (running && post_login_loop_controller) {
+    printf("After login loop");
+    selected_opt = get_opt_input();
+    switch (selected_opt) {
+      case INVALID_CHOICE: {
+        printf("Invalid option! Try again\n");
+        break;
+      }
+    }
+  }
+}
+
 int main() {
   setup_stores();
-  app_loop();
+  pre_login_loop();
+  post_login_loop();
   return 0;
-};
+}

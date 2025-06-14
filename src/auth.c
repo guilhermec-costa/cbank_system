@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "colorization.h"
 #include "store.h"
 #include "utils.h"
 
@@ -20,7 +21,7 @@ bool try_login(AuthCredentials c) {
   return true;
 }
 
-AuthCredentials make_in_mem_user(const char* acc_id, const char* pwd) {
+AuthCredentials make_in_mem_creds(const char* acc_id, const char* pwd) {
   AuthCredentials c;
   strcpy(c.account_id, acc_id);
   strcpy(c.password, pwd);
@@ -35,7 +36,7 @@ void create_user(CreateUserDTO payload) {
   }
 
   const char* const pwd_hash = hash_str(payload.password, PWD_HASH_SALT);
-  mov_store_cursor(stores.user_store.store_name, END);
+  mov_store_cursor(stores.user_store.store_name, SEEK_END);
 
   const char* acc_id = gen_acc_id();
   const int next_user_id = NEXT_USER_IDENTITY;
@@ -46,16 +47,76 @@ void create_user(CreateUserDTO payload) {
 
   fprintf(stores.user_store.storage,
           "id=%d;acc_id=%s;email=%s;pwd=%s;created_at=%s;updated_at=%s\n",
-          next_user_id, acc_id, payload.email, pwd_hash, formatted_now, "NULL");
+          next_user_id, acc_id, payload.email, pwd_hash, formatted_now,
+          "NULL");
 
   fflush(stores.user_store.storage);
   printf("Your account has been created!");
 };
 
-BankUser register_user_form() {
-  printf("Register User Form");
-  BankUser user;
-  RESET_ENTITY(user);
+CreateUserDTO register_user_form() {
+  printf("\n%s==============================\n", COLOR_CYAN);
+  printf("        User Registration\n");
+  printf("==============================%s\n\n", COLOR_RESET);
 
+  char new_email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
+  char new_name[REGISTRATION_NAME_MAX_CHAR_CONSTRAINT];
+  char new_pwd[PWD_MAX_CHAR_CONSTRAINT];
+
+  printf("%sPlease fill in the following details:%s\n\n", COLOR_GREEN,
+         COLOR_RESET);
+
+  ask_null_terminated_input_str(new_email, sizeof(new_email),
+                                COLOR_YELLOW "📧  Email: " COLOR_RESET);
+  ask_null_terminated_input_str(new_name, sizeof(new_name),
+                                COLOR_YELLOW "👤  Name: " COLOR_RESET);
+  ask_null_terminated_input_str(new_pwd, sizeof(new_pwd),
+                                COLOR_YELLOW "🔑  Password: " COLOR_RESET);
+  CreateUserDTO user = {};
+  RESET_ENTITY(user);
+  strcpy(user.email, new_email);
+  strcpy(user.password, new_pwd);
+  strcpy(user.name, new_name);
+
+  printf("\n%s✅ User registration form completed!%s\n", COLOR_GREEN,
+         COLOR_RESET);
+  printf("%s--------------------------------------%s\n", COLOR_CYAN,
+         COLOR_RESET);
   return user;
+}
+
+bool trigger_login_process() {
+  char tmp_id[ACC_ID_MAX_CHAR_CONSTRAINT];
+  char tmp_pwd[PWD_MAX_CHAR_CONSTRAINT];
+  bool logged = false;
+  int login_tries = 0;
+
+  printf("\n%s==============================\n", COLOR_CYAN);
+  printf("           User Login\n");
+  printf("==============================%s\n\n", COLOR_RESET);
+
+  while (!logged && login_tries < MAX_LOGIN_TRIES) {
+    printf("%s🔐 Attempt %d of %d%s\n", COLOR_MAGENTA, login_tries + 1,
+           MAX_LOGIN_TRIES, COLOR_RESET);
+    printf("%s------------------------------%s\n", COLOR_CYAN, COLOR_RESET);
+
+    ask_null_terminated_input_str(
+        tmp_id, sizeof(tmp_id), COLOR_YELLOW "🆔  Account ID: " COLOR_RESET);
+    ask_null_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
+                                  COLOR_YELLOW "🔑  Password: " COLOR_RESET);
+
+    const AuthCredentials user = make_in_mem_creds(tmp_id, tmp_pwd);
+    logged = try_login(user);
+    if (!logged) {
+      login_tries++;
+      printf("\n%s❌ Failed to login. Please try again.%s\n\n", COLOR_RED, COLOR_RESET);
+      continue;
+    }
+
+    printf("\n%s✅ Login successful! Welcome!%s\n", COLOR_GREEN, COLOR_RESET);
+    printf("%s--------------------------------------%s\n\n", COLOR_CYAN, COLOR_RESET);
+    return true;
+  }
+
+  return false;
 }

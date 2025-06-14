@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #define INVALID_CHOICE -1
@@ -14,7 +15,6 @@ int validate_choice(const char* expr);
 void ask_null_terminated_input_str(char* const src, size_t src_size,
                                    const char* question);
 
-static inline void colorize(const char* color) { printf("%s", color); };
 const char* hash_str(const char* const str, const char* const salt);
 const char* gen_acc_id();
 struct tm now();
@@ -26,5 +26,9 @@ static inline const char* fmt_date(char* buf, size_t buf_s,
            date.tm_mday, date.tm_hour, date.tm_min, date.tm_sec);
   return buf;
 }
+
+static inline void terminate_str_by_newline(char* const str) {
+  str[strcspn(str, "\n")] = '\0';
+};
 
 #endif /* CBANK_UTILS_H */

@@ -20,11 +20,6 @@ typedef struct _stores {
   } id_tracker_store;
 } Stores;
 
-typedef enum storage_file_pos {
-  START = SEEK_SET,
-  END = SEEK_END
-} StorageFilePos;
-
 FILE* db_instance(const char* f);
 void setup_stores();
 void terminate_stores();
@@ -35,7 +30,7 @@ bool email_already_registered(const char* email);
 
 void reset_entity_attr_mem(void* ent, size_t ent_s);
 void updt_next_identity(const char* store_name);
-void mov_store_cursor(const char* store_name, StorageFilePos pos);
+void mov_store_cursor(const char* store_name, int pos);
 int get_next_identity(const char* store_name);
 
 typedef struct CreateUserDTO {
@@ -45,7 +40,6 @@ typedef struct CreateUserDTO {
 } CreateUserDTO;
 
 #define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))
-#define UPDATE_ENTITY_NEXT_IDENTIY(store) updt_next_identity(store);
 
 #define NEXT_USER_IDENTITY get_next_identity(DB_USER_SECTION);
 
