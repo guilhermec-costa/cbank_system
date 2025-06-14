@@ -22,18 +22,17 @@ void setup_stores() {
   }
 }
 
-void reset_store_cursor_pos(const char* store_name) {
-  if(strcmp(store_name, stores.user_store.store_name)) {
-    fseek(stores.user_store.storage, 0, SEEK_SET);
+void mov_store_cursor(const char* store_name, StorageFilePos pos) {
+  if(strcmp(store_name, stores.user_store.store_name) == 0) {
+    fseek(stores.user_store.storage, 0, pos);
   } 
-  return;
 }
 
 BankUser get_user_by_id(const char* id) {
   char line_buf[256];
   BankUser user;
   RESET_ENTITY(user);
-  reset_store_cursor_pos(stores.user_store.store_name);
+  mov_store_cursor(stores.user_store.store_name, START);
 
   char* id_token = NULL;
   char* pwd_token = NULL;
@@ -61,4 +60,17 @@ BankUser get_user_by_id(const char* id) {
   
   strcpy(user.id, "");
   return user;
+}
+
+FILE* get_storage(const char* store_name) {
+  if(strcmp(store_name, DB_USER_SECTION) == 0)
+    return stores.user_store.storage;
+
+  return NULL;
+}
+
+void updt_next_identity(const char* store_name) {
+  FILE* entity_storage = get_storage(store_name);
+  if(entity_storage == NULL) return;
+  mov_store_cursor(store_name, END);
 }

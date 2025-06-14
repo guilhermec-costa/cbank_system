@@ -9,6 +9,7 @@
 #define PWD_HASH_SALT "PHToXCpRR1qGC2G8Cvi9fA=="
 
 bool try_login(AuthCredentials cred);
+BankUser register_user_form();
 void create_user(AuthCredentials cred);
 AuthCredentials make_in_mem_user(const char* id, const char* pwd);
 void logout();

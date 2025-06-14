@@ -14,8 +14,7 @@ bool try_login(AuthCredentials c) {
   if(strcmp(user.id, NON_EXISTING_USER_ID_FLAG) == 0) return false;
 
   const char* ck_pwd_hash = hash_str(c.password, PWD_HASH_SALT);
-  const char* stored_pwd_hash = hash_str(user.password, PWD_HASH_SALT); 
-  if(strcmp(ck_pwd_hash, stored_pwd_hash) != 0) return false;
+  if(strcmp(ck_pwd_hash, user.password) != 0) return false;
 
   return true;
 }
@@ -42,7 +41,14 @@ void create_user(AuthCredentials c) {
 
   const char* const pwd_hash = hash_str(c.password, PWD_HASH_SALT);
   fseek(stores.user_store.storage, 0, SEEK_END);
-  fprintf(stores.user_store.storage, "id=%s;pwd=%s\n", c.id, pwd_hash);
+  fprintf(stores.user_store.storage, "id=%s;pwd=%s;\n", c.id, pwd_hash);
   fflush(stores.user_store.storage);
   printf("Your account has been created!");
 };
+
+BankUser register_user_form() {
+  printf("Register User Form");
+  BankUser user;
+  RESET_ENTITY(user);
+  return user;
+}

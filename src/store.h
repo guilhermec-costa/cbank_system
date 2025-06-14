@@ -19,7 +19,14 @@ void setup_stores();
 void terminate_stores();
 BankUser get_user_by_id(const char* id);
 void reset_entity_attr_mem(void* ent, size_t ent_s);
+void updt_next_identity(const char* store_name);
 
 #define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))
+#define UPDATE_ENTITY_NEXT_IDENTIY(store) updt_next_identity(store);
+
+typedef enum storage_file_pos {
+  START = SEEK_SET,
+  END = SEEK_END
+} StorageFilePos;
 
 #endif /* CBANK_STORE_H */
