@@ -25,4 +25,12 @@ typedef struct bank_user {
   char updated_at[sizeof(VALID_DATETIME_STR)];
 } BankUser;
 
+typedef struct account {
+  char   id[20];
+  char   user_id_fk[20];
+  double balance;
+  char   created_at[sizeof(VALID_DATETIME_STR)];
+  char   updated_at[sizeof(VALID_DATETIME_STR)];
+} Account;
+
 #endif /* CBANK_MODELS_H */

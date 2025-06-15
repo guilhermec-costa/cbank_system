@@ -9,7 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 
-BankUser logged_user; 
+BankUser logged_user;
 
 bool try_login(AuthCredentials c) {
   BankUser user = get_user_by_acc_id(c.account_id);

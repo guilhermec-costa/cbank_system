@@ -7,21 +7,14 @@ extern Stores stores;
 BankUser mount_from_line_buf(const char* line_buf) {
   BankUser user;
   RESET_ENTITY(user);
-  char* id_token         = NULL;
-  char* acc_id_token     = NULL;
-  char* pwd_token        = NULL;
-  char* email_token      = NULL;
-  char* created_at_token = NULL;
-  char* updated_at_token = NULL;
-  char* is_active_token  = NULL;
 
-  id_token         = strstr(line_buf, "id=");
-  acc_id_token     = strstr(line_buf, "acc_id=");
-  pwd_token        = strstr(line_buf, "pwd=");
-  email_token      = strstr(line_buf, "email=");
-  created_at_token = strstr(line_buf, "created_at=");
-  updated_at_token = strstr(line_buf, "updated_at=");
-  is_active_token  = strstr(line_buf, "is_active=");
+  char* id_token         = strstr(line_buf, "id=");
+  char* acc_id_token     = strstr(line_buf, "acc_id=");
+  char* pwd_token        = strstr(line_buf, "pwd=");
+  char* email_token      = strstr(line_buf, "email=");
+  char* created_at_token = strstr(line_buf, "created_at=");
+  char* updated_at_token = strstr(line_buf, "updated_at=");
+  char* is_active_token  = strstr(line_buf, "is_active=");
 
   if (!id_token || !acc_id_token || !pwd_token || !email_token || !created_at_token ||
       !updated_at_token || !is_active_token) {
@@ -65,7 +58,8 @@ BankUser get_user_by_acc_id(const char* acc_id) {
   char* acc_id_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), user_store)) {
     acc_id_token = strstr(line_buf, "acc_id=");
-    if(!acc_id_token) continue;
+    if (!acc_id_token)
+      continue;
 
     char __acc_id[ACC_ID_MAX_CHAR_CONSTRAINT];
     sscanf(acc_id_token, "acc_id=%9[^;];", __acc_id);

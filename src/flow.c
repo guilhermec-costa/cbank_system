@@ -1,11 +1,11 @@
 #include "flow.h"
 
+#include "acc.h"
 #include "auth.h"
 #include "colorization.h"
 #include "menu.h"
 #include "store.h"
 #include "utils.h"
-#include "acc.h"
 
 #include <stdbool.h>
 

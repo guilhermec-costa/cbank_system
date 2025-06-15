@@ -10,7 +10,6 @@
 #define DB_ACCOUNT_SECTION "./stores/account_db"
 #define DB_TRANSACTION_SECTION "./stores/transaction_db"
 
-
 typedef struct Store {
   const char* store_name;
   FILE*       storage;
