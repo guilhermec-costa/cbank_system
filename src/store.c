@@ -1,10 +1,12 @@
 #include "store.h"
+#include "colorization.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <errno.h>
 
 Stores stores;
 
@@ -15,24 +17,35 @@ FILE* db_instance(const char* f) {
 
 void check_sucessfull_storage_creation(FILE* storage, const char* storage_name) {
   if (storage == NULL) {
-    printf("Failed to initialize \"%s\"", storage_name);
-    exit(-1);
+    printf("\n%s❌ Failed to initialize storage \"%s\"%s\n", COLOR_RED, storage_name, COLOR_RESET);
+    printf("%s⚠️  Check if the file or directory exists and has correct permissions.%s\n\n", COLOR_YELLOW, COLOR_RESET);
+    exit(1);
   };
   return;
 }
 
-void setup_stores() {
-  mkdir("stores", 0777);
-  stores.user_store.store_name = DB_USER_SECTION;
-  stores.user_store.storage    = db_instance(DB_USER_SECTION);
-  check_sucessfull_storage_creation(stores.user_store.storage, stores.user_store.store_name);
+void open_store(Store* store, const char* name) {
+  store->store_name = name;
+  store->storage = db_instance(name);
+  check_sucessfull_storage_creation(store->storage, store->store_name);
+};
 
-  stores.id_tracker_store.store_name = DB_ID_TRACKER_SECTION;
-  stores.id_tracker_store.storage    = db_instance(DB_ID_TRACKER_SECTION);
-  check_sucessfull_storage_creation(stores.id_tracker_store.storage,
-                                    stores.id_tracker_store.store_name);
+void setup_stores() {
+  if(mkdir("stores", 0777) == -1) {
+    if(errno != EEXIST) {
+      perror("Failed to create stores directory");
+      exit(EXIT_FAILURE);
+    }
+  };
+
+  open_store(&stores.id_tracker_store, DB_ID_TRACKER_SECTION);
+  open_store(&stores.user_store, DB_USER_SECTION);
+  open_store(&stores.account_store, DB_ACCOUNT_SECTION);
+  open_store(&stores.transaction_store, DB_TRANSACTION_SECTION);
 
   initialize_id_tracker_if_needed(DB_USER_SECTION);
+  initialize_id_tracker_if_needed(DB_TRANSACTION_SECTION);
+  initialize_id_tracker_if_needed(DB_ACCOUNT_SECTION);
 }
 
 void terminate_stores() {
@@ -106,6 +119,7 @@ void updt_next_identity(const char* store_name) {
   rename(tmp_f_name, DB_ID_TRACKER_SECTION);
 
   fclose(id_storage);
+  // very IMPORTANT
   stores.id_tracker_store.storage = db_instance(DB_ID_TRACKER_SECTION);
   if (!updated) {
     printf("⚠️  Store '%s' not found in ID tracker.\n", store_name);

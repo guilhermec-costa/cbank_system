@@ -48,6 +48,8 @@ bool pre_login_loop() {
       }
     }
   }
+
+  return false;
 }
 
 void post_login_loop() {

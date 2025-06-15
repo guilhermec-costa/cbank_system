@@ -7,17 +7,19 @@
 
 #define DB_USER_SECTION "./stores/user_db"
 #define DB_ID_TRACKER_SECTION "./stores/id_tracker_db"
+#define DB_ACCOUNT_SECTION "./stores/account_db"
+#define DB_TRANSACTION_SECTION "./stores/transaction_db"
+
+typedef struct Store {
+  const char* store_name;
+  FILE*       storage;
+} Store;
 
 typedef struct _stores {
-  struct UserStore {
-    const char* store_name;
-    FILE*       storage;
-  } user_store;
-
-  struct IdTrackerStore {
-    const char* store_name;
-    FILE*       storage;
-  } id_tracker_store;
+  Store user_store;
+  Store id_tracker_store;
+  Store account_store;
+  Store transaction_store;
 } Stores;
 
 FILE* db_instance(const char* f);
@@ -46,4 +48,6 @@ FILE* get_storage(const char* store_name);
 
 #define NEXT_USER_IDENTITY get_next_identity(DB_USER_SECTION);
 
+
+// COLUMNS NAME DEFINITIONS
 #endif /* CBANK_STORE_H */
