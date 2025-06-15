@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 Stores stores;
 
@@ -19,21 +21,8 @@ void check_sucessfull_storage_creation(FILE* storage, const char* storage_name) 
   return;
 }
 
-void initialize_id_tracker_if_needed(const char* store_name) {
-  if (!id_tracker_has_store(store_name)) {
-    FILE* id_storage = get_storage(DB_ID_TRACKER_SECTION);
-    if (id_storage == NULL) {
-      printf("Failed to open ID tracker to initialize.\n");
-      return;
-    }
-
-    fprintf(id_storage, "store=%s;cur_id=0;\n", store_name);
-    fflush(id_storage);
-    printf("✅ Initialized ID tracker for '%s'\n", store_name);
-  }
-}
-
 void setup_stores() {
+  mkdir("stores", 0777);
   stores.user_store.store_name = DB_USER_SECTION;
   stores.user_store.storage    = db_instance(DB_USER_SECTION);
   check_sucessfull_storage_creation(stores.user_store.storage, stores.user_store.store_name);
@@ -46,7 +35,7 @@ void setup_stores() {
   initialize_id_tracker_if_needed(DB_USER_SECTION);
 }
 
-void terminate_store() {
+void terminate_stores() {
   fclose(stores.user_store.storage);
   fclose(stores.id_tracker_store.storage);
 }

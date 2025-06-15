@@ -1,10 +1,12 @@
-#include <stdbool.h>
-#include "utils.h"
-#include "colorization.h"
-#include "store.h"
-#include "auth.h"
 #include "flow.h"
+
+#include "auth.h"
+#include "colorization.h"
 #include "menu.h"
+#include "store.h"
+#include "utils.h"
+
+#include <stdbool.h>
 
 bool pre_login_loop() {
   bool running = true;

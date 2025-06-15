@@ -5,8 +5,8 @@
 
 #include <stdio.h>
 
-#define DB_USER_SECTION "user.db"
-#define DB_ID_TRACKER_SECTION "id_tracker.db"
+#define DB_USER_SECTION "./stores/user_db"
+#define DB_ID_TRACKER_SECTION "./stores/id_tracker_db"
 
 typedef struct _stores {
   struct UserStore {
@@ -39,6 +39,7 @@ typedef struct CreateUserDTO {
 } CreateUserDTO;
 
 bool  id_tracker_has_store(const char* store_name);
+void initialize_id_tracker_if_needed(const char* store_name);
 FILE* get_storage(const char* store_name);
 
 #define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))

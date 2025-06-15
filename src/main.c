@@ -6,5 +6,7 @@ int main() {
   const bool loop_success = pre_login_loop();
   if (loop_success)
     post_login_loop();
+
+  terminate_stores();
   return 0;
 }

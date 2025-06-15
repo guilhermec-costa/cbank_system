@@ -23,3 +23,17 @@ bool id_tracker_has_store(const char* store_name) {
 
   return false;
 }
+
+void initialize_id_tracker_if_needed(const char* store_name) {
+  if (!id_tracker_has_store(store_name)) {
+    FILE* id_storage = get_storage(DB_ID_TRACKER_SECTION);
+    if (id_storage == NULL) {
+      printf("Failed to open ID tracker to initialize.\n");
+      return;
+    }
+
+    fprintf(id_storage, "store=%s;cur_id=0;\n", store_name);
+    fflush(id_storage);
+    printf("✅ Initialized ID tracker for '%s'\n", store_name);
+  }
+}
