@@ -10,6 +10,8 @@
 #define NON_EXISTING_USER_ID_FLAG ""
 #define PWD_HASH_SALT "PHToXCpRR1qGC2G8Cvi9fA=="
 
+extern BankUser logged_user;
+
 bool            try_login(AuthCredentials cred);
 CreateUserDTO   register_user_form();
 void            create_user(CreateUserDTO payload);

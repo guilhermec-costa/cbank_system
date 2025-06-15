@@ -10,6 +10,7 @@
 #define DB_ACCOUNT_SECTION "./stores/account_db"
 #define DB_TRANSACTION_SECTION "./stores/transaction_db"
 
+
 typedef struct Store {
   const char* store_name;
   FILE*       storage;
@@ -21,6 +22,8 @@ typedef struct _stores {
   Store account_store;
   Store transaction_store;
 } Stores;
+
+extern Stores stores;
 
 FILE* db_instance(const char* f);
 void  setup_stores();
@@ -41,13 +44,12 @@ typedef struct CreateUserDTO {
 } CreateUserDTO;
 
 bool  id_tracker_has_store(const char* store_name);
-void initialize_id_tracker_if_needed(const char* store_name);
+void  initialize_id_tracker_if_needed(const char* store_name);
 FILE* get_storage(const char* store_name);
 
 #define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))
 
 #define NEXT_USER_IDENTITY get_next_identity(DB_USER_SECTION);
-
 
 // COLUMNS NAME DEFINITIONS
 #endif /* CBANK_STORE_H */

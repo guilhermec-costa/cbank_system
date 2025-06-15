@@ -9,7 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 
-extern Stores stores;
+BankUser logged_user; 
 
 bool try_login(AuthCredentials c) {
   BankUser user = get_user_by_acc_id(c.account_id);
@@ -20,6 +20,7 @@ bool try_login(AuthCredentials c) {
   if (strcmp(ck_pwd_hash, user.password) != 0)
     return false;
 
+  logged_user = user;
   return true;
 }
 
@@ -48,8 +49,8 @@ void create_user(CreateUserDTO payload) {
 
   mov_store_cursor(stores.user_store.store_name, SEEK_END);
   fprintf(stores.user_store.storage,
-          "id=%d;acc_id=%s;email=%s;pwd=%s;created_at=%s;updated_at=%s\n", next_user_id, acc_id,
-          payload.email, pwd_hash, formatted_now, "NULL");
+          "id=%d;acc_id=%s;email=%s;pwd=%s;is_active=%d;created_at=%s;updated_at=%s\n",
+          next_user_id, acc_id, payload.email, pwd_hash, true, formatted_now, "NULL");
 
   updt_next_identity(stores.user_store.store_name);
 

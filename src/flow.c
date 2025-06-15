@@ -5,6 +5,7 @@
 #include "menu.h"
 #include "store.h"
 #include "utils.h"
+#include "acc.h"
 
 #include <stdbool.h>
 
@@ -43,7 +44,7 @@ bool pre_login_loop() {
         break;
       }
       case 3: {
-        printf("Thanks for using the system\n");
+        printf("\n👋 Thank you for using CBank System. See you soon!\n\n");
         return false;
       }
     }
@@ -64,6 +65,9 @@ void post_login_loop() {
         printf("Invalid option! Try again\n");
         break;
       }
+      case 1:
+        const int balance = check_user_balance();
+        printf("Balance: %d", balance);
     }
   }
 }

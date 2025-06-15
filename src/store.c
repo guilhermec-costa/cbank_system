@@ -1,12 +1,13 @@
 #include "store.h"
+
 #include "colorization.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <errno.h>
 
 Stores stores;
 
@@ -18,7 +19,8 @@ FILE* db_instance(const char* f) {
 void check_sucessfull_storage_creation(FILE* storage, const char* storage_name) {
   if (storage == NULL) {
     printf("\n%s❌ Failed to initialize storage \"%s\"%s\n", COLOR_RED, storage_name, COLOR_RESET);
-    printf("%s⚠️  Check if the file or directory exists and has correct permissions.%s\n\n", COLOR_YELLOW, COLOR_RESET);
+    printf("%s⚠️  Check if the file or directory exists and has correct permissions.%s\n\n",
+           COLOR_YELLOW, COLOR_RESET);
     exit(1);
   };
   return;
@@ -26,13 +28,13 @@ void check_sucessfull_storage_creation(FILE* storage, const char* storage_name) 
 
 void open_store(Store* store, const char* name) {
   store->store_name = name;
-  store->storage = db_instance(name);
+  store->storage    = db_instance(name);
   check_sucessfull_storage_creation(store->storage, store->store_name);
 };
 
 void setup_stores() {
-  if(mkdir("stores", 0777) == -1) {
-    if(errno != EEXIST) {
+  if (mkdir("stores", 0777) == -1) {
+    if (errno != EEXIST) {
       perror("Failed to create stores directory");
       exit(EXIT_FAILURE);
     }
