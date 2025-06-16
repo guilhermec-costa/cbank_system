@@ -53,8 +53,18 @@ void create_user(CreateUserDTO payload) {
           next_user_id, acc_id, payload.email, pwd_hash, true, formatted_now, "NULL");
 
   updt_next_identity(stores.user_store.store_name);
-
   fflush(stores.user_store.storage);
+
+  mov_store_cursor(stores.account_store.store_name, SEEK_END);
+
+  const int next_account_identity = NEXT_ACCOUNT_IDENTITY;
+  fprintf(stores.account_store.storage,
+          "id=%d;user_id_fk=%d;balance=%lf;created_at=%s;updated_at=%s\n", next_account_identity,
+          next_user_id, 0.0, formatted_now, "NULL");
+
+  updt_next_identity(stores.account_store.store_name);
+  fflush(stores.account_store.storage);
+
   printf("Your account has been created!");
 };
 

@@ -49,6 +49,7 @@ FILE* get_storage(const char* store_name);
 #define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))
 
 #define NEXT_USER_IDENTITY get_next_identity(DB_USER_SECTION);
+#define NEXT_ACCOUNT_IDENTITY get_next_identity(DB_ACCOUNT_SECTION);
 
 // COLUMNS NAME DEFINITIONS
 #endif /* CBANK_STORE_H */

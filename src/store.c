@@ -53,15 +53,19 @@ void setup_stores() {
 void terminate_stores() {
   fclose(stores.user_store.storage);
   fclose(stores.id_tracker_store.storage);
+  fclose(stores.account_store.storage);
+  fclose(stores.transaction_store.storage);
 }
 
 void mov_store_cursor(const char* store_name, int pos) {
-  if (strcmp(store_name, stores.user_store.store_name) == 0) {
+  if (strcmp(store_name, stores.user_store.store_name) == 0)
     fseek(stores.user_store.storage, 0, pos);
-  }
-  if (strcmp(store_name, stores.id_tracker_store.store_name) == 0) {
+  if (strcmp(store_name, stores.id_tracker_store.store_name) == 0)
     fseek(stores.id_tracker_store.storage, 0, pos);
-  }
+  if (strcmp(store_name, stores.account_store.store_name) == 0)
+    fseek(stores.account_store.storage, 0, pos);
+  if (strcmp(store_name, stores.transaction_store.store_name) == 0)
+    fseek(stores.transaction_store.storage, 0, pos);
 }
 
 FILE* get_storage(const char* store_name) {
@@ -73,6 +77,16 @@ FILE* get_storage(const char* store_name) {
   if (strcmp(store_name, DB_ID_TRACKER_SECTION) == 0) {
     mov_store_cursor(DB_ID_TRACKER_SECTION, SEEK_SET);
     return stores.id_tracker_store.storage;
+  }
+
+  if (strcmp(store_name, DB_ACCOUNT_SECTION) == 0) {
+    mov_store_cursor(DB_ACCOUNT_SECTION, SEEK_SET);
+    return stores.account_store.storage;
+  }
+
+  if (strcmp(store_name, DB_TRANSACTION_SECTION) == 0) {
+    mov_store_cursor(DB_TRANSACTION_SECTION, SEEK_SET);
+    return stores.transaction_store.storage;
   }
 
   return NULL;

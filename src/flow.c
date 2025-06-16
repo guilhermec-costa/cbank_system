@@ -65,9 +65,22 @@ void post_login_loop() {
         printf("Invalid option! Try again\n");
         break;
       }
-      case 1:
-        const int balance = check_user_balance();
-        printf("Balance: %d", balance);
+      case 1: {
+        double balance = check_user_balance();
+        printf("Balance: %lf", balance);
+        break;
+      }
+
+      case 2: {
+        char value[20];
+        ask_null_terminated_input_str(value, sizeof(value), "Value to deposit: ");
+        double numeric_v = atof(value);
+        int    made      = make_deposit(numeric_v);
+        if (!made) {
+          printf("Faild to make deposit");
+        }
+        printf("Deposit made!");
+      }
     }
   }
 }
