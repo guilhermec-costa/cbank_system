@@ -1,6 +1,7 @@
 #include "auth.h"
 
 #include "colorization.h"
+#include "models.h"
 #include "store.h"
 #include "utils.h"
 
@@ -48,9 +49,11 @@ void create_user(CreateUserDTO payload) {
   const char*     formatted_now = fmt_date(date_buf, sizeof(date_buf), at_now);
 
   mov_store_cursor(stores.user_store.store_name, SEEK_END);
-  fprintf(stores.user_store.storage,
-          "id=%d;acc_id=%s;email=%s;pwd=%s;is_active=%d;created_at=%s;updated_at=%s\n",
-          next_user_id, acc_id, payload.email, pwd_hash, true, formatted_now, "NULL");
+  fprintf(
+      stores.user_store.storage,
+      "id=%d;acc_id=%s;name=%s;cpf=%s;email=%s;pwd=%s;is_active=%d;created_at=%s;updated_at=%s\n",
+      next_user_id, acc_id, payload.name, payload.cpf, payload.email, pwd_hash, true, formatted_now,
+      "NULL");
 
   updt_next_identity(stores.user_store.store_name);
   fflush(stores.user_store.storage);
@@ -75,12 +78,14 @@ CreateUserDTO register_user_form() {
 
   char new_email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
   char new_name[REGISTRATION_NAME_MAX_CHAR_CONSTRAINT];
+  char new_cpf[CPF_DIGITS];
   char new_pwd[PWD_MAX_CHAR_CONSTRAINT];
 
   printf("%sPlease fill in the following details:%s\n\n", COLOR_GREEN, COLOR_RESET);
 
   ask_null_terminated_input_str(new_email, sizeof(new_email),
                                 COLOR_YELLOW "📧  Email: " COLOR_RESET);
+  ask_null_terminated_input_str(new_cpf, sizeof(new_cpf), COLOR_YELLOW "🪪  CPF: " COLOR_RESET);
   ask_null_terminated_input_str(new_name, sizeof(new_name), COLOR_YELLOW "👤  Name: " COLOR_RESET);
   ask_null_terminated_input_str(new_pwd, sizeof(new_pwd),
                                 COLOR_YELLOW "🔑  Password: " COLOR_RESET);
@@ -89,6 +94,7 @@ CreateUserDTO register_user_form() {
   strcpy(user.email, new_email);
   strcpy(user.password, new_pwd);
   strcpy(user.name, new_name);
+  strcpy(user.cpf, new_cpf);
 
   printf("\n%s✅ User registration form completed!%s\n", COLOR_GREEN, COLOR_RESET);
   printf("%s--------------------------------------%s\n", COLOR_CYAN, COLOR_RESET);

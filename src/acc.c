@@ -88,7 +88,7 @@ int make_deposit(double v) {
   FILE*       tmp_f      = fopen(tmp_f_name, "w");
   if (tmp_f == NULL) {
     printf("Failed to open temporary file for updating account.\n");
-    return -1;
+    return 1;
   }
 
   char        f_line_buf[256];

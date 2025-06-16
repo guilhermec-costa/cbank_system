@@ -19,7 +19,7 @@ bool pre_login_loop() {
     selected_opt = get_opt_input();
     switch (selected_opt) {
       case INVALID_CHOICE: {
-        printf("Invalid option! Try again\n");
+        printf("\n❌ Invalid option! Please try again.\n\n");
         break;
       }
       case 1: {
@@ -62,12 +62,12 @@ void post_login_loop() {
     selected_opt = get_opt_input();
     switch (selected_opt) {
       case INVALID_CHOICE: {
-        printf("Invalid option! Try again\n");
+        printf("\n❌ Invalid option! Please try again.\n\n");
         break;
       }
       case 1: {
         double balance = check_user_balance();
-        printf("Balance: %lf", balance);
+        printf("\n💰 Current Balance: R$ %.2lf\n\n", balance);
         break;
       }
 
@@ -75,11 +75,18 @@ void post_login_loop() {
         char value[20];
         ask_null_terminated_input_str(value, sizeof(value), "Value to deposit: ");
         double numeric_v = atof(value);
-        int    made      = make_deposit(numeric_v);
-        if (!made) {
-          printf("Faild to make deposit");
+        if (numeric_v <= 0) {
+          printf("\n❌ Invalid deposit amount. Must be greater than zero.\n\n");
+          break;
         }
-        printf("Deposit made!");
+        int result = make_deposit(numeric_v);
+        if (result == 0) {
+          printf("\n✅ Deposit of R$ %.2lf successful!\n\n", numeric_v);
+        } else if (result == 1) {
+          printf("\n⚠️  Deposit failed. Account not found.\n\n");
+        } else {
+          printf("\n❌ Deposit failed due to an internal error.\n\n");
+        }
       }
     }
   }

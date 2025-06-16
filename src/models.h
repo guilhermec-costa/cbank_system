@@ -5,6 +5,7 @@
 #define REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT 50
 #define PWD_MAX_CHAR_CONSTRAINT 35
 #define ACC_ID_MAX_CHAR_CONSTRAINT 10
+#define CPF_DIGITS 11
 #define VALID_DATETIME_STR "2004-06-04-21-50-32"
 
 #include <stdbool.h>
@@ -25,6 +26,7 @@ typedef struct bank_user {
   char id[20];
   char acc_id[ACC_ID_MAX_CHAR_CONSTRAINT];
   char name[REGISTRATION_NAME_MAX_CHAR_CONSTRAINT];
+  char cpf[CPF_DIGITS];
   char email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
   char password[PWD_MAX_CHAR_CONSTRAINT];
   bool is_active;

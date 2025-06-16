@@ -39,6 +39,7 @@ int  get_next_identity(const char* store_name);
 typedef struct CreateUserDTO {
   char name[50];
   char email[50];
+  char cpf[CPF_DIGITS];
   char password[PWD_MAX_CHAR_CONSTRAINT];
 } CreateUserDTO;
 
