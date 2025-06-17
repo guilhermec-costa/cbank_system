@@ -1,6 +1,7 @@
 #include "store.h"
 
 #include "colorization.h"
+#include "utils.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -108,6 +109,7 @@ void updt_next_identity(const char* store_name) {
   bool        updated     = false;
 
   while (fgets(line_buf, sizeof(line_buf), id_storage)) {
+    terminate_str_by_newline(line_buf);
     store_token = strstr(line_buf, "store=");
     curid_token = strstr(line_buf, "cur_id=");
     if (!curid_token || !store_token) {
@@ -152,6 +154,7 @@ int get_next_identity(const char* store_name) {
   const char* store_token = NULL;
   const char* curid_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), id_storage)) {
+    terminate_str_by_newline(line_buf);
     store_token = strstr(line_buf, "store=");
     curid_token = strstr(line_buf, "cur_id=");
     if (!curid_token || !store_token)

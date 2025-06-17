@@ -1,4 +1,5 @@
 #include "store.h"
+#include "utils.h"
 
 #include <string.h>
 
@@ -11,6 +12,7 @@ bool id_tracker_has_store(const char* store_name) {
 
   const char* store_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), id_storage)) {
+    terminate_str_by_newline(line_buf);
     store_token = strstr(line_buf, "store=");
     if (store_token) {
       char _tmp_store_name[50];

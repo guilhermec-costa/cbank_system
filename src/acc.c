@@ -2,6 +2,7 @@
 
 #include "models.h"
 #include "store.h"
+#include "utils.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -64,6 +65,7 @@ double check_user_balance() {
 
   const char* user_id_fk_token = NULL;
   while (fgets(f_line_buf, sizeof(f_line_buf), acc_store)) {
+    terminate_str_by_newline(f_line_buf);
     user_id_fk_token = strstr(f_line_buf, "user_id_fk=");
     if (!user_id_fk_token)
       continue;
@@ -94,6 +96,7 @@ int make_deposit(double v) {
   char        f_line_buf[256];
   const char* user_id_fk_token = NULL;
   while (fgets(f_line_buf, sizeof(f_line_buf), acc_storage)) {
+    terminate_str_by_newline(f_line_buf);
     user_id_fk_token = strstr(f_line_buf, "user_id_fk=");
     if (!user_id_fk_token) {
       fputs(f_line_buf, tmp_f);

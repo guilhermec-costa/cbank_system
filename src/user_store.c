@@ -1,5 +1,6 @@
 #include "models.h"
 #include "store.h"
+#include "utils.h"
 
 #include <string.h>
 
@@ -66,6 +67,7 @@ BankUser get_user_by_cpf(const char* cpf) {
 
   char* cpf_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), user_store)) {
+    terminate_str_by_newline(line_buf);
     cpf_token = strstr(line_buf, "cpf=");
     if (!cpf_token)
       continue;
@@ -87,6 +89,7 @@ bool email_already_registered(const char* email) {
 
   char* email_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), user_store)) {
+    terminate_str_by_newline(line_buf);
     email_token = strstr(line_buf, "email=");
     if (!email_token)
       continue;
