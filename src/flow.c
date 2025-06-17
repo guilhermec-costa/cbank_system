@@ -9,7 +9,7 @@
 
 #include <stdbool.h>
 
-bool pre_login_loop(int stop_flag) {
+bool pre_login_loop(int* stop_flag) {
   bool running = true;
   pre_login_menu();
   int selected_opt          = 0;
@@ -44,7 +44,7 @@ bool pre_login_loop(int stop_flag) {
       }
       case 3: {
         printf("\n👋 Thank you for using CBank System. See you soon!\n\n");
-        stop_flag = 1;
+        *stop_flag = 1;
         return false;
       }
     }
@@ -53,7 +53,7 @@ bool pre_login_loop(int stop_flag) {
   return false;
 }
 
-void post_login_loop(int stop_flag) {
+void post_login_loop() {
   bool running = true;
   post_login_menu();
   int selected_opt = 0;
@@ -92,7 +92,6 @@ void post_login_loop(int stop_flag) {
 
       case 7: {
         RESET_ENTITY(logged_user);
-        stop_flag = 1;
         return;
       }
     }

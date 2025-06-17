@@ -6,7 +6,7 @@
 static int pre_login_loop_controller  = 0;
 static int post_login_loop_controller = 0;
 
-bool pre_login_loop(int stop_flag);
-void post_login_loop(int stop_flag);
+bool pre_login_loop(int* stop_flag);
+void post_login_loop();
 
 #endif /* CBANK_FLOW_H */
