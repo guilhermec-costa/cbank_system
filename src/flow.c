@@ -9,14 +9,14 @@
 
 #include <stdbool.h>
 
-bool pre_login_loop() {
+bool pre_login_loop(int stop_flag) {
   bool running = true;
   pre_login_menu();
   int selected_opt          = 0;
   pre_login_loop_controller = 1;
 
   while (running && pre_login_loop_controller) {
-    selected_opt = get_opt_input();
+    selected_opt = get_opt_input(PRE_LOGIN_MIN_CHOICE, PRE_LOGIN_MAX_CHOICE);
     switch (selected_opt) {
       case INVALID_CHOICE: {
         printf("\n❌ Invalid option! Please try again.\n\n");
@@ -35,7 +35,6 @@ bool pre_login_loop() {
           return false;
         }
         pre_login_loop_controller  = 0;
-        post_login_loop_controller = 1;
         return true;
       }
       case 2: {
@@ -45,6 +44,7 @@ bool pre_login_loop() {
       }
       case 3: {
         printf("\n👋 Thank you for using CBank System. See you soon!\n\n");
+        stop_flag = 1;
         return false;
       }
     }
@@ -53,13 +53,13 @@ bool pre_login_loop() {
   return false;
 }
 
-void post_login_loop() {
+void post_login_loop(int stop_flag) {
   bool running = true;
   post_login_menu();
   int selected_opt = 0;
 
-  while (running && post_login_loop_controller) {
-    selected_opt = get_opt_input();
+  while (running) {
+    selected_opt = get_opt_input(POST_LOGIN_MIN_CHOICE, POST_LOGIN_MAX_CHOICE);
     switch (selected_opt) {
       case INVALID_CHOICE: {
         printf("\n❌ Invalid option! Please try again.\n\n");
@@ -87,6 +87,13 @@ void post_login_loop() {
         } else {
           printf("\n❌ Deposit failed due to an internal error.\n\n");
         }
+        break;
+      }
+
+      case 7: {
+        RESET_ENTITY(logged_user);
+        stop_flag = 1;
+        return;
       }
     }
   }

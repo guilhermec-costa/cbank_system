@@ -1,3 +1,4 @@
+#include "models.h"
 #include "store.h"
 
 #include <string.h>
@@ -57,22 +58,22 @@ BankUser mount_from_line_buf(const char* line_buf) {
   return user;
 }
 
-BankUser get_user_by_acc_id(const char* acc_id) {
+BankUser get_user_by_cpf(const char* cpf) {
   FILE*    user_store = get_storage(DB_USER_SECTION);
   char     line_buf[256];
   BankUser user;
   RESET_ENTITY(user);
 
-  char* acc_id_token = NULL;
+  char* cpf_token = NULL;
   while (fgets(line_buf, sizeof(line_buf), user_store)) {
-    acc_id_token = strstr(line_buf, "acc_id=");
-    if (!acc_id_token)
+    cpf_token = strstr(line_buf, "cpf=");
+    if (!cpf_token)
       continue;
 
-    char __acc_id[ACC_ID_MAX_CHAR_CONSTRAINT];
-    sscanf(acc_id_token, "acc_id=%9[^;];", __acc_id);
+    char __cpf[CPF_DIGITS];
+    sscanf(cpf_token, "cpf=%10[^;];", __cpf);
 
-    if (strcmp(__acc_id, acc_id) == 0) {
+    if (strcmp(__cpf, cpf) == 0) {
       user = mount_from_line_buf(line_buf);
       break;
     }

@@ -13,7 +13,7 @@
 BankUser logged_user;
 
 bool try_login(AuthCredentials c) {
-  BankUser user = get_user_by_acc_id(c.account_id);
+  BankUser user = get_user_by_cpf(c.cpf);
   if (strcmp(user.id, NON_EXISTING_USER_ID_FLAG) == 0)
     return false;
 
@@ -27,7 +27,7 @@ bool try_login(AuthCredentials c) {
 
 AuthCredentials make_in_mem_creds(const char* acc_id, const char* pwd) {
   AuthCredentials c;
-  strcpy(c.account_id, acc_id);
+  strcpy(c.cpf, acc_id);
   strcpy(c.password, pwd);
   return c;
 }
@@ -83,12 +83,13 @@ CreateUserDTO register_user_form() {
 
   printf("%sPlease fill in the following details:%s\n\n", COLOR_GREEN, COLOR_RESET);
 
+  ask_null_terminated_input_str(new_cpf, sizeof(new_cpf), COLOR_YELLOW "🪪  CPF: " COLOR_RESET);
   ask_null_terminated_input_str(new_email, sizeof(new_email),
                                 COLOR_YELLOW "📧  Email: " COLOR_RESET);
-  ask_null_terminated_input_str(new_cpf, sizeof(new_cpf), COLOR_YELLOW "🪪  CPF: " COLOR_RESET);
   ask_null_terminated_input_str(new_name, sizeof(new_name), COLOR_YELLOW "👤  Name: " COLOR_RESET);
   ask_null_terminated_input_str(new_pwd, sizeof(new_pwd),
                                 COLOR_YELLOW "🔑  Password: " COLOR_RESET);
+
   CreateUserDTO user = {};
   RESET_ENTITY(user);
   strcpy(user.email, new_email);
@@ -102,7 +103,7 @@ CreateUserDTO register_user_form() {
 }
 
 bool trigger_login_process() {
-  char tmp_id[ACC_ID_MAX_CHAR_CONSTRAINT];
+  char cpf[CPF_DIGITS];
   char tmp_pwd[PWD_MAX_CHAR_CONSTRAINT];
   bool logged      = false;
   int  login_tries = 0;
@@ -116,12 +117,12 @@ bool trigger_login_process() {
            COLOR_RESET);
     printf("%s------------------------------%s\n", COLOR_CYAN, COLOR_RESET);
 
-    ask_null_terminated_input_str(tmp_id, sizeof(tmp_id),
-                                  COLOR_YELLOW "🆔  Account ID: " COLOR_RESET);
+    ask_null_terminated_input_str(cpf, sizeof(cpf),
+                                  COLOR_YELLOW "🆔  CPF: " COLOR_RESET);
     ask_null_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
                                   COLOR_YELLOW "🔑  Password: " COLOR_RESET);
 
-    const AuthCredentials user = make_in_mem_creds(tmp_id, tmp_pwd);
+    const AuthCredentials user = make_in_mem_creds(cpf, tmp_pwd);
     logged                     = try_login(user);
     if (!logged) {
       login_tries++;

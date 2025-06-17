@@ -28,7 +28,7 @@ FILE* db_instance(const char* f);
 void  setup_stores();
 void  terminate_stores();
 
-BankUser get_user_by_acc_id(const char* account_id);
+BankUser get_user_by_cpf(const char* cpf);
 bool     email_already_registered(const char* email);
 
 void reset_entity_attr_mem(void* ent, size_t ent_s);

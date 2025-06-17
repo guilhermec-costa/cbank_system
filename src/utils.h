@@ -8,10 +8,13 @@
 #include <time.h>
 
 #define INVALID_CHOICE -1
-#define MIN_CHOICE 1
-#define MAX_CHOICE 3
+#define PRE_LOGIN_MIN_CHOICE 1
+#define PRE_LOGIN_MAX_CHOICE 3
 
-int  validate_choice(const char* expr);
+#define POST_LOGIN_MIN_CHOICE 1
+#define POST_LOGIN_MAX_CHOICE 7
+
+int  validate_choice(const char* expr, int min, int max);
 void ask_null_terminated_input_str(char* const src, size_t src_size, const char* question);
 
 const char* hash_str(const char* const str, const char* const salt);
@@ -28,5 +31,9 @@ static inline const char* fmt_date(char* buf, size_t buf_s, const struct tm date
 static inline void terminate_str_by_newline(char* const str) {
   str[strcspn(str, "\n")] = '\0';
 };
+
+static inline void flush_stdin() {
+  int c; while((c = getchar()) != '\n' && c != EOF);
+}
 
 #endif /* CBANK_UTILS_H */

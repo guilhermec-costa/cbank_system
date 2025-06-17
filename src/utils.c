@@ -6,9 +6,9 @@
 #include <time.h>
 #include <unistd.h>
 
-int validate_choice(const char* choice) {
+int validate_choice(const char* choice, int min, int max) {
   int choice_to_i = atoi(choice);
-  if (choice_to_i == 0 || choice_to_i < MIN_CHOICE || choice_to_i > MAX_CHOICE)
+  if (choice_to_i == 0 || choice_to_i < min || choice_to_i > max)
     return INVALID_CHOICE;
   return choice_to_i;
 }

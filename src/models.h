@@ -5,7 +5,7 @@
 #define REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT 50
 #define PWD_MAX_CHAR_CONSTRAINT 35
 #define ACC_ID_MAX_CHAR_CONSTRAINT 10
-#define CPF_DIGITS 11
+#define CPF_DIGITS 12
 #define VALID_DATETIME_STR "2004-06-04-21-50-32"
 
 #include <stdbool.h>
@@ -18,7 +18,7 @@ typedef char _updated_at[sizeof(VALID_DATETIME_STR)];
 #define UPDATED_AT _updated_at updated_at;
 
 typedef struct auth_credentails {
-  char account_id[REGISTRATION_NAME_MAX_CHAR_CONSTRAINT];
+  char cpf[CPF_DIGITS];
   char password[PWD_MAX_CHAR_CONSTRAINT];
 } AuthCredentials;
 
