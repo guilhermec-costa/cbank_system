@@ -79,7 +79,7 @@ void post_login_loop() {
           printf("\n❌ Invalid deposit amount. Must be greater than zero.\n\n");
           break;
         }
-        int result = make_deposit(numeric_v);
+        int result = make_transaction_op(numeric_v, DEPOSIT);
         if (result == 0) {
           printf("\n✅ Deposit of R$ %.2lf successful!\n\n", numeric_v);
         } else if (result == 1) {
@@ -88,6 +88,17 @@ void post_login_loop() {
           printf("\n❌ Deposit failed due to an internal error.\n\n");
         }
         break;
+      }
+
+      case 3: {
+        char value[20];
+        ask_null_terminated_input_str(value, sizeof(value), "Value to withdraw: ");
+        double numeric_v = atof(value);
+        if (numeric_v <= 0) {
+          printf("\n❌ Invalid withdraw amount. Must be greater than zero.\n\n");
+          break;
+        }
+        int result = make_transaction_op(numeric_v, WITHDRAW);
       }
 
       case 7: {

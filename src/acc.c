@@ -80,7 +80,7 @@ double check_user_balance() {
   return account_entity.balance;
 }
 
-int make_deposit(double v) {
+int make_transaction_op(double v, TransactionType ttype) {
   bool    updated     = false;
   FILE*   acc_storage = get_storage(DB_ACCOUNT_SECTION);
   Account account_entity;
@@ -105,7 +105,18 @@ int make_deposit(double v) {
 
     account_entity = mount_acc_from_line_buf(f_line_buf);
     if (strcmp(account_entity.user_id_fk, logged_user.id) == 0) {
-      account_entity.balance += v;
+      switch(ttype) {
+        case DEPOSIT: {
+          account_entity.balance += v;
+          break;
+        }
+        case WITHDRAW: {
+          if(account_entity.balance < 0.000001) {
+          }
+          account_entity.balance -= v;
+          break;
+        }
+      }
       updated = true;
     }
     fputs(acc_to_line_buf(&account_entity), tmp_f);
