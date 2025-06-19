@@ -19,7 +19,6 @@ int main() {
   server_cfg.in_address = INADDR_ANY; // accepts from any host
   const struct Server server = make_server(server_cfg, start);
 
-
   int app_mode = SERVER;
   if(app_mode == SERVER) {
     server.start(&server);
