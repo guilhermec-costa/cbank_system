@@ -8,22 +8,22 @@
 #define PORT 8080
 
 struct ServerConfig {
-  int domain;
-  int port;
-  int service;
-  int protocol;
-  int queue_s;
+  int      domain;
+  int      port;
+  int      protocol;
+  int      queue_s;
+  int      socket_type;
+  uint32_t in_address;
 };
 
 struct Server {
   struct ServerConfig cfg;
   int                 socket_fd;
   struct sockaddr_in  sock_address;
-  void (*launch)(struct Server* server);
+  void (*start)(const struct Server* server);
 };
 
-struct Server make_server(int domain, int port, int service, int protocol, int backlog,
-                          void (*launch)(struct Server* server));
-void          launch(struct Server* server);
+struct Server make_server(struct ServerConfig config, void (*start)(const struct Server* server));
+void          start(const struct Server* server);
 
 #endif /* CBANK_SERVER_H */
