@@ -2,22 +2,21 @@ CC = gcc
 BINARY = bin/bank
 CFLAGS = -Wall -Wextra -std=c99 -g -lcrypt
 
-SRCS=$(wildcard  src/*.c)
-OBJS_NAMES = $(notdir $(SRCS:.c=.o)) 
-BIN_OBJS = $(addprefix bin/, $(OBJS_NAMES))
+SRCS := $(shell find src -name "*.c")
+OBJS := $(patsubst src/%.c, bin/%.o, $(SRCS))
 
 all: $(BINARY)
 
-$(BINARY): $(BIN_OBJS)
+$(BINARY): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 bin/%.o: src/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(BINARY) bin/*.o
+	rm -rf bin
 
 fmt:
-	@clang-format -i src/*.c src/*.h
-	@echo ".C and .H files formatted"
+	clang-format -i $(SRCS) $(HEADERS)
+	@echo "Formatted .c and .h files"
