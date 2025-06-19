@@ -1,7 +1,7 @@
 #include "server.h"
 
 #include "http_parser.h"
-#include "route_contants.h"
+#include "router.h"
 
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -36,20 +36,16 @@ void start(const struct Server* server) {
 
     struct HttpRequest req;
     printf("%s", client_buf);
-    char template_content[8192] = {0};
     if (parse_request_line(client_buf, &req) == 0) {
-      get_route_html(template_content, sizeof(template_content), req.path);
-      printf("%s", template_content);
+      route_request(client_fd, &req);
     } else {
       printf("Failed to parse request line.\n");
+      const char* bad_request =
+          "HTTP/1.1 400 Bad Request" CRLF "Content-Type: text/plain" CRLF CRLF "400 Bad Request";
+
+      write(client_fd, bad_request, strlen(bad_request));
     };
 
-    char response[16384] = {0};
-    strcpy(response, template_content);
-
-    const char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
-    write(client_fd, header, strlen(header));
-    write(client_fd, template_content, strlen(template_content));
     printf("Response sent! closing connection\n");
     close(client_fd);
   }

@@ -1,3 +1,5 @@
+#ifndef CBANK_HTTP_PARSER_H
+#define CBANK_HTTP_PARSER_H
 #include <stddef.h>
 #define CRLF "\r\n"
 
@@ -7,5 +9,7 @@ struct HttpRequest {
   char version[16];
 };
 
-int parse_request_line(const char* req, struct HttpRequest* http_req);
+int  parse_request_line(const char* req, struct HttpRequest* http_req);
 void get_route_html(char* template_content, size_t buf_size, const char* path);
+
+#endif /* CBANK_HTTP_PARSER_H */

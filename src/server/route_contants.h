@@ -1,8 +1,8 @@
 #ifndef CBANK_ROUTE_CONSTANTS_H
 #define CBANK_ROUTE_CONSTANTS_H
 
-#define INDEX_PATH "/"
-#define LOGIN_PATH "/login"
-#define ACCOUNTS_PATH "/accounts"
+#define INDEX_ROUTE_PATH "/"
+#define LOGIN_ROUTE_PATH "/login"
+#define ACCOUNTS_ROUTE_PATH "/accounts"
 
 #endif /* CBANK_ROUTE_CONSTANTS_H */

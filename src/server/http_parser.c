@@ -1,4 +1,5 @@
 #include "http_parser.h"
+
 #include "route_contants.h"
 #include "templates_constants.h"
 
@@ -57,13 +58,13 @@ int parse_request_line(const char* req_buf, struct HttpRequest* http_req) {
 void get_route_html(char* template_content, size_t buf_size, const char* path) {
   FILE* template_file = NULL;
 
-  if(strcmp(path, INDEX_PATH) == 0) {
+  if (strcmp(path, INDEX_ROUTE_PATH) == 0) {
     template_file = fopen(INDEX_TEMPLATE_PATH, "r");
   }
-  if(strcmp(path, LOGIN_PATH) == 0) {
+  if (strcmp(path, LOGIN_ROUTE_PATH) == 0) {
     template_file = fopen(LOGIN_TEMPLATE_PATH, "r");
   }
-  if(strcmp(path, ACCOUNTS_PATH) == 0) {
+  if (strcmp(path, ACCOUNTS_ROUTE_PATH) == 0) {
     template_file = fopen(ACCOUNTS_TEMPLATE_PATH, "r");
   }
 
@@ -72,7 +73,7 @@ void get_route_html(char* template_content, size_t buf_size, const char* path) {
     return;
   }
 
-  size_t bytes_read = fread(template_content, 1, buf_size - 1, template_file);
+  size_t bytes_read            = fread(template_content, 1, buf_size - 1, template_file);
   template_content[bytes_read] = '\0';
 
   fclose(template_file);
