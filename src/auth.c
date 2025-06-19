@@ -117,8 +117,7 @@ bool trigger_login_process() {
            COLOR_RESET);
     printf("%s------------------------------%s\n", COLOR_CYAN, COLOR_RESET);
 
-    ask_null_terminated_input_str(cpf, sizeof(cpf),
-                                  COLOR_YELLOW "🆔  CPF: " COLOR_RESET);
+    ask_null_terminated_input_str(cpf, sizeof(cpf), COLOR_YELLOW "🆔  CPF: " COLOR_RESET);
     ask_null_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
                                   COLOR_YELLOW "🔑  Password: " COLOR_RESET);
 

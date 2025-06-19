@@ -34,7 +34,7 @@ bool pre_login_loop(int* stop_flag) {
                  COLOR_RESET);
           return false;
         }
-        pre_login_loop_controller  = 0;
+        pre_login_loop_controller = 0;
         return true;
       }
       case 2: {

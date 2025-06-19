@@ -105,13 +105,13 @@ int make_transaction_op(double v, TransactionType ttype) {
 
     account_entity = mount_acc_from_line_buf(f_line_buf);
     if (strcmp(account_entity.user_id_fk, logged_user.id) == 0) {
-      switch(ttype) {
+      switch (ttype) {
         case DEPOSIT: {
           account_entity.balance += v;
           break;
         }
         case WITHDRAW: {
-          if(account_entity.balance < 0.000001) {
+          if (account_entity.balance < 0.000001) {
           }
           account_entity.balance -= v;
           break;

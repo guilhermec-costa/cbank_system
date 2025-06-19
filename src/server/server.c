@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 int server() {
-  int server_fd, client_fd;
+  int  server_fd, client_fd;
   char client_buf[3000] = {0};
 
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -22,8 +22,7 @@ int server() {
   server_sock_addr.sin_addr.s_addr = INADDR_ANY;
   server_sock_addr.sin_port        = htons(8080);
 
-  if (bind(server_fd, (struct sockaddr*)&server_sock_addr,
-           sizeof(server_sock_addr)) < 0) {
+  if (bind(server_fd, (struct sockaddr*)&server_sock_addr, sizeof(server_sock_addr)) < 0) {
     perror("socket bind failed");
     exit(EXIT_FAILURE);
   }
@@ -39,8 +38,8 @@ int server() {
     struct sockaddr_in client_addr;
     printf("ALo\n");
 
-    if ((client_fd = accept(server_fd, (struct sockaddr*)&server_sock_addr,
-                            (socklen_t*)&addrlen)) < 0) {
+    if ((client_fd = accept(server_fd, (struct sockaddr*)&server_sock_addr, (socklen_t*)&addrlen)) <
+        0) {
       perror("accept failed");
       continue;
     }
