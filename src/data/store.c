@@ -1,7 +1,7 @@
 #include "store.h"
 
-#include "colorization.h"
-#include "utils.h"
+#include "../colorization.h"
+#include "../utils.h"
 
 #include <errno.h>
 #include <stdio.h>

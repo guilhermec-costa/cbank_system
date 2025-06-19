@@ -1,5 +1,5 @@
 #include "store.h"
-#include "utils.h"
+#include "../utils.h"
 
 #include <string.h>
 

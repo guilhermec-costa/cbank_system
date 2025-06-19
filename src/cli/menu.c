@@ -1,5 +1,5 @@
-#include "colorization.h"
-#include "utils.h"
+#include "../colorization.h"
+#include "../utils.h"
 
 void pre_login_menu() {
   printf("\n%s=========================================\n", COLOR_CYAN);

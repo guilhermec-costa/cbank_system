@@ -1,8 +1,8 @@
 #ifndef CBANK_AUTH_H
 #define CBANK_AUTH_H
 
-#include "models.h"
-#include "store.h"
+#include "../data/models.h"
+#include "../data/store.h"
 
 #include <stdbool.h>
 

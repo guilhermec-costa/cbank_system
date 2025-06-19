@@ -1,5 +1,5 @@
-#include "flow.h"
-#include "store.h"
+#include "cli/flow.h"
+#include "data/store.h"
 
 int main() {
   setup_stores();

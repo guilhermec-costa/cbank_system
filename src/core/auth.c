@@ -1,9 +1,9 @@
 #include "auth.h"
 
-#include "colorization.h"
-#include "models.h"
-#include "store.h"
-#include "utils.h"
+#include "../colorization.h"
+#include "../data/models.h"
+#include "../data/store.h"
+#include "../utils.h"
 
 #include <crypt.h>
 #include <stdio.h>

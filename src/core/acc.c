@@ -1,7 +1,7 @@
 #include "acc.h"
 
-#include "../models.h"
-#include "../store.h"
+#include "../data/models.h"
+#include "../data/store.h"
 #include "../utils.h"
 
 #include <stdio.h>
