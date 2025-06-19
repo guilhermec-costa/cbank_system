@@ -33,7 +33,9 @@ static inline void terminate_str_by_newline(char* const str) {
 };
 
 static inline void flush_stdin() {
-  int c; while((c = getchar()) != '\n' && c != EOF);
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF)
+    ;
 }
 
 #endif /* CBANK_UTILS_H */

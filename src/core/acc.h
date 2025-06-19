@@ -7,6 +7,6 @@ typedef enum _Transaction_Type {
 } TransactionType;
 
 double check_user_balance();
-int make_transaction_op(double v, TransactionType ttype);
+int    make_transaction_op(double v, TransactionType ttype);
 
 #endif /* CBANK_ACC_H */

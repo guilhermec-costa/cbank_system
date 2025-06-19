@@ -3,6 +3,7 @@ BINARY = bin/bank
 CFLAGS = -Wall -Wextra -std=c99 -g -lcrypt
 
 SRCS := $(shell find src -name "*.c")
+HEADERS := $(shell find src -name "*.h")
 OBJS := $(patsubst src/%.c, bin/%.o, $(SRCS))
 
 all: $(BINARY)

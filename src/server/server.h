@@ -17,12 +17,13 @@ struct ServerConfig {
 
 struct Server {
   struct ServerConfig cfg;
-  int socket_fd;
-  struct sockaddr_in sock_address;
-  void (*launch)(struct Server *server);
+  int                 socket_fd;
+  struct sockaddr_in  sock_address;
+  void (*launch)(struct Server* server);
 };
 
-struct Server make_server(int domain, int port, int service, int protocol, int backlog, void (*launch)(struct Server *server));
-void launch(struct Server* server);
+struct Server make_server(int domain, int port, int service, int protocol, int backlog,
+                          void (*launch)(struct Server* server));
+void          launch(struct Server* server);
 
 #endif /* CBANK_SERVER_H */
