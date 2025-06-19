@@ -1,4 +1,6 @@
 #include "http_parser.h"
+#include "route_contants.h"
+#include "templates_constants.h"
 
 #define _POSIX_C_SOURCE 200809L
 
@@ -50,4 +52,28 @@ int parse_request_line(const char* req_buf, struct HttpRequest* http_req) {
   }
 
   return 0; // success
+};
+
+void get_route_html(char* template_content, size_t buf_size, const char* path) {
+  FILE* template_file = NULL;
+
+  if(strcmp(path, INDEX_PATH) == 0) {
+    template_file = fopen(INDEX_TEMPLATE_PATH, "r");
+  }
+  if(strcmp(path, LOGIN_PATH) == 0) {
+    template_file = fopen(LOGIN_TEMPLATE_PATH, "r");
+  }
+  if(strcmp(path, ACCOUNTS_PATH) == 0) {
+    template_file = fopen(ACCOUNTS_TEMPLATE_PATH, "r");
+  }
+
+  if (!template_file) {
+    perror("Failed to open template file");
+    return;
+  }
+
+  size_t bytes_read = fread(template_content, 1, buf_size - 1, template_file);
+  template_content[bytes_read] = '\0';
+
+  fclose(template_file);
 }

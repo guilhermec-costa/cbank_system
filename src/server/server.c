@@ -1,6 +1,7 @@
 #include "server.h"
 
 #include "http_parser.h"
+#include "route_contants.h"
 
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -35,21 +36,20 @@ void start(const struct Server* server) {
 
     struct HttpRequest req;
     printf("%s", client_buf);
+    char template_content[8192] = {0};
     if (parse_request_line(client_buf, &req) == 0) {
-      printf("Method: %s\n", req.method);
-      printf("Path: %s\n", req.path);
-      printf("Version: %s\n", req.version);
+      get_route_html(template_content, sizeof(template_content), req.path);
+      printf("%s", template_content);
     } else {
       printf("Failed to parse request line.\n");
     };
 
-    const char* response =
-        "HTTP/1.1 200 OK" CRLF "Content-Type: text/html; charset=UTF-8" CRLF CRLF
-        "<!DOCTYPE html>" CRLF "<html>" CRLF "<head>" CRLF "<title>HttpServer</title>" CRLF
-        "</head>" CRLF "<body>" CRLF "<h1>My http server testing again</h1>" CRLF "</body>" CRLF
-        "</html>" CRLF;
+    char response[16384] = {0};
+    strcpy(response, template_content);
 
-    write(client_fd, response, strlen(response));
+    const char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+    write(client_fd, header, strlen(header));
+    write(client_fd, template_content, strlen(template_content));
     printf("Response sent! closing connection\n");
     close(client_fd);
   }
