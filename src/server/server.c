@@ -1,4 +1,5 @@
 #include "server.h"
+
 #include "http_parser.h"
 
 #include <arpa/inet.h>
@@ -28,26 +29,25 @@ void start(const struct Server* server) {
 
     memset(client_buf, 0, sizeof(client_buf));
     ssize_t bytes_read = read(client_fd, client_buf, sizeof(client_buf) - 1);
-    if(bytes_read > 0) {
+    if (bytes_read > 0) {
       client_buf[bytes_read] = '\0';
     }
 
     struct HttpRequest req;
     printf("%s", client_buf);
-    parse_request_line(client_buf, &req);
+    if (parse_request_line(client_buf, &req) == 0) {
+      printf("Method: %s\n", req.method);
+      printf("Path: %s\n", req.path);
+      printf("Version: %s\n", req.version);
+    } else {
+      printf("Failed to parse request line.\n");
+    };
 
-    const char* response = "HTTP/1.1 200 OK" CRLF
-                           "Content-Type: text/html; charset=UTF-8" CRLF CRLF
-                           "<!DOCTYPE html>" CRLF
-                           "<html>" CRLF
-                           "<head>" CRLF
-                           "<title>HttpServer</title>" CRLF
-                           "</head>" CRLF
-                           "<body>" CRLF
-                           "<h1>My http server testing again</h1>" CRLF
-                           "</body>" CRLF
-                           "</html>" CRLF;
-
+    const char* response =
+        "HTTP/1.1 200 OK" CRLF "Content-Type: text/html; charset=UTF-8" CRLF CRLF
+        "<!DOCTYPE html>" CRLF "<html>" CRLF "<head>" CRLF "<title>HttpServer</title>" CRLF
+        "</head>" CRLF "<body>" CRLF "<h1>My http server testing again</h1>" CRLF "</body>" CRLF
+        "</html>" CRLF;
 
     write(client_fd, response, strlen(response));
     printf("Response sent! closing connection\n");
@@ -72,7 +72,7 @@ struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Se
 
   int sockopt = 1;
   // prevents socket already binded
-  if(setsockopt(server.socket_fd, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof(sockopt)) < 0) {
+  if (setsockopt(server.socket_fd, SOL_SOCKET, SO_REUSEADDR, &sockopt, sizeof(sockopt)) < 0) {
     perror("setsocketopt failed");
     exit(EXIT_FAILURE);
   }
