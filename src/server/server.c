@@ -35,7 +35,6 @@ void start(const struct Server* server) {
     }
 
     struct HttpRequest req;
-    printf("%s", client_buf);
     if (parse_req_line(client_buf, &req) == 0) {
       const char* headers_start = strstr(client_buf, CRLF) + 2;
       const char* body_start    = parse_req_headers(headers_start, &req);

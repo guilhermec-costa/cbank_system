@@ -6,14 +6,35 @@
 #include "templates_constants.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 enum HTTP_REQ_PARTS { METHOD, PATH, VERSION };
 
-void safe_strncpy(char* dest, const char* src, size_t size) {
+static void safe_strncpy(char* dest, const char* src, size_t size) {
   strncpy(dest, src, size);
   dest[size - 1] = '\0';
 }
+
+static const char* http_header_field_names[] = {
+    "Host", "Content-Type", "Content-Length", "User-Agent", "Accept", "Cookie", "Connection"};
+
+const char* get_header_field_name(const HttpHeaderField field) {
+  if (field >= 0 && field < HEADER_COUNT) {
+    return http_header_field_names[field];
+  }
+  return "Unknown";
+};
+
+const char* get_header(struct HttpRequest* req, HttpHeaderField header_field) {
+  const char* header_name = get_header_field_name(header_field);
+  for (int i = 0; i < req->header_count; i++) {
+    if (strcasecmp(req->headers[i].key, header_name) == 0) {
+      return req->headers[i].value;
+    }
+  }
+  return NULL;
+};
 
 int parse_req_line(const char* req_buf, struct HttpRequest* http_req) {
   const char* first_line_end = strstr(req_buf, CRLF);
@@ -96,8 +117,15 @@ const char* parse_req_headers(const char* header_start, struct HttpRequest* http
   return req_line;
 };
 
-const char* parse_req_body(const char* req_start, struct HttpRequest* http_req) {
-
+void parse_req_body(const char* req_start, struct HttpRequest* http_req) {
+  const char* content_length = get_header(http_req, HEADER_CONTENT_LENGTH);
+  if (content_length) {
+    int len = atoi(content_length);
+    if (len > 0 && len < BODY_LEN) {
+      memcpy(http_req->body, req_start, len);
+      http_req->body[len] = '\0';
+    };
+  };
 };
 
 void get_route_html(char* template_content, size_t buf_size, const char* path);
@@ -125,12 +153,3 @@ void get_route_html(char* template_content, size_t buf_size, const char* path) {
 
   fclose(template_file);
 }
-
-const char* get_header(struct HttpRequest* req, const char* key) {
-  for (int i = 0; i < req->header_count; i++) {
-    if (strcasecmp(req->headers[i].key, key) == 0) {
-      return req->headers[i].value;
-    }
-  }
-  return NULL;
-};

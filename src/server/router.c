@@ -2,6 +2,7 @@
 
 #include "route_contants.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -53,6 +54,7 @@ struct Route routes[] = {{"GET", INDEX_ROUTE_PATH, handle_home},
                          {"GET", LOGIN_ROUTE_PATH, handle_login}};
 
 void route_request(int client_fd, struct HttpRequest* req) {
+  printf("%s", req->body);
   const int routers_count = sizeof(routes) / sizeof(routes[0]);
   int       router_found  = 0;
   for (int i = 0; i < routers_count; i++) {

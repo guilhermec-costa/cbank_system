@@ -12,6 +12,18 @@
 #define MAX_VALUE_LEN 512
 #define BODY_LEN 4096
 
+typedef enum {
+  HEADER_HOST,
+  HEADER_CONTENT_TYPE,
+  HEADER_CONTENT_LENGTH,
+  HEADER_USER_AGENT,
+  HEADER_ACCEPT,
+  HEADER_COOKIE,
+  HEADER_CONNECTION,
+  HEADER_UNKNOWN,
+  HEADER_COUNT
+} HttpHeaderField;
+
 struct HttpHeader {
   char key[MAX_KEY_LEN];
   char value[MAX_VALUE_LEN];
@@ -29,9 +41,8 @@ struct HttpRequest {
 
 int         parse_req_line(const char* raw_req, struct HttpRequest* http_req);
 const char* parse_req_headers(const char* header_start, struct HttpRequest* http_req);
-const char* parse_req_body(const char* body_start, struct HttpRequest* http_req);
+void        parse_req_body(const char* body_start, struct HttpRequest* http_req);
 void        get_route_html(char* template_content, size_t buf_size, const char* path);
-
-const char* get_header(struct HttpRequest* req, const char* key);
+const char* get_header(struct HttpRequest* req, const HttpHeaderField header_field);
 
 #endif /* CBANK_HTTP_PARSER_H */
