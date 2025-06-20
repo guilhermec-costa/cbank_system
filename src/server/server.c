@@ -34,12 +34,15 @@ void start(const struct Server* server) {
       client_buf[bytes_read] = '\0';
     }
 
-    struct HttpRequest req;
+    struct HttpRequest  req;
+    struct HttpResponse res;
+
     if (parse_req_line(client_buf, &req) == 0) {
       const char* headers_start = strstr(client_buf, CRLF) + 2;
       const char* body_start    = parse_req_headers(headers_start, &req);
       parse_req_body(body_start, &req);
-      route_request(client_fd, &req);
+      route_request(&req, &res);
+      send_http_response(client_fd, &res);
     } else {
       printf("Failed to parse request line.\n");
       const char* bad_request =

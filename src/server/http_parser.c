@@ -108,9 +108,7 @@ void parse_req_body(const char* req_start, struct HttpRequest* http_req) {
   };
 };
 
-void get_route_html(char* template_content, size_t buf_size, const char* path);
-
-void get_route_html(char* template_content, size_t buf_size, const char* path) {
+void get_path_template(char* template_content, size_t buf_size, const char* path) {
   FILE* template_file = NULL;
 
   if (strcmp(path, INDEX_ROUTE_PATH) == 0) {

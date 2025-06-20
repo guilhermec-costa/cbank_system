@@ -6,9 +6,11 @@
 struct Route {
   const char* method;
   const char* path;
-  void (*handler)(int client_fd, struct HttpRequest* req);
+  void (*handler)(struct HttpRequest* req, struct HttpResponse* res);
 };
 
-void route_request(int client_fd, struct HttpRequest* req);
+void route_request(struct HttpRequest* req, struct HttpResponse* res);
+void add_res_header(struct HttpResponse* res, const char* key, const char* value);
+void send_http_response(int client_fd, const struct HttpResponse* res);
 
 #endif /* CBANK_ROUTER_H */

@@ -1,14 +1,5 @@
-typedef enum ContentType {
-  CONTENT_TYPE_HTML,
-  CONTENT_TYPE_JSON,
-  CONTENT_TYPE_PLAIN,
-  CONTENT_TYPE_CSS,
-  CONTENT_TYPE_JAVASCRIPT,
-  CONTENT_TYPE_XML,
-  CONTENT_TYPE_FORM_URLENCODED,
-  CONTENT_TYPE_MULTIPART_FORM_DATA,
-  CONTENT_TYPE_OCTET_STREAM,
-  CONTENT_TYPE_UNKNOWN
-} ContentType;
+#include "http_parser.h"
 
 const char* get_content_type_string(ContentType type);
+const char* get_status_text(HttpStatusCode code);
+const char* get_header_field_name(const HttpHeaderField field);

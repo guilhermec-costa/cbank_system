@@ -1,7 +1,5 @@
 #include "http_utils.h"
 
-#include "http_parser.h"
-
 const char* get_content_type_string(ContentType type) {
   switch (type) {
     case CONTENT_TYPE_HTML:
@@ -24,6 +22,31 @@ const char* get_content_type_string(ContentType type) {
       return "application/octet-stream";
     default:
       return "application/octet-stream";
+  }
+}
+
+const char* get_status_text(HttpStatusCode code) {
+  switch (code) {
+    case HTTP_OK:
+      return "OK";
+    case HTTP_CREATED:
+      return "Created";
+    case HTTP_NO_CONTENT:
+      return "No Content";
+    case HTTP_BAD_REQUEST:
+      return "Bad Request";
+    case HTTP_UNAUTHORIZED:
+      return "Unauthorized";
+    case HTTP_FORBIDDEN:
+      return "Forbidden";
+    case HTTP_NOT_FOUND:
+      return "Not Found";
+    case HTTP_METHOD_NOT_ALLOWED:
+      return "Method Not Allowed";
+    case HTTP_INTERNAL_SERVER_ERROR:
+      return "Internal Server Error";
+    default:
+      return "Unknown";
   }
 }
 
