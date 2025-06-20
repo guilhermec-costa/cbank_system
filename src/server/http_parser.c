@@ -1,9 +1,9 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include "http_parser.h"
 
 #include "route_contants.h"
 #include "templates_constants.h"
-
-#define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
 #include <string.h>
@@ -15,7 +15,7 @@ void safe_strncpy(char* dest, const char* src, size_t size) {
   dest[size - 1] = '\0';
 }
 
-int parse_request_line(const char* req_buf, struct HttpRequest* http_req) {
+int parse_req_line(const char* req_buf, struct HttpRequest* http_req) {
   const char* first_line_end = strstr(req_buf, CRLF);
   if (first_line_end == NULL) {
     printf("Invalid HTTP request line\n");
@@ -55,6 +55,53 @@ int parse_request_line(const char* req_buf, struct HttpRequest* http_req) {
   return 0; // success
 };
 
+const char* parse_req_headers(const char* header_start, struct HttpRequest* http_req) {
+  http_req->header_count = 0;
+  char        line_buf[1024];
+  const char* req_line = header_start;
+
+  while (1) {
+    const char* next_h = strstr(req_line, CRLF);
+    if (!next_h)
+      break;
+
+    size_t line_len = next_h - req_line;
+    if (line_len == 0) {
+      return next_h + 2; // end of headers
+    }
+
+    if (line_len >= sizeof(line_buf))
+      line_len = sizeof(line_buf) - 1; // minus one, so it has space to terminate the string
+    memcpy(line_buf, req_line, line_len);
+    line_buf[line_len] = '\0';
+
+    char* colon = strchr(line_buf, ':');
+    if (colon) {
+      *colon      = '\0';
+      char* key   = line_buf;
+      char* value = colon + 1;
+      while (*value == ' ')
+        value++; // remove blank spaces
+
+      if (http_req->header_count < MAX_HEADERS) {
+        strncpy(http_req->headers[http_req->header_count].key, key, MAX_KEY_LEN - 1);
+        strncpy(http_req->headers[http_req->header_count].value, value, MAX_VALUE_LEN - 1);
+        http_req->header_count++;
+      }
+    }
+
+    req_line = next_h + 2;
+  };
+
+  return req_line;
+};
+
+const char* parse_req_body(const char* req_start, struct HttpRequest* http_req) {
+
+};
+
+void get_route_html(char* template_content, size_t buf_size, const char* path);
+
 void get_route_html(char* template_content, size_t buf_size, const char* path) {
   FILE* template_file = NULL;
 
@@ -78,3 +125,12 @@ void get_route_html(char* template_content, size_t buf_size, const char* path) {
 
   fclose(template_file);
 }
+
+const char* get_header(struct HttpRequest* req, const char* key) {
+  for (int i = 0; i < req->header_count; i++) {
+    if (strcasecmp(req->headers[i].key, key) == 0) {
+      return req->headers[i].value;
+    }
+  }
+  return NULL;
+};

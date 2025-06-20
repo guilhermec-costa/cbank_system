@@ -1,15 +1,37 @@
 #ifndef CBANK_HTTP_PARSER_H
 #define CBANK_HTTP_PARSER_H
+
 #include <stddef.h>
+#include <string.h>
+#include <strings.h>
+
 #define CRLF "\r\n"
+
+#define MAX_HEADERS 32
+#define MAX_KEY_LEN 128
+#define MAX_VALUE_LEN 512
+#define BODY_LEN 4096
+
+struct HttpHeader {
+  char key[MAX_KEY_LEN];
+  char value[MAX_VALUE_LEN];
+};
 
 struct HttpRequest {
   char method[8];
   char path[256];
   char version[16];
+
+  struct HttpHeader headers[MAX_HEADERS];
+  int               header_count;
+  char              body[BODY_LEN];
 };
 
-int  parse_request_line(const char* req, struct HttpRequest* http_req);
-void get_route_html(char* template_content, size_t buf_size, const char* path);
+int         parse_req_line(const char* raw_req, struct HttpRequest* http_req);
+const char* parse_req_headers(const char* header_start, struct HttpRequest* http_req);
+const char* parse_req_body(const char* body_start, struct HttpRequest* http_req);
+void        get_route_html(char* template_content, size_t buf_size, const char* path);
+
+const char* get_header(struct HttpRequest* req, const char* key);
 
 #endif /* CBANK_HTTP_PARSER_H */
