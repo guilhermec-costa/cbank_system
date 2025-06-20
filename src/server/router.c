@@ -1,10 +1,20 @@
 #include "router.h"
 
+#include "http_parser.h"
+#include "http_utils.h"
 #include "route_contants.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+static void send_response(int fd, const HttpStatusCode status, const ContentType ct,
+                          const char* body) {
+  char header[512];
+  int  header_len = snprintf(header, sizeof(header), "HTTP/1.1 %s" CRLF);
+};
+
+static void send_200_html() {}
 
 void handle_home(int client_fd, struct HttpRequest* req) {
   char template_content[8192] = {0};
@@ -59,9 +69,10 @@ void route_request(int client_fd, struct HttpRequest* req) {
   int       router_found  = 0;
   for (int i = 0; i < routers_count; i++) {
     const struct Route route = routes[i];
-    if ((strcmp(req->method, route.method) == 0) && (strcmp(req->path, route.path) == 0)) {
+    if ((strcasecmp(req->method, route.method) == 0) && (strcmp(req->path, route.path) == 0)) {
       route.handler(client_fd, req);
       router_found = 1;
+      break;
     }
   }
 

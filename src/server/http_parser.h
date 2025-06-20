@@ -24,6 +24,17 @@ typedef enum {
   HEADER_COUNT
 } HttpHeaderField;
 
+typedef enum {
+  HTTP_OK                    = 200,
+  HTTP_BAD_REQUEST           = 400,
+  HTTP_NOT_FOUND             = 404,
+  HTTP_INTERNAL_SERVER_ERROR = 500,
+  HTTP_METHOD_NOT_ALLOWED    = 405,
+  HTTP_CREATED               = 201,
+  HTTP_FORBIDDEN             = 403,
+  HTTP_UNAUTHORIZED          = 401
+} HttpStatusCode;
+
 struct HttpHeader {
   char key[MAX_KEY_LEN];
   char value[MAX_VALUE_LEN];

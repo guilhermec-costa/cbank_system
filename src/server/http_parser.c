@@ -16,26 +16,6 @@ static void safe_strncpy(char* dest, const char* src, size_t size) {
   dest[size - 1] = '\0';
 }
 
-static const char* http_header_field_names[] = {
-    "Host", "Content-Type", "Content-Length", "User-Agent", "Accept", "Cookie", "Connection"};
-
-const char* get_header_field_name(const HttpHeaderField field) {
-  if (field >= 0 && field < HEADER_COUNT) {
-    return http_header_field_names[field];
-  }
-  return "Unknown";
-};
-
-const char* get_header(struct HttpRequest* req, HttpHeaderField header_field) {
-  const char* header_name = get_header_field_name(header_field);
-  for (int i = 0; i < req->header_count; i++) {
-    if (strcasecmp(req->headers[i].key, header_name) == 0) {
-      return req->headers[i].value;
-    }
-  }
-  return NULL;
-};
-
 int parse_req_line(const char* req_buf, struct HttpRequest* http_req) {
   const char* first_line_end = strstr(req_buf, CRLF);
   if (first_line_end == NULL) {
