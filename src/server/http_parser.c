@@ -111,6 +111,9 @@ void parse_req_body(const char* req_start, struct HttpRequest* http_req) {
 void get_path_template(char* template_content, size_t buf_size, const char* path) {
   FILE* template_file = NULL;
 
+  if (strcmp(path, NOT_FOUND_ROUTE_PATH) == 0) {
+    template_file = fopen(_404_TEMPLATE_PATH, "r");
+  }
   if (strcmp(path, INDEX_ROUTE_PATH) == 0) {
     template_file = fopen(INDEX_TEMPLATE_PATH, "r");
   }

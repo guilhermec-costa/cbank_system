@@ -10,7 +10,7 @@
 #define MAX_HEADERS 32
 #define MAX_KEY_LEN 128
 #define MAX_VALUE_LEN 512
-#define BODY_LEN 4096
+#define BODY_LEN 8192
 
 typedef enum {
   HEADER_HOST,
@@ -69,7 +69,7 @@ struct HttpResponse {
   HttpStatusCode    status_code;
   const char*       status_text;
   struct HttpHeader headers[MAX_HEADERS];
-  char*             body;
+  char              body[BODY_LEN];
   int               header_count;
 };
 

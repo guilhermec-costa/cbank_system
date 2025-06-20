@@ -16,12 +16,13 @@ void set_nonblocking(int fd) {}
 
 void start(const struct Server* server) {
   char client_buf[16000] = {0};
-  int  addrlen           = sizeof(server->sock_address);
   while (1) {
-    int client_fd;
+    int                client_fd;
+    struct sockaddr_in client_addr;
+    int                addrlen = sizeof(client_addr);
 
-    if ((client_fd = accept(server->socket_fd, (struct sockaddr*)&server->sock_address,
-                            (socklen_t*)&addrlen)) < 0) {
+    if ((client_fd =
+             accept(server->socket_fd, (struct sockaddr*)&client_addr, (socklen_t*)&addrlen)) < 0) {
       perror("accept failed");
       continue;
     }
@@ -30,19 +31,30 @@ void start(const struct Server* server) {
 
     memset(client_buf, 0, sizeof(client_buf));
     ssize_t bytes_read = read(client_fd, client_buf, sizeof(client_buf) - 1);
-    if (bytes_read > 0) {
-      client_buf[bytes_read] = '\0';
+
+    if (bytes_read <= 0) {
+      printf("Client closed connection\n");
+      close(client_fd);
+      continue;
     }
 
-    struct HttpRequest  req;
-    struct HttpResponse res;
+    client_buf[bytes_read] = '\0';
+
+    struct HttpRequest  req = {0};
+    struct HttpResponse res = {0};
 
     if (parse_req_line(client_buf, &req) == 0) {
       const char* headers_start = strstr(client_buf, CRLF) + 2;
       const char* body_start    = parse_req_headers(headers_start, &req);
       parse_req_body(body_start, &req);
-      route_request(&req, &res);
-      send_http_response(client_fd, &res);
+      const RouteHandler handler = get_route_handler(&req, &res);
+      if (!handler) {
+        send_404_response(client_fd, &res);
+        printf("Client closed connection\n");
+        close(client_fd);
+        continue;
+      }
+      handler(client_fd, &req, &res);
     } else {
       printf("Failed to parse request line.\n");
       const char* bad_request =

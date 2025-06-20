@@ -4,11 +4,10 @@
 #include "http_utils.h"
 #include "route_contants.h"
 #include "router.h"
-#include "templates_constants.h"
 
 #include <stdio.h>
 
-void handle_home(struct HttpRequest* req, struct HttpResponse* res) {
+void handle_home(int fd, struct HttpRequest* req, struct HttpResponse* res) {
   get_path_template(res->body, sizeof(res->body), INDEX_ROUTE_PATH);
 
   const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
@@ -17,11 +16,16 @@ void handle_home(struct HttpRequest* req, struct HttpResponse* res) {
 
   char        body_res_buf[32];
   const char* content_length_str = get_header_field_name(HEADER_CONTENT_LENGTH);
-  snprintf(body_res_buf, sizeof(body_res_buf), "%zu", res->body ? strlen(res->body) : 0);
+  snprintf(body_res_buf, sizeof(body_res_buf), "%zu", strlen(res->body));
   add_res_header(res, content_length_str, body_res_buf);
+
+  res->status_code = HTTP_OK;
+  res->version     = "HTTP/1.1";
+  res->status_text = get_status_text(HTTP_OK);
+  send_http_response(fd, res);
 }
 
-void handle_accounts(struct HttpRequest* req, struct HttpResponse* res) {
+void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res) {
   get_path_template(res->body, sizeof(res->body), ACCOUNTS_ROUTE_PATH);
 
   const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
@@ -32,9 +36,14 @@ void handle_accounts(struct HttpRequest* req, struct HttpResponse* res) {
   const char* content_length_str = get_header_field_name(HEADER_CONTENT_LENGTH);
   snprintf(body_res_buf, sizeof(body_res_buf), "%zu", res->body ? strlen(res->body) : 0);
   add_res_header(res, content_length_str, body_res_buf);
+
+  res->status_code = HTTP_OK;
+  res->version     = "HTTP/1.1";
+  res->status_text = get_status_text(HTTP_OK);
+  send_http_response(fd, res);
 }
 
-void handle_login(struct HttpRequest* req, struct HttpResponse* res) {
+void handle_login(int fd, struct HttpRequest* req, struct HttpResponse* res) {
   get_path_template(res->body, sizeof(res->body), LOGIN_ROUTE_PATH);
 
   const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
@@ -45,4 +54,9 @@ void handle_login(struct HttpRequest* req, struct HttpResponse* res) {
   const char* content_length_str = get_header_field_name(HEADER_CONTENT_LENGTH);
   snprintf(body_res_buf, sizeof(body_res_buf), "%zu", res->body ? strlen(res->body) : 0);
   add_res_header(res, content_length_str, body_res_buf);
+
+  res->status_code = HTTP_OK;
+  res->version     = "HTTP/1.1";
+  res->status_text = get_status_text(HTTP_OK);
+  send_http_response(fd, res);
 };

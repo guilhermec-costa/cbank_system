@@ -1,6 +1,6 @@
 CC = gcc
 BINARY = bin/bank
-CFLAGS = -Wall -Wextra -std=c99 -g -lcrypt
+CFLAGS = -Wall -Wextra -std=c99 -g -lcrypt -fsanitize=address
 
 SRCS := $(shell find src -name "*.c")
 HEADERS := $(shell find src -name "*.h")
