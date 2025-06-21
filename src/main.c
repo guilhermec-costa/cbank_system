@@ -5,13 +5,8 @@
 
 enum APP_MODE { CLI, SERVER };
 
-struct Logger logger;
-
 int main() {
-  logger       = get_logger();
-  logger.level = DEBUG;
-
-  logger.log(&logger, DEBUG, "Initializing stores");
+  GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Setting up data stores");
   setup_stores();
 
   struct ServerConfig server_cfg;

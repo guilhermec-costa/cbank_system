@@ -1,7 +1,7 @@
 #ifndef CBANK_SERVER_H
 #define CBANK_SERVER_H
 
-#define BUFFER_SIZE 16000
+#define CLIENT_BUFFER_SIZE 16000
 
 #include <netinet/in.h>
 

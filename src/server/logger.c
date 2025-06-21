@@ -56,6 +56,18 @@ static void __log(const struct Logger* logger, enum LogLevel level, const char* 
   }
 };
 
+struct Logger* get_global_logger() {
+  static struct Logger logger;
+  static int           initialized = 0;
+  if (!initialized) {
+    logger       = get_logger();
+    logger.level = DEBUG;
+    initialized  = 1;
+  }
+
+  return &logger;
+}
+
 struct Logger get_logger() {
   struct Logger logger = {0};
   logger.level         = DEBUG;

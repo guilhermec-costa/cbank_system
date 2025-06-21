@@ -108,20 +108,26 @@ void parse_req_body(const char* req_start, struct HttpRequest* http_req) {
   };
 };
 
+struct RoutePathTemplate {
+  const char* route_path;
+  const char* route_path_template;
+};
+
+struct RoutePathTemplate route_path_template_map[] = {
+    {NOT_FOUND_ROUTE_PATH, _404_TEMPLATE_PATH},
+    {INDEX_ROUTE_PATH, INDEX_TEMPLATE_PATH},
+    {LOGIN_ROUTE_PATH, LOGIN_TEMPLATE_PATH},
+    {ACCOUNTS_ROUTE_PATH, ACCOUNTS_TEMPLATE_PATH}};
+
 void get_path_template(char* template_content, size_t buf_size, const char* path) {
   FILE* template_file = NULL;
 
-  if (strcmp(path, NOT_FOUND_ROUTE_PATH) == 0) {
-    template_file = fopen(_404_TEMPLATE_PATH, "r");
-  }
-  if (strcmp(path, INDEX_ROUTE_PATH) == 0) {
-    template_file = fopen(INDEX_TEMPLATE_PATH, "r");
-  }
-  if (strcmp(path, LOGIN_ROUTE_PATH) == 0) {
-    template_file = fopen(LOGIN_TEMPLATE_PATH, "r");
-  }
-  if (strcmp(path, ACCOUNTS_ROUTE_PATH) == 0) {
-    template_file = fopen(ACCOUNTS_TEMPLATE_PATH, "r");
+  for (size_t i = 0; i < sizeof(route_path_template_map) / sizeof(route_path_template_map[0]);
+       i++) {
+    struct RoutePathTemplate rpt = route_path_template_map[i];
+    if (strcmp(path, rpt.route_path) == 0) {
+      template_file = fopen(rpt.route_path_template, "r");
+    }
   }
 
   if (!template_file) {

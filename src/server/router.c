@@ -51,6 +51,15 @@ void send_404_response(int fd, struct HttpResponse* res) {
 
   get_path_template(res->body, sizeof(res->body), NOT_FOUND_ROUTE_PATH);
   send_http_response(fd, res);
+};
+
+void send_bad_request_response(int fd, struct HttpResponse* res) {
+  res->status_code = HTTP_BAD_REQUEST;
+  res->version     = "HTTP/1.1";
+  res->status_text = get_status_text(HTTP_NOT_FOUND);
+  add_res_header(res, get_header_field_name(HEADER_CONTENT_TYPE),
+                 get_content_type_string(CONTENT_TYPE_PLAIN));
+  send_http_response(fd, res);
 }
 
 struct Route routes[] = {{"GET", INDEX_ROUTE_PATH, handle_home},

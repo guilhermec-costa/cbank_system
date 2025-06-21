@@ -1,3 +1,6 @@
+#ifndef CBANK_LOGGER_H
+#define CBANK_LOGGER_H
+
 #include <stdarg.h>
 
 enum LogLevel { DEBUG = 0, INFO = 1, WARN = 2, ERROR = 3 };
@@ -17,4 +20,8 @@ struct Logger {
   void (*error)(const char* __fmt, va_list args);
 };
 
-struct Logger get_logger();
+struct Logger  get_logger();
+struct Logger* get_global_logger();
+#define GLOBAL_LOGGER get_global_logger()
+
+#endif /* CBANK_LOGGER_H */

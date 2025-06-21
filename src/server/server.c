@@ -1,6 +1,7 @@
 #include "server.h"
 
 #include "http_parser.h"
+#include "logger.h"
 #include "router.h"
 
 #include <arpa/inet.h>
@@ -12,10 +13,13 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#define SERVER_PORT 8080
+
 void set_nonblocking(int fd) {}
 
 void start(const struct Server* server) {
-  char client_buf[16000] = {0};
+  GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Starting server");
+  char client_buf[CLIENT_BUFFER_SIZE] = {0};
   while (1) {
     int                client_fd;
     struct sockaddr_in client_addr;
@@ -27,13 +31,14 @@ void start(const struct Server* server) {
       continue;
     }
 
-    printf("Client connected\n");
+    GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Client connected");
 
     memset(client_buf, 0, sizeof(client_buf));
     ssize_t bytes_read = read(client_fd, client_buf, sizeof(client_buf) - 1);
+    printf("%s", client_buf);
 
     if (bytes_read <= 0) {
-      printf("Client closed connection\n");
+      GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Client closed connection");
       close(client_fd);
       continue;
     }
@@ -50,20 +55,17 @@ void start(const struct Server* server) {
       const RouteHandler handler = get_route_handler(&req, &res);
       if (!handler) {
         send_404_response(client_fd, &res);
-        printf("Client closed connection\n");
+        GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Client connection closed\n");
         close(client_fd);
         continue;
       }
       handler(client_fd, &req, &res);
     } else {
-      printf("Failed to parse request line.\n");
-      const char* bad_request =
-          "HTTP/1.1 400 Bad Request" CRLF "Content-Type: text/plain" CRLF CRLF "400 Bad Request";
-
-      write(client_fd, bad_request, strlen(bad_request));
+      GLOBAL_LOGGER->log(GLOBAL_LOGGER, ERROR, "Failed to parse request line.");
+      send_bad_request_response(client_fd, &res);
     };
 
-    printf("Response sent! closing connection\n");
+    GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Response sent! closing connection");
     close(client_fd);
   }
 
@@ -93,7 +95,7 @@ struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Se
 
   server_sock_addr.sin_family      = AF_INET;
   server_sock_addr.sin_addr.s_addr = INADDR_ANY;
-  server_sock_addr.sin_port        = htons(8080);
+  server_sock_addr.sin_port        = htons(SERVER_PORT);
 
   if (bind(server.socket_fd, (struct sockaddr*)&server_sock_addr, sizeof(server_sock_addr)) < 0) {
     perror("socket bind failed");
@@ -105,7 +107,7 @@ struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Se
     exit(EXIT_FAILURE);
   }
 
-  printf("Server listening on port 8080\n");
+  GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Server listening on port %d", SERVER_PORT);
 
   server.start = start;
 
