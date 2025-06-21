@@ -15,8 +15,6 @@ void handle_login(int fd, struct HttpRequest* req, struct HttpResponse* res) {
   snprintf(body_res_buf, sizeof(body_res_buf), "%zu", strlen(res->body));
   add_res_header(res, content_length_str, body_res_buf);
 
-  res->status_code = HTTP_OK;
-  res->version     = "HTTP/1.1";
-  res->status_text = get_status_text(HTTP_OK);
+  make_res_first_line(res, HTTP_OK);
   send_http_response(fd, res);
 };

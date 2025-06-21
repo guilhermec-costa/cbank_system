@@ -73,7 +73,7 @@ void send_bad_request_response(int fd, struct HttpResponse* res) {
 
 struct Route routes[] = {{{"GET"}, INDEX_ROUTE_PATH, handle_home, 1},
                          {{"GET"}, ACCOUNTS_ROUTE_PATH, handle_accounts, 1},
-                         {{"GET", "POST"}, "/api/accounts", handle_accounts, 2},
+                         {{"GET", "POST"}, "/api/accounts", handle_api_accounts, 2},
                          {{"GET", "POST"}, LOGIN_ROUTE_PATH, handle_login, 2}};
 
 static struct RouteHandlerResponse make_handler_response(const RouteHandler*    handler,

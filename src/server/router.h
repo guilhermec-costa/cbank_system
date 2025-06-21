@@ -27,5 +27,6 @@ void send_http_response(int client_fd, const struct HttpResponse* res);
 void send_404_response(int fd, struct HttpResponse* res);
 void send_bad_request_response(int fd, struct HttpResponse* res);
 void send_not_allowed_response(int fd, struct HttpResponse* res);
+void make_res_first_line(struct HttpResponse* res, int status_code);
 
 #endif /* CBANK_ROUTER_H */
