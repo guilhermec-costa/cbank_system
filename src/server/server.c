@@ -91,13 +91,9 @@ struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Se
     perror("setsocketopt failed");
     exit(EXIT_FAILURE);
   }
-  struct sockaddr_in server_sock_addr;
 
-  server_sock_addr.sin_family      = AF_INET;
-  server_sock_addr.sin_addr.s_addr = INADDR_ANY;
-  server_sock_addr.sin_port        = htons(SERVER_PORT);
-
-  if (bind(server.socket_fd, (struct sockaddr*)&server_sock_addr, sizeof(server_sock_addr)) < 0) {
+  if (bind(server.socket_fd, (struct sockaddr*)&server.sock_address, sizeof(server.sock_address)) <
+      0) {
     perror("socket bind failed");
     exit(EXIT_FAILURE);
   }
