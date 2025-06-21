@@ -52,14 +52,21 @@ void start(const struct Server* server) {
       const char* headers_start = strstr(client_buf, CRLF) + 2;
       const char* body_start    = parse_req_headers(headers_start, &req);
       parse_req_body(body_start, &req);
-      const RouteHandler handler = get_route_handler(&req, &res);
-      if (!handler) {
-        send_404_response(client_fd, &res);
-        GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Client connection closed\n");
+      const struct RouteHandlerResponse handler_res = get_route_handler(&req, &res);
+      if (!handler_res.handler) {
+        if (handler_res.error_flag == NOT_FOUND_FLAG) {
+          GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Not found");
+          send_404_response(client_fd, &res);
+        }
+        if (handler_res.error_flag == METHOD_NOT_ALLOWED_FLAG) {
+          GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Method not allowed");
+          send_not_allowed_response(client_fd, &res);
+        }
         close(client_fd);
+        GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Client connection closed");
         continue;
       }
-      handler(client_fd, &req, &res);
+      handler_res.handler(client_fd, &req, &res);
     } else {
       GLOBAL_LOGGER->log(GLOBAL_LOGGER, ERROR, "Failed to parse request line.");
       send_bad_request_response(client_fd, &res);

@@ -42,10 +42,14 @@ void send_http_response(int client_fd, const struct HttpResponse* res) {
   }
 };
 
-void send_404_response(int fd, struct HttpResponse* res) {
-  res->status_code = HTTP_NOT_FOUND;
+void make_res_first_line(struct HttpResponse* res, int status_code) {
+  res->status_code = status_code;
   res->version     = "HTTP/1.1";
-  res->status_text = get_status_text(HTTP_NOT_FOUND);
+  res->status_text = get_status_text(status_code);
+};
+
+void send_404_response(int fd, struct HttpResponse* res) {
+  make_res_first_line(res, HTTP_NOT_FOUND);
   add_res_header(res, get_header_field_name(HEADER_CONTENT_TYPE),
                  get_content_type_string(CONTENT_TYPE_HTML));
 
@@ -53,28 +57,46 @@ void send_404_response(int fd, struct HttpResponse* res) {
   send_http_response(fd, res);
 };
 
-void send_bad_request_response(int fd, struct HttpResponse* res) {
-  res->status_code = HTTP_BAD_REQUEST;
-  res->version     = "HTTP/1.1";
-  res->status_text = get_status_text(HTTP_NOT_FOUND);
+void send_not_allowed_response(int fd, struct HttpResponse* res) {
+  make_res_first_line(res, HTTP_METHOD_NOT_ALLOWED);
   add_res_header(res, get_header_field_name(HEADER_CONTENT_TYPE),
                  get_content_type_string(CONTENT_TYPE_PLAIN));
   send_http_response(fd, res);
 }
 
-struct Route routes[] = {{"GET", INDEX_ROUTE_PATH, handle_home},
-                         {"GET", ACCOUNTS_ROUTE_PATH, handle_accounts},
-                         {"GET", "/api/accounts", handle_accounts},
-                         {"GET", LOGIN_ROUTE_PATH, handle_login}};
+void send_bad_request_response(int fd, struct HttpResponse* res) {
+  make_res_first_line(res, HTTP_BAD_REQUEST);
+  add_res_header(res, get_header_field_name(HEADER_CONTENT_TYPE),
+                 get_content_type_string(CONTENT_TYPE_PLAIN));
+  send_http_response(fd, res);
+}
 
-RouteHandler get_route_handler(struct HttpRequest* req, struct HttpResponse* res) {
+struct Route routes[] = {{{"GET"}, INDEX_ROUTE_PATH, handle_home, 1},
+                         {{"GET"}, ACCOUNTS_ROUTE_PATH, handle_accounts, 1},
+                         {{"GET", "POST"}, "/api/accounts", handle_accounts, 2},
+                         {{"GET", "POST"}, LOGIN_ROUTE_PATH, handle_login, 2}};
+
+static struct RouteHandlerResponse make_handler_response(const RouteHandler*    handler,
+                                                         enum HandlerErrorFlags f) {
+  struct RouteHandlerResponse res = {
+    .handler = handler ? *handler : NULL,
+    f
+  };
+  return res;
+};
+
+struct RouteHandlerResponse get_route_handler(struct HttpRequest* req, struct HttpResponse* res) {
   const int routers_count = sizeof(routes) / sizeof(routes[0]);
   for (int i = 0; i < routers_count; i++) {
     const struct Route route = routes[i];
-    if ((strcasecmp(req->method, route.method) == 0) && (strcmp(req->path, route.path) == 0)) {
-      return route.handler;
-      break;
+    if (strcmp(req->path, route.path) == 0) {
+      for (int i = 0; i < route.method_count; i++) {
+        if (strcasecmp(req->method, route.allowed_methods[i]) == 0) {
+          return make_handler_response(&route.handler, NO_ERROR_FLAG);
+        }
+      }
+      return make_handler_response(NULL, METHOD_NOT_ALLOWED_FLAG);
     }
   }
-  return NULL;
+  return make_handler_response(NULL, NOT_FOUND_FLAG);
 }

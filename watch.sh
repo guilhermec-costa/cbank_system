@@ -1,2 +1,2 @@
 #!/bin/bash
-ls src/**/*.c | entr -r sh -c "make fmt && make && ./bin/bank"
+ls src/**/*.{c,h,html} | entr -r sh -c "make fmt && make && ./bin/bank"

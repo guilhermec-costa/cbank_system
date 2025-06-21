@@ -12,7 +12,7 @@ void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res) 
 
   char        body_res_buf[32];
   const char* content_length_str = get_header_field_name(HEADER_CONTENT_LENGTH);
-  snprintf(body_res_buf, sizeof(body_res_buf), "%zu", res->body ? strlen(res->body) : 0);
+  snprintf(body_res_buf, sizeof(body_res_buf), "%zu", strlen(res->body));
   add_res_header(res, content_length_str, body_res_buf);
 
   res->status_code = HTTP_OK;
