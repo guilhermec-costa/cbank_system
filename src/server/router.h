@@ -17,7 +17,7 @@ struct Route {
 enum HandlerErrorFlags { NO_ERROR_FLAG, NOT_FOUND_FLAG, METHOD_NOT_ALLOWED_FLAG };
 
 struct RouteHandlerResponse {
-  const RouteHandler           handler;
+  const RouteHandler     handler;
   enum HandlerErrorFlags error_flag;
 };
 

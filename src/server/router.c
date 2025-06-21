@@ -78,10 +78,7 @@ struct Route routes[] = {{{"GET"}, INDEX_ROUTE_PATH, handle_home, 1},
 
 static struct RouteHandlerResponse make_handler_response(const RouteHandler*    handler,
                                                          enum HandlerErrorFlags f) {
-  struct RouteHandlerResponse res = {
-    .handler = handler ? *handler : NULL,
-    f
-  };
+  struct RouteHandlerResponse res = {.handler = handler ? *handler : NULL, f};
   return res;
 };
 

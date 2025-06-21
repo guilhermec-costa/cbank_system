@@ -58,7 +58,7 @@ const char* acc_to_line_buf(Account* restrict acc) {
 
 const char* acc_to_json_obj(Account* restrict acc) {
   const char* json_start = "{";
-  const char* json_end = "}";
+  const char* json_end   = "}";
 }
 
 double check_user_balance() {
@@ -144,12 +144,12 @@ int make_transaction_op(double v, TransactionType ttype) {
 
 Account* get_all_accounts(int* out_count) {
   FILE* acc_storage = get_storage(DB_ACCOUNT_SECTION);
-  char f_line_buf[256];
-  int alloc_size = 20;
-  int realloc_trigger = alloc_size - 1;
+  char  f_line_buf[256];
+  int   alloc_size      = 20;
+  int   realloc_trigger = alloc_size - 1;
 
   Account* acc_ptr = (Account*)calloc(alloc_size, sizeof(Account));
-  if(!acc_ptr) {
+  if (!acc_ptr) {
     *out_count = 0;
     return NULL;
   }
@@ -160,11 +160,11 @@ Account* get_all_accounts(int* out_count) {
     f_line_buf[strcspn(f_line_buf, "\n")] = '\0';
     Account acc_entity;
     RESET_ENTITY(acc_entity);
-    if(iter_idx == realloc_trigger) {
+    if (iter_idx == realloc_trigger) {
       alloc_size += 20;
-      realloc_trigger = alloc_size - 1;
+      realloc_trigger          = alloc_size - 1;
       Account* _tmp_realoc_ptr = realloc(acc_ptr, alloc_size * sizeof(Account));
-      if(!_tmp_realoc_ptr) {
+      if (!_tmp_realoc_ptr) {
         free(acc_ptr);
         *out_count = 0;
         return NULL;
