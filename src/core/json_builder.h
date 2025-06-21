@@ -27,6 +27,7 @@ void json_add_float(JsonBuilder* jb, const char* key, double value);
 void json_add_bool(JsonBuilder* jb, const char* key, bool value);
 void json_add_null(JsonBuilder* jb, const char* key);
 
+void        json_add_comma_if_needed(JsonBuilder* jb);
 const char* json_build(JsonBuilder* jb);
 
 #endif /* CBANK_JSON_BUILDER_H */

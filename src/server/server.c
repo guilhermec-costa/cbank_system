@@ -35,7 +35,6 @@ void start(const struct Server* server) {
 
     memset(client_buf, 0, sizeof(client_buf));
     ssize_t bytes_read = read(client_fd, client_buf, sizeof(client_buf) - 1);
-    printf("%s", client_buf);
 
     if (bytes_read <= 0) {
       GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Client closed connection");

@@ -35,7 +35,7 @@ GetAccountDTO account_to_get_account_DTO(Account* acc) {
 };
 
 const char* accountDTO_to_json_obj(JsonBuilder* jb, GetAccountDTO* acc_dto) {
-  json_init(jb);
+  json_add_comma_if_needed(jb);
   json_start_object(jb);
   json_add_string(jb, "id", acc_dto->id);
   json_add_string(jb, "created_at", acc_dto->created_at);
@@ -61,8 +61,21 @@ static void handle_GET_api_accounts(struct HttpRequest* req, struct HttpResponse
   add_res_header(res, content_type_str, json_type);
 
   JsonBuilder jb;
-  const char* json = accountDTO_to_json_obj(&jb, accountsDTO);
-  snprintf(res->body, sizeof(res->body), "%s", json);
+  json_init(&jb);
+
+  json_start_object(&jb);
+  json_start_array(&jb, "data");
+
+  for (int i = 0; i < items_count; i++) {
+    accountDTO_to_json_obj(&jb, &accountsDTO[i]);
+  }
+
+  json_end_array(&jb);
+  json_end_object(&jb);
+
+  snprintf(res->body, sizeof(res->body), "%s", json_build(&jb));
+
+  free(accountsDTO);
 };
 
 static void handle_POST_api_accounts(struct HttpRequest* req, struct HttpResponse* res) {

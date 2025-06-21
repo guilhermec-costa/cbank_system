@@ -20,10 +20,8 @@ void add_comma(JsonBuilder* jb) {
 };
 
 void json_start_array(JsonBuilder* jb, const char* key) {
-  if (!jb->is_first) {
-    add_comma(jb);
-  }
-  jb->offset   = snprintf(jb->buf + jb->offset, JSON_BUF_SIZE - jb->offset, "\"%s\":[", key);
+  json_add_comma_if_needed(jb);
+  jb->offset += snprintf(jb->buf + jb->offset, JSON_BUF_SIZE - jb->offset, "\"%s\":[", key);
   jb->is_first = true;
 }
 
@@ -35,8 +33,9 @@ void json_end_array(JsonBuilder* jb) {
 void json_add_comma_if_needed(JsonBuilder* jb) {
   if (!jb->is_first) {
     add_comma(jb);
+  } else {
+    jb->is_first = false;
   }
-  jb->is_first = false;
 }
 
 void json_add_string(JsonBuilder* jb, const char* key, const char* value) {
