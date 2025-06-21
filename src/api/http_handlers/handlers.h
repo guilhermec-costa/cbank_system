@@ -1,7 +1,7 @@
 #ifndef CBANK_HANDLERS_H
 #define CBANK_HANDLERS_H
 
-#include "http_parser.h"
+#include "../../server/http_parser.h"
 
 void handle_home(int fd, struct HttpRequest* req, struct HttpResponse* res);
 void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res);

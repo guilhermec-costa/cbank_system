@@ -1,6 +1,6 @@
 #include "router.h"
 
-#include "handlers.h"
+#include "../api/http_handlers/handlers.h"
 #include "http_parser.h"
 #include "http_utils.h"
 #include "route_contants.h"
