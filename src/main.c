@@ -1,10 +1,17 @@
 #include "cli/flow.h"
 #include "data/store.h"
+#include "server/logger.h"
 #include "server/server.h"
 
 enum APP_MODE { CLI, SERVER };
 
+struct Logger logger;
+
 int main() {
+  logger       = get_logger();
+  logger.level = DEBUG;
+
+  logger.log(&logger, DEBUG, "Initializing stores");
   setup_stores();
 
   struct ServerConfig server_cfg;
