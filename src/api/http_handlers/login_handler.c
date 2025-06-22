@@ -20,7 +20,7 @@ void handle_GET_login(struct HttpRequest* req, struct HttpResponse* res) {
   make_res_first_line(res, HTTP_OK);
 };
 
-void handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
+bool handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
   LoginSchema     schema       = {0};
   const char*     content_type = get_header(req, HEADER_CONTENT_TYPE);
   LoginBodyParser parser       = strcmp(content_type, "application/json") == 0
@@ -34,13 +34,13 @@ void handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
   if (!parser(req->body, &schema)) {
     make_res_first_line(res, HTTP_BAD_REQUEST);
     strcpy(res->body, "Malformed JSON");
-    return;
+    return false;
   };
 
   if (!validate_login_schema(&schema)) {
     make_res_first_line(res, HTTP_BAD_REQUEST);
     strcpy(res->body, "Invalid fields");
-    return;
+    return false;
   };
 
   AuthCredentials auth = {0};
@@ -50,19 +50,25 @@ void handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
   if (!try_login(auth)) {
     make_res_first_line(res, HTTP_UNAUTHORIZED);
     strcpy(res->body, "Invalid credentials");
-    return;
+    return false;
   };
 
   make_res_first_line(res, HTTP_NO_CONTENT);
-  strcpy(res->body, "Logged in");
-  return;
+  return true;
 };
 
 void handle_login(int fd, struct HttpRequest* req, struct HttpResponse* res) {
-  if (strcmp(req->method, "GET") == 0)
+  if (strcmp(req->method, "GET") == 0) {
     handle_GET_login(req, res);
-  if (strcmp(req->method, "POST") == 0)
-    handle_POST_login(req, res);
-
-  send_http_response(fd, res);
+    send_http_response(fd, res);
+    return;
+  }
+  if (strcmp(req->method, "POST") == 0) {
+    bool success = handle_POST_login(req, res);
+    if (!success) {
+      send_http_response(fd, res);
+      return;
+    }
+    redirect(fd, res, ACCOUNTS_ROUTE_PATH);
+  }
 };
