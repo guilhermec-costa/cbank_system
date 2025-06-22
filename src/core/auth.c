@@ -14,8 +14,10 @@ BankUser logged_user;
 
 bool try_login(AuthCredentials c) {
   BankUser user = get_user_by_cpf(c.cpf);
-  if (strcmp(user.id, NON_EXISTING_USER_ID_FLAG) == 0)
+  if (strcmp(user.id, NON_EXISTING_USER_ID_FLAG) == 0) {
+    strcpy(logged_user.id, NON_EXISTING_USER_ID_FLAG);
     return false;
+  }
 
   const char* ck_pwd_hash = hash_str(c.password, PWD_HASH_SALT);
   if (strcmp(ck_pwd_hash, user.password) != 0)

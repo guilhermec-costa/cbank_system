@@ -21,6 +21,8 @@ typedef enum {
   HEADER_COOKIE,
   HEADER_CONNECTION,
   HEADER_UNKNOWN,
+  HEADER_AUTHORIZATION,
+  HEADER_LOCATION,
   HEADER_COUNT
 } HttpHeaderField;
 
@@ -33,7 +35,8 @@ typedef enum {
   HTTP_METHOD_NOT_ALLOWED    = 405,
   HTTP_CREATED               = 201,
   HTTP_FORBIDDEN             = 403,
-  HTTP_UNAUTHORIZED          = 401
+  HTTP_UNAUTHORIZED          = 401,
+  HTTP_REDIRECT              = 302
 } HttpStatusCode;
 
 typedef enum {
@@ -78,5 +81,6 @@ const char* parse_req_headers(const char* header_start, struct HttpRequest* http
 void        parse_req_body(const char* body_start, struct HttpRequest* http_req);
 void        get_path_template(char* template_content, size_t buf_size, const char* path);
 const char* get_header(struct HttpRequest* req, const HttpHeaderField header_field);
+const char* get_res_header(struct HttpResponse* res, HttpHeaderField header_field);
 
 #endif /* CBANK_HTTP_PARSER_H */

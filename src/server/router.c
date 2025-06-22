@@ -1,10 +1,10 @@
 #include "router.h"
 
 #include "../api/http_handlers/handlers.h"
+#include "../api/middlewares/middlewares.h"
 #include "http_parser.h"
 #include "http_utils.h"
 #include "route_contants.h"
-#include "templates_constants.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -36,6 +36,9 @@ void send_http_response(int client_fd, const struct HttpResponse* res) {
   offset += snprintf(header_buf + offset, sizeof(header_buf) - offset, CRLF);
 
   write(client_fd, header_buf, offset);
+  if (res->status_code == HTTP_REDIRECT) {
+    return;
+  }
 
   if (strlen(res->body) > 0) {
     write(client_fd, res->body, strlen(res->body));
@@ -71,29 +74,56 @@ void send_bad_request_response(int fd, struct HttpResponse* res) {
   send_http_response(fd, res);
 }
 
-struct Route routes[] = {{{"GET"}, INDEX_ROUTE_PATH, handle_home, 1},
-                         {{"GET"}, ACCOUNTS_ROUTE_PATH, handle_accounts, 1},
-                         {{"GET", "POST"}, "/api/accounts", handle_api_accounts, 2},
-                         {{"GET", "POST"}, LOGIN_ROUTE_PATH, handle_login, 2}};
+struct Route routes[] = {{.path            = INDEX_ROUTE_PATH,
+                          .handler         = handle_home,
+                          .allowed_methods = {"GET"},
+                          .middlewares =
+                              {
+                                  auth_middleware,
+                              },
+                          .method_count     = 1,
+                          .middleware_count = 1},
+                         {.path             = ACCOUNTS_ROUTE_PATH,
+                          .handler          = handle_accounts,
+                          .allowed_methods  = {"GET"},
+                          .middlewares      = {auth_middleware},
+                          .method_count     = 1,
+                          .middleware_count = 1},
+                         {.path            = "/api/accounts",
+                          .handler         = handle_api_accounts,
+                          .allowed_methods = {"GET", "POST"},
+                          .middlewares     = {auth_middleware},
+                          .method_count    = 1},
+                         {.path             = LOGIN_ROUTE_PATH,
+                          .handler          = handle_login,
+                          .allowed_methods  = {"GET", "POST"},
+                          .method_count     = 2,
+                          .middleware_count = 0}};
 
-static struct RouteHandlerResponse make_handler_response(const RouteHandler*    handler,
-                                                         enum HandlerErrorFlags f) {
-  struct RouteHandlerResponse res = {.handler = handler ? *handler : NULL, f};
-  return res;
-};
-
-struct RouteHandlerResponse get_route_handler(struct HttpRequest* req, struct HttpResponse* res) {
+struct RouteValidationResponse get_route(struct HttpRequest* req, struct HttpResponse* res) {
   const int routers_count = sizeof(routes) / sizeof(routes[0]);
   for (int i = 0; i < routers_count; i++) {
     const struct Route route = routes[i];
     if (strcmp(req->path, route.path) == 0) {
       for (int i = 0; i < route.method_count; i++) {
         if (strcasecmp(req->method, route.allowed_methods[i]) == 0) {
-          return make_handler_response(&route.handler, NO_ERROR_FLAG);
+          return (struct RouteValidationResponse){
+              .route = route, .error_flag = NO_ERROR_FLAG, .valid = true};
         }
       }
-      return make_handler_response(NULL, METHOD_NOT_ALLOWED_FLAG);
+      return (struct RouteValidationResponse){
+          .route = NULL, .error_flag = METHOD_NOT_ALLOWED_FLAG, .valid = false};
     }
   }
-  return make_handler_response(NULL, NOT_FOUND_FLAG);
+  return (struct RouteValidationResponse){
+      .route = NULL, .error_flag = NOT_FOUND_FLAG, .valid = false};
+}
+
+void redirect(int client_fd, struct HttpResponse* res, const char* location) {
+  make_res_first_line(res, HTTP_REDIRECT);
+
+  const char* location_header_str = get_header_field_name(HEADER_LOCATION);
+  add_res_header(res, location_header_str, location);
+
+  send_http_response(client_fd, res);
 }

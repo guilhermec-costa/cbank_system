@@ -70,12 +70,11 @@ static void handle_GET_api_accounts(struct HttpRequest* req, struct HttpResponse
     accountDTO_to_json_obj(&jb, &accountsDTO[i]);
   }
 
+  free(accountsDTO);
   json_end_array(&jb);
   json_end_object(&jb);
 
   snprintf(res->body, sizeof(res->body), "%s", json_build(&jb));
-
-  free(accountsDTO);
 };
 
 static void handle_POST_api_accounts(struct HttpRequest* req, struct HttpResponse* res) {
