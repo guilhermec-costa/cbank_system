@@ -117,7 +117,8 @@ struct RoutePathTemplate route_path_template_map[] = {
     {NOT_FOUND_ROUTE_PATH, _404_TEMPLATE_PATH},
     {INDEX_ROUTE_PATH, INDEX_TEMPLATE_PATH},
     {LOGIN_ROUTE_PATH, LOGIN_TEMPLATE_PATH},
-    {ACCOUNTS_ROUTE_PATH, ACCOUNTS_TEMPLATE_PATH}};
+    {ACCOUNTS_ROUTE_PATH, ACCOUNTS_TEMPLATE_PATH},
+    {REGISTER_ACCOUNT_ROUTE_PATH, REGISTER_ACCOUNT_TEMPLATE_PATH}};
 
 void get_path_template(char* template_content, size_t buf_size, const char* path) {
   FILE* template_file = NULL;

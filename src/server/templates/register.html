@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Banco C</title>
+    <title>Criar Conta - Banco C</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
             padding: 20px;
         }
 
-        .login-container {
+        .register-container {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 25px;
@@ -29,7 +29,7 @@
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.2);
             width: 100%;
-            max-width: 420px;
+            max-width: 480px;
             animation: slideUp 0.6s ease-out;
         }
 
@@ -64,18 +64,18 @@
             font-size: 0.9em;
         }
 
-        .login-header {
+        .register-header {
             text-align: center;
             margin-bottom: 35px;
         }
 
-        .login-header h2 {
+        .register-header h2 {
             color: #2c3e50;
             font-size: 1.8em;
             margin-bottom: 10px;
         }
 
-        .login-header .subtitle {
+        .register-header .subtitle {
             color: #7f8c8d;
             font-size: 0.95em;
         }
@@ -107,6 +107,7 @@
         }
 
         input[type="text"],
+        input[type="email"],
         input[type="password"] {
             width: 100%;
             padding: 15px 15px 15px 45px;
@@ -119,13 +120,50 @@
         }
 
         input[type="text"]:focus,
+        input[type="email"]:focus,
         input[type="password"]:focus {
             border-color: #667eea;
             background: rgba(255, 255, 255, 1);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .login-btn {
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .password-strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .password-strength.weak .password-strength-fill {
+            width: 33%;
+            background: #e74c3c;
+        }
+
+        .password-strength.medium .password-strength-fill {
+            width: 66%;
+            background: #f39c12;
+        }
+
+        .password-strength.strong .password-strength-fill {
+            width: 100%;
+            background: #27ae60;
+        }
+
+        .password-hint {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .register-btn {
             width: 100%;
             padding: 16px;
             background: linear-gradient(45deg, #667eea, #764ba2);
@@ -140,13 +178,19 @@
             margin-top: 10px;
         }
 
-        .login-btn:hover {
+        .register-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .login-btn:active {
+        .register-btn:active {
             transform: translateY(0);
+        }
+
+        .register-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .additional-options {
@@ -168,43 +212,54 @@
             text-decoration: underline;
         }
 
-        .forgot-password {
+        .login-link {
             text-align: center;
             margin-top: 20px;
         }
 
-        .forgot-password a {
+        .login-link a {
             color: #7f8c8d;
             text-decoration: none;
             font-size: 0.9em;
         }
 
-        .forgot-password a:hover {
+        .login-link a:hover {
             color: #667eea;
             text-decoration: underline;
         }
 
         .security-notice {
-            background: linear-gradient(45deg, rgba(243, 156, 18, 0.1), rgba(230, 126, 34, 0.1));
-            border-left: 4px solid #f39c12;
+            background: linear-gradient(45deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.1));
+            border-left: 4px solid #27ae60;
             padding: 15px;
             border-radius: 8px;
             margin-top: 25px;
         }
 
         .security-notice p {
-            color: #e67e22;
+            color: #27ae60;
             font-size: 0.85em;
             margin: 0;
             line-height: 1.4;
         }
 
         .security-notice strong {
-            color: #d35400;
+            color: #1e8449;
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #c0392b;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            display: none;
         }
 
         @media (max-width: 480px) {
-            .login-container {
+            .register-container {
                 padding: 30px 25px;
                 margin: 10px;
             }
@@ -213,18 +268,18 @@
                 font-size: 1.8em;
             }
             
-            .login-header h2 {
+            .register-header h2 {
                 font-size: 1.5em;
             }
         }
 
         /* Animação de loading para o botão */
-        .login-btn.loading {
+        .register-btn.loading {
             position: relative;
             color: transparent;
         }
 
-        .login-btn.loading::after {
+        .register-btn.loading::after {
             content: '';
             position: absolute;
             top: 50%;
@@ -245,22 +300,40 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="register-container">
         <div class="bank-logo">
             <h1>🏦 BANCO C</h1>
             <p>Internet Banking Seguro</p>
         </div>
 
-        <div class="login-header">
-            <h2>Acesso Seguro</h2>
-            <p class="subtitle">Digite suas credenciais para continuar</p>
+        <div class="register-header">
+            <h2>Criar Conta</h2>
+            <p class="subtitle">Preencha seus dados para criar sua conta</p>
         </div>
 
-        <form method="POST" action="/login" id="loginForm">
+        <div class="error-message" id="errorMessage"></div>
+
+        <form method="POST" action="/register" id="registerForm">
+            <div class="form-group">
+                <label for="nome">Nome Completo</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">📧</span>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="cpf">CPF</label>
                 <div class="input-wrapper">
-                    <span class="input-icon">👤</span>
+                    <span class="input-icon">🆔</span>
                     <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required maxlength="14">
                 </div>
             </div>
@@ -269,19 +342,23 @@
                 <label for="password">Senha</label>
                 <div class="input-wrapper">
                     <span class="input-icon">🔒</span>
-                    <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                    <input type="password" id="password" name="password" placeholder="Crie uma senha segura" required>
+                </div>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="password-strength-fill"></div>
+                </div>
+                <div class="password-hint">
+                    A senha deve ter pelo menos 8 caracteres, incluindo maiúsculas, minúsculas e números.
                 </div>
             </div>
 
-            <button type="submit" class="login-btn" id="loginBtn">
-                Entrar com Segurança
+            <button type="submit" class="register-btn" id="registerBtn">
+                Criar Conta Segura
             </button>
         </form>
 
-        <div class="forgot-password">
-            <a href="/forgot-password">Esqueci minha senha</a>
-            <br>
-            <a href="/register">Criar conta</a>
+        <div class="login-link">
+            <a href="/login">Já tenho conta? Fazer login</a>
         </div>
 
         <div class="additional-options">
@@ -289,7 +366,7 @@
         </div>
 
         <div class="security-notice">
-            <p><strong>🔐 Dica de Segurança:</strong> Nunca compartilhe seus dados de acesso. O Banco C jamais solicitará sua senha por telefone ou e-mail.</p>
+            <p><strong>🔐 Seus dados estão seguros:</strong> Utilizamos criptografia de ponta para proteger suas informações pessoais e financeiras.</p>
         </div>
     </div>
 
@@ -302,15 +379,26 @@
             }
         });
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const btn = document.getElementById('loginBtn');
-            btn.classList.add('loading');
-            btn.disabled = true;
+        document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthIndicator = document.getElementById('passwordStrength');
             
-            setTimeout(() => {
-                btn.classList.remove('loading');
-                btn.disabled = false;
-            }, 3000);
+            let strength = 0;
+            
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            strengthIndicator.className = 'password-strength';
+            if (strength >= 5) {
+                strengthIndicator.classList.add('strong');
+            } else if (strength >= 3) {
+                strengthIndicator.classList.add('medium');
+            } else if (strength >= 1) {
+                strengthIndicator.classList.add('weak');
+            }
         });
 
         function validarCPF(cpf) {
@@ -335,21 +423,79 @@
             return resto === parseInt(cpf.charAt(10));
         }
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        function validarEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        function validarSenha(senha) {
+            if (senha.length < 8) return false;
+            if (!/[a-z]/.test(senha)) return false;
+            if (!/[A-Z]/.test(senha)) return false;
+            if (!/[0-9]/.test(senha)) return false;
+            return true;
+        }
+
+        function mostrarErro(mensagem) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = mensagem;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('registerBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }, 3000);
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const nome = document.getElementById('nome').value.trim();
+            const email = document.getElementById('email').value.trim();
             const cpf = document.getElementById('cpf').value;
             const senha = document.getElementById('password').value;
             
-            if (!validarCPF(cpf)) {
+            if (nome.length < 2 || nome.split(' ').length < 2) {
                 e.preventDefault();
-                alert('Por favor, insira um CPF válido.');
+                mostrarErro('Por favor, digite seu nome completo.');
                 return false;
             }
             
-            if (senha.length < 4) {
+            if (!validarEmail(email)) {
                 e.preventDefault();
-                alert('A senha deve ter pelo menos 4 caracteres.');
+                mostrarErro('Por favor, insira um e-mail válido.');
                 return false;
             }
+            
+            if (!validarCPF(cpf)) {
+                e.preventDefault();
+                mostrarErro('Por favor, insira um CPF válido.');
+                return false;
+            }
+            
+            if (!validarSenha(senha)) {
+                e.preventDefault();
+                mostrarErro('A senha deve ter pelo menos 8 caracteres, incluindo maiúsculas, minúsculas e números.');
+                return false;
+            }
+            
+            return true;
+        });
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                const errorDiv = document.getElementById('errorMessage');
+                if (errorDiv.style.display === 'block') {
+                    errorDiv.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>

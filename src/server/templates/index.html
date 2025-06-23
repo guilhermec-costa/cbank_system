@@ -2,59 +2,275 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Banco C - Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banco C - Internet Banking</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+        * {
             margin: 0;
-            padding: 20px;
-        }
-        header {
-            background-color: #007acc;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 {
-            margin: 0;
-        }
-        main {
-            margin-top: 30px;
-        }
-        ul {
-            list-style: none;
             padding: 0;
+            box-sizing: border-box;
         }
-        li {
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .bank-logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
         }
-        a {
-            color: #007acc;
-            text-decoration: none;
-            font-weight: bold;
+
+        .welcome-message {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 10px;
         }
-        a:hover {
-            text-decoration: underline;
+
+        .tagline {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .card p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .quick-access {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quick-access h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-link {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .quick-link:hover {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            transform: translateY(-3px);
+        }
+
+        .quick-link-icon {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 40px;
+        }
+
+        .security-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #f39c12;
+        }
+
+        .security-info p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9em;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-links {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <div class="bank-logo">🏦 BANCO C</div>
+            <div class="welcome-message">Bem-vindo</div>
+            <div class="tagline">Internet Banking Seguro e Confiável</div>
+        </header>
 
-    <header>
-        <h1>Bem-vindo ao Banco C</h1>
-        <p>Servidor bancário feito em C</p>
-    </header>
+        <div class="main-content">
+            <div class="card">
+                <div class="card-icon">💳</div>
+                <h3>Minhas Contas</h3>
+                <p>Visualize o saldo, extrato e movimentações de todas as suas contas corrente e poupança em um só lugar.</p>
+                <a href="/accounts" class="btn">Acessar Contas</a>
+            </div>
 
-    <main>
-        <h2>Rotas disponíveis:</h2>
-        <ul>
-            <li><a href="/accounts">Ver Contas</a></li>
-            <li><a href="/login">Login</a></li>
-            <li><a href="/about">Sobre</a></li>
-        </ul>
-    </main>
+            <div class="card">
+                <div class="card-icon">🔐</div>
+                <h3>Área Segura</h3>
+                <p>Acesse sua conta com total segurança através do nosso sistema de autenticação avançado.</p>
+                <a href="/login" class="btn">Fazer Login</a>
+            </div>
 
+            <div class="card">
+                <div class="card-icon">ℹ️</div>
+                <h3>Sobre o Banco C</h3>
+                <p>Conheça mais sobre nossa instituição, nossa missão e os serviços que oferecemos para você.</p>
+                <a href="/about" class="btn">Saiba Mais</a>
+            </div>
+        </div>
+
+        <div class="quick-access">
+            <h2>Acesso Rápido</h2>
+            <div class="quick-links">
+                <a href="/transfer" class="quick-link">
+                    <span class="quick-link-icon">💸</span>
+                    Transferências
+                </a>
+                <a href="/payments" class="quick-link">
+                    <span class="quick-link-icon">📄</span>
+                    Pagamentos
+                </a>
+                <a href="/investments" class="quick-link">
+                    <span class="quick-link-icon">📈</span>
+                    Investimentos
+                </a>
+                <a href="/loans" class="quick-link">
+                    <span class="quick-link-icon">💰</span>
+                    Empréstimos
+                </a>
+                <a href="/cards" class="quick-link">
+                    <span class="quick-link-icon">💳</span>
+                    Cartões
+                </a>
+                <a href="/support" class="quick-link">
+                    <span class="quick-link-icon">🎧</span>
+                    Suporte
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 Banco C - Todos os direitos reservados</p>
+            <p>Servidor bancário desenvolvido em linguagem C</p>
+            
+            <div class="security-info">
+                <p>🔒 <strong>Segurança:</strong> Suas informações são protegidas com criptografia de ponta. Nunca compartilhe seus dados de acesso.</p>
+            </div>
+        </footer>
+    </div>
 </body>
 </html>

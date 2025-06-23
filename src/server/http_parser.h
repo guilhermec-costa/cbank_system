@@ -10,7 +10,7 @@
 #define MAX_HEADERS 32
 #define MAX_KEY_LEN 128
 #define MAX_VALUE_LEN 512
-#define BODY_LEN 8192
+#define BODY_LEN 18000
 
 typedef enum {
   HEADER_HOST,

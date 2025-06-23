@@ -1,49 +1,360 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>404 - Página não encontrada</title>
-  <style>
-    body {
-      background-color: #f8f8f8;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 100px;
-      color: #333;
-    }
-    h1 {
-      font-size: 80px;
-      margin-bottom: 20px;
-      color: #e63946;
-    }
-    h2 {
-      font-size: 32px;
-      margin-bottom: 30px;
-    }
-    p {
-      font-size: 18px;
-      color: #555;
-    }
-    a {
-      display: inline-block;
-      margin-top: 20px;
-      text-decoration: none;
-      background-color: #e63946;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      transition: background-color 0.3s;
-    }
-    a:hover {
-      background-color: #d62828;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página Não Encontrada | Banco C</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .error-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 50px 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bank-logo {
+            margin-bottom: 30px;
+        }
+
+        .bank-logo h1 {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .bank-logo p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .error-visual {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .error-number {
+            font-size: 8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+            text-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .error-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .error-title {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .error-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .error-description {
+            color: #34495e;
+            font-size: 1em;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            background: rgba(52, 73, 94, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #3498db;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+            border: 2px solid rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(108, 117, 125, 0.15);
+            border-color: rgba(108, 117, 125, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .helpful-links {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 25px;
+            margin-top: 25px;
+        }
+
+        .helpful-links h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .link-item {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .link-item:hover {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            transform: translateY(-2px);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        /* Elementos flutuantes de decoração */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: floatAround 20s infinite linear;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            font-size: 2em;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            font-size: 1.5em;
+            animation-delay: 5s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            font-size: 1.8em;
+            animation-delay: 10s;
+        }
+
+        @keyframes floatAround {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg); 
+            }
+            25% { 
+                transform: translateY(-20px) rotate(90deg); 
+            }
+            50% { 
+                transform: translateY(0px) rotate(180deg); 
+            }
+            75% { 
+                transform: translateY(20px) rotate(270deg); 
+            }
+        }
+
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 40px 25px;
+                margin: 10px;
+            }
+            
+            .error-number {
+                font-size: 6em;
+            }
+            
+            .error-title {
+                font-size: 1.8em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .error-number {
+                font-size: 4.5em;
+            }
+            
+            .error-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>404</h1>
-  <h2>Página não encontrada</h2>
-  <p>A página que você está procurando não existe ou foi movida.</p>
-  <a href="/">Voltar para a página inicial</a>
+    <div class="error-container">
+        <div class="floating-elements">
+            <div class="floating-element">🏦</div>
+            <div class="floating-element">💳</div>
+            <div class="floating-element">🔒</div>
+        </div>
+
+        <div class="bank-logo">
+            <h1>🏦 BANCO C</h1>
+            <p>Internet Banking Seguro</p>
+        </div>
+
+        <div class="error-visual">
+            <div class="error-icon">🔍</div>
+            <div class="error-number">404</div>
+        </div>
+
+        <h2 class="error-title">Oops! Página Não Encontrada</h2>
+        <p class="error-subtitle">A página que você está procurando não pôde ser localizada em nossos servidores.</p>
+
+        <div class="error-description">
+            <p>Isso pode ter acontecido porque:</p>
+            <p>• A URL foi digitada incorretamente<br>
+            • A página foi movida ou removida<br>
+            • Você não tem permissão para acessar este recurso<br>
+            • Houve um erro temporário no sistema</p>
+        </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('mousemove', function(e) {
+                const elements = document.querySelectorAll('.floating-element');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                elements.forEach((element, index) => {
+                    const speed = (index + 1) * 0.5;
+                    const xPos = (x - 0.5) * speed;
+                    const yPos = (y - 0.5) * speed;
+                    
+                    element.style.transform += ` translate(${xPos}px, ${yPos}px)`;
+                });
+            });
+
+            const errorNumber = document.querySelector('.error-number');
+            let hoverCount = 0;
+            
+            errorNumber.addEventListener('mouseenter', function() {
+                hoverCount++;
+                if (hoverCount % 3 === 0) {
+                    this.style.animation = 'pulse 0.5s ease-in-out';
+                    setTimeout(() => {
+                        this.style.animation = 'pulse 2s infinite';
+                    }, 500);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
