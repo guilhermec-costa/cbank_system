@@ -1,6 +1,12 @@
-#include "executors.h"
+#include "query.h"
 
-#include <stdlib.h>
+#include <string.h>
+
+SelectQuery* qselect(SelectQuery* q, const char* columns) {
+  strncpy(q->columns, columns, sizeof(q->columns) - 1);
+  q->columns[sizeof(q->columns) - 1] = '\0';
+  return q;
+};
 
 SelectQuery* qfrom(SelectQuery* q, const char* table) {
   q->table = table;

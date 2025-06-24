@@ -3,7 +3,7 @@
 
 #include "query.h"
 
-int          select_executor(SelectQuery*, char*** results, int* rows, int* cols);
+int          select_executor(SelectQuery*, char**** results, int* rows, int* cols);
 void         insert_executor(SelectQuery* q);
 void         update_executor(SelectQuery* q);
 void         delete_executor(SelectQuery* q);

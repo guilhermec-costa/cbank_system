@@ -13,12 +13,20 @@
 #include <string.h>
 
 void get_accounts_query() {
-  SelectQuery* q = new_select_query();
-  int          results =
-      q->select("id,name,cpf")->from(q, DB_ACCOUNT_SECTION)->where(q, "id", "=", "1")->execute();
+  int          rows    = 0;
+  int          cols    = 0;
+  char***      r       = {0};
+  SelectQuery* q       = new_select_query();
+  int          results = q->select(q, "id,name,cpf")
+                    ->from(q, DB_ACCOUNT_SECTION)
+                    ->where(q, "id", "=", "1")
+                    ->execute(q, &r, &rows, &cols);
+
+  return;
 };
 
 void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res) {
+  get_accounts_query();
   get_path_template(res->body, sizeof(res->body), ACCOUNTS_ROUTE_PATH);
 
   make_res_first_line(res, HTTP_OK);
