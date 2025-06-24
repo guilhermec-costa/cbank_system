@@ -57,30 +57,46 @@ bool apply_select_where(SelectQuery* q, const char* line_buf) {
   return true;
 };
 
-int select_executor(SelectQuery* q, char**** results, int* rows, int* cols) {
-  FILE* f = open_store_on_modes(q->table, "r");
+ResultSet* select_executor(SelectQuery* q) {
+  ResultSet* rs = make_result_set();
+  FILE*      f  = open_store_on_modes(q->table, "r");
   if (!f)
     return 0;
 
-  int max_rows = 100;
-
-  char   line_buf[1024];
-  char*** result_data = calloc(max_rows, sizeof(char**));
-  int    line_count  = 0;
+  char    line_buf[1024];
+  char*** result_data = calloc(RS_MAX_ROWS, sizeof(char**));
+  int     line_count  = 0;
 
   while (fgets(line_buf, sizeof(line_buf), f)) {
     line_buf[strcspn(line_buf, "\n")] = '\0';
 
     if (apply_select_where(q, line_buf)) {
-      result_data[line_count++] = strdup(line_buf);
+      char** columns   = calloc(RS_MAX_COLS, sizeof(char*));
+      int    col_count = 0;
+
+      char* rest = line_buf;
+      char* pair;
+
+      while ((pair = strtok_r(rest, ";", &rest))) {
+        char* sep_pos = strchr(pair, '=');
+        if (!sep_pos)
+          continue;
+
+        *sep_pos          = '\0';
+        const char* value = sep_pos + 1;
+
+        columns[col_count++] = strdup(value);
+      }
+
+      rs->cols                  = col_count;
+      result_data[line_count++] = columns;
     }
   }
 
   fclose(f);
-
-  *results = result_data;
-  *rows = line_count;
-  return line_count;
+  rs->rows = line_count;
+  rs->data = result_data;
+  return rs;
 };
 
 SelectQuery* new_select_query() {

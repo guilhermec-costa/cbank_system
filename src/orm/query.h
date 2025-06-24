@@ -2,6 +2,7 @@
 #define CBANK_QUERY_H
 
 typedef struct SelectQuery SelectQuery;
+typedef struct ResultSet   ResultSet;
 
 typedef enum { QUERY_SELECT, QUERY_INSERT, QUERY_UPDATE, QUERY_DELETE } QueryType;
 
@@ -24,7 +25,7 @@ typedef struct {
   char*** data; // data[row][column]: value
 } SelectResult;
 
-typedef int (*SelectQueryExecutorFn)(SelectQuery*, char**** results, int* rows, int* cols);
+typedef ResultSet* (*SelectQueryExecutorFn)(SelectQuery*);
 
 struct SelectQuery {
   const char* table;
@@ -41,5 +42,18 @@ struct SelectQuery {
 SelectQuery* qselect(SelectQuery* q, const char* columns);
 SelectQuery* qfrom(SelectQuery* q, const char* table);
 SelectQuery* qwhere(SelectQuery* q, const char* column, const char* operator, const char* value);
+
+#define RS_MAX_COLS 20
+#define RS_MAX_ROWS 100
+struct ResultSet {
+  char*** data;
+  int     rows;
+  int     cols;
+
+  void (*free)(ResultSet*);
+  void (*print)(ResultSet*);
+};
+
+ResultSet* make_result_set();
 
 #endif /* CBANK_QUERY_H */

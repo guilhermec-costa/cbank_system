@@ -13,15 +13,14 @@
 #include <string.h>
 
 void get_accounts_query() {
-  int          rows    = 0;
-  int          cols    = 0;
-  char***      r       = {0};
   SelectQuery* q       = new_select_query();
-  int          results = q->select(q, "id,name,cpf")
-                    ->from(q, DB_ACCOUNT_SECTION)
-                    ->where(q, "id", "=", "1")
-                    ->execute(q, &r, &rows, &cols);
+  ResultSet*   results = q->select(q, "id,name,cpf")
+                           ->from(q, DB_ACCOUNT_SECTION)
+                           ->where(q, "id", "=", "1")
+                           ->execute(q);
 
+  results->print(results);
+  results->free(results);
   return;
 };
 

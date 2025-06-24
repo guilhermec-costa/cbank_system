@@ -55,7 +55,7 @@ void start(const struct Server* server) {
       const struct RouteValidationResponse _route = get_route(&req, &res);
       if (!_route.valid) {
         if (_route.error_flag == NOT_FOUND_FLAG) {
-          GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Not found");
+          GLOBAL_LOGGER->log(GLOBAL_LOGGER, ERROR, "Not found");
           send_404_response(client_fd, &res);
         }
         if (_route.error_flag == METHOD_NOT_ALLOWED_FLAG) {
