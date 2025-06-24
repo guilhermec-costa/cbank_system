@@ -60,7 +60,7 @@ BankUser mount_from_line_buf(const char* line_buf) {
 }
 
 BankUser get_user_by_cpf(const char* cpf) {
-  FILE*    user_store = get_storage(DB_USER_SECTION);
+  FILE*    user_store = get_storage_for_reading(DB_USER_SECTION);
   char     line_buf[256];
   BankUser user;
   RESET_ENTITY(user);
@@ -84,7 +84,7 @@ BankUser get_user_by_cpf(const char* cpf) {
 }
 
 bool email_already_registered(const char* email) {
-  FILE* user_store = get_storage(DB_USER_SECTION);
+  FILE* user_store = get_storage_for_reading(DB_USER_SECTION);
   char  line_buf[256];
 
   char* email_token = NULL;

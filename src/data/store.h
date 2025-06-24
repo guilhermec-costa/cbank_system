@@ -25,8 +25,10 @@ typedef struct _stores {
 extern Stores stores;
 
 FILE* db_instance(const char* f);
-void  setup_stores();
-void  terminate_stores();
+FILE* open_store_on_modes(const char* f, const char* restrict modes);
+
+void setup_stores();
+void terminate_stores();
 
 BankUser get_user_by_cpf(const char* cpf);
 bool     email_already_registered(const char* email);
@@ -45,7 +47,7 @@ typedef struct CreateUserDTO {
 
 bool  id_tracker_has_store(const char* store_name);
 void  initialize_id_tracker_if_needed(const char* store_name);
-FILE* get_storage(const char* store_name);
+FILE* get_storage_for_reading(const char* store_name);
 
 #define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))
 

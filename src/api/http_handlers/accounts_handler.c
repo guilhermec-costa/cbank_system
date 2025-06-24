@@ -1,5 +1,8 @@
 #include "../../core/acc.h"
 #include "../../core/json_builder.h"
+#include "../../data/store.h"
+#include "../../orm/executors.h"
+#include "../../orm/query.h"
 #include "../../server/http_utils.h"
 #include "../../server/route_contants.h"
 #include "../../server/router.h"
@@ -8,6 +11,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+void get_accounts_query() {
+  SelectQuery* q = new_select_query();
+  int          results =
+      q->select("id,name,cpf")->from(q, DB_ACCOUNT_SECTION)->where(q, "id", "=", "1")->execute();
+};
 
 void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res) {
   get_path_template(res->body, sizeof(res->body), ACCOUNTS_ROUTE_PATH);

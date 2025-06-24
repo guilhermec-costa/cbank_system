@@ -4,7 +4,7 @@
 #include <string.h>
 
 bool id_tracker_has_store(const char* store_name) {
-  FILE* id_storage = get_storage(DB_ID_TRACKER_SECTION);
+  FILE* id_storage = get_storage_for_reading(DB_ID_TRACKER_SECTION);
   if (id_storage == NULL)
     return false;
 
@@ -28,7 +28,7 @@ bool id_tracker_has_store(const char* store_name) {
 
 void initialize_id_tracker_if_needed(const char* store_name) {
   if (!id_tracker_has_store(store_name)) {
-    FILE* id_storage = get_storage(DB_ID_TRACKER_SECTION);
+    FILE* id_storage = get_storage_for_reading(DB_ID_TRACKER_SECTION);
     if (id_storage == NULL) {
       printf("Failed to open ID tracker to initialize.\n");
       return;

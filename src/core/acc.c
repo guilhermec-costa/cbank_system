@@ -62,7 +62,7 @@ const char* acc_to_json_obj(Account* restrict acc) {
 }
 
 double check_user_balance() {
-  FILE*   acc_store = get_storage(DB_ACCOUNT_SECTION);
+  FILE*   acc_store = get_storage_for_reading(DB_ACCOUNT_SECTION);
   Account account_entity;
   RESET_ENTITY(account_entity);
   account_entity.balance = 0.0;
@@ -87,7 +87,7 @@ double check_user_balance() {
 
 int make_transaction_op(double v, TransactionType ttype) {
   bool    updated     = false;
-  FILE*   acc_storage = get_storage(DB_ACCOUNT_SECTION);
+  FILE*   acc_storage = get_storage_for_reading(DB_ACCOUNT_SECTION);
   Account account_entity;
   RESET_ENTITY(account_entity);
 
@@ -143,7 +143,7 @@ int make_transaction_op(double v, TransactionType ttype) {
 }
 
 Account* get_all_accounts(int* out_count) {
-  FILE* acc_storage = get_storage(DB_ACCOUNT_SECTION);
+  FILE* acc_storage = get_storage_for_reading(DB_ACCOUNT_SECTION);
   char  f_line_buf[256];
   int   alloc_size      = 20;
   int   realloc_trigger = alloc_size - 1;

@@ -17,6 +17,11 @@ FILE* db_instance(const char* f) {
   return store;
 }
 
+FILE* open_store_on_modes(const char* f, const char* restrict modes) {
+  FILE* store = fopen(f, modes);
+  return store;
+};
+
 void check_sucessfull_storage_creation(FILE* storage, const char* storage_name) {
   if (storage == NULL) {
     printf("\n%s❌ Failed to initialize storage \"%s\"%s\n", COLOR_RED, storage_name, COLOR_RESET);
@@ -27,7 +32,7 @@ void check_sucessfull_storage_creation(FILE* storage, const char* storage_name) 
   return;
 }
 
-void open_store(Store* store, const char* name) {
+void create_store(Store* store, const char* name) {
   store->store_name = name;
   store->storage    = db_instance(name);
   check_sucessfull_storage_creation(store->storage, store->store_name);
@@ -41,10 +46,10 @@ void setup_stores() {
     }
   };
 
-  open_store(&stores.id_tracker_store, DB_ID_TRACKER_SECTION);
-  open_store(&stores.user_store, DB_USER_SECTION);
-  open_store(&stores.account_store, DB_ACCOUNT_SECTION);
-  open_store(&stores.transaction_store, DB_TRANSACTION_SECTION);
+  create_store(&stores.id_tracker_store, DB_ID_TRACKER_SECTION);
+  create_store(&stores.user_store, DB_USER_SECTION);
+  create_store(&stores.account_store, DB_ACCOUNT_SECTION);
+  create_store(&stores.transaction_store, DB_TRANSACTION_SECTION);
 
   initialize_id_tracker_if_needed(DB_USER_SECTION);
   initialize_id_tracker_if_needed(DB_TRANSACTION_SECTION);
@@ -69,7 +74,7 @@ void mov_store_cursor(const char* store_name, int pos) {
     fseek(stores.transaction_store.storage, 0, pos);
 }
 
-FILE* get_storage(const char* store_name) {
+FILE* get_storage_for_reading(const char* store_name) {
   if (strcmp(store_name, DB_USER_SECTION) == 0) {
     mov_store_cursor(DB_USER_SECTION, SEEK_SET);
     return stores.user_store.storage;
@@ -94,7 +99,7 @@ FILE* get_storage(const char* store_name) {
 }
 
 void updt_next_identity(const char* store_name) {
-  FILE* id_storage = get_storage(DB_ID_TRACKER_SECTION);
+  FILE* id_storage = get_storage_for_reading(DB_ID_TRACKER_SECTION);
   char  line_buf[256];
 
   const char* tmp_f_name = "id_tracker_tmp.db";
@@ -145,7 +150,7 @@ void updt_next_identity(const char* store_name) {
 }
 
 int get_next_identity(const char* store_name) {
-  FILE* id_storage = get_storage(DB_ID_TRACKER_SECTION);
+  FILE* id_storage = get_storage_for_reading(DB_ID_TRACKER_SECTION);
   if (id_storage == NULL)
     return false;
 
