@@ -14,9 +14,9 @@
 
 void get_accounts_query() {
   SelectQuery* q       = new_select_query();
-  ResultSet*   results = q->select(q, "id,name,cpf")
+  ResultSet*   results = q->select(q, "id,created_at")
                            ->from(q, DB_ACCOUNT_SECTION)
-                           ->where(q, "id", "=", "1")
+                           ->where(q, "id", "<=", "2")
                            ->execute(q);
 
   results->print(results);

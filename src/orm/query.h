@@ -16,7 +16,7 @@ typedef struct {
 
 typedef SelectQuery* (*WhereFn)(SelectQuery* q, const char* column, const char* operator,
                                 const char* value);
-typedef SelectQuery* (*SelectFn)(SelectQuery* q, const char* columns);
+typedef SelectQuery* (*SelectFn)(SelectQuery* q, char* columns);
 typedef SelectQuery* (*FromFn)(SelectQuery* q, const char* table);
 
 typedef struct {
@@ -29,8 +29,9 @@ typedef ResultSet* (*SelectQueryExecutorFn)(SelectQuery*);
 
 struct SelectQuery {
   const char* table;
-  char        columns[256];
+  char**      columns;
   int         condition_count;
+  int         columns_count;
 
   WhereCondition        conditions[CONDITION_COUNT];
   WhereFn               where;
@@ -39,16 +40,18 @@ struct SelectQuery {
   SelectQueryExecutorFn execute;
 };
 
-SelectQuery* qselect(SelectQuery* q, const char* columns);
+SelectQuery* qselect(SelectQuery* q, char* columns);
 SelectQuery* qfrom(SelectQuery* q, const char* table);
 SelectQuery* qwhere(SelectQuery* q, const char* column, const char* operator, const char* value);
 
 #define RS_MAX_COLS 20
 #define RS_MAX_ROWS 100
+
 struct ResultSet {
   char*** data;
   int     rows;
   int     cols;
+  char*   column_order[RS_MAX_COLS];
 
   void (*free)(ResultSet*);
   void (*print)(ResultSet*);

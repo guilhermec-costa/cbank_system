@@ -82,10 +82,18 @@ ResultSet* select_executor(SelectQuery* q) {
         if (!sep_pos)
           continue;
 
-        *sep_pos          = '\0';
-        const char* value = sep_pos + 1;
+        *sep_pos                = '\0';
+        const char* column_name = pair;
+        const char* value       = sep_pos + 1;
 
-        columns[col_count++] = strdup(value);
+        for (int i = 0; i < q->columns_count; i++) {
+          if (strcmp(q->columns[i], column_name) == 0) {
+            if (line_count == 0) {
+              rs->column_order[col_count] = strdup(pair);
+            }
+            columns[col_count++] = strdup(value);
+          }
+        }
       }
 
       rs->cols                  = col_count;

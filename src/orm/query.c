@@ -1,12 +1,24 @@
 #include "query.h"
+#define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-SelectQuery* qselect(SelectQuery* q, const char* columns) {
-  strncpy(q->columns, columns, sizeof(q->columns) - 1);
-  q->columns[sizeof(q->columns) - 1] = '\0';
+SelectQuery* qselect(SelectQuery* q, char* columns) {
+  q->columns = calloc(RS_MAX_COLS, sizeof(char*));
+
+  char columns_buf[1024];
+  strncpy(columns_buf, columns, sizeof(columns_buf) - 1);
+  columns_buf[sizeof(columns_buf) - 1] = '\0';
+
+  char* rest_col = columns_buf;
+  char* col_token;
+
+  while ((col_token = strtok_r(rest_col, ",", &rest_col))) {
+    q->columns[q->columns_count++] = strdup(col_token);
+  }
+
   return q;
 };
 
@@ -39,7 +51,7 @@ static void free_result_set(ResultSet* rs) {
 static void print_result_set(ResultSet* rs) {
   for (int i = 0; i < rs->rows; i++) {
     for (int j = 0; j < rs->cols; j++) {
-      printf("%s\t", rs->data[i][j]);
+      printf("| %s=%s ", rs->column_order[j], rs->data[i][j]);
     }
     printf("\n");
   }
