@@ -1,4 +1,4 @@
-#include "query.h"
+#include "select_query.h"
 #define _POSIX_C_SOURCE 200809L
 
 #include "../data/store.h"
@@ -107,6 +107,16 @@ ResultSet* select_executor(SelectQuery* q) {
   return rs;
 };
 
+static void destroy_select_query(SelectQuery* q) {
+  if (!q)
+    return;
+
+  for (int i = 0; i < q->columns_count; i++) {
+    free(q->columns[i]);
+  }
+  free(q);
+};
+
 SelectQuery* new_select_query() {
   SelectQuery* q = calloc(1, sizeof(SelectQuery));
   memset(q, 0, sizeof(SelectQuery));
@@ -114,5 +124,6 @@ SelectQuery* new_select_query() {
   q->where   = qwhere;
   q->from    = qfrom;
   q->execute = select_executor;
+  q->destroy = destroy_select_query;
   return q;
 }

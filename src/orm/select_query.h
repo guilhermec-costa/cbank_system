@@ -38,6 +38,7 @@ struct SelectQuery {
   SelectFn              select;
   FromFn                from;
   SelectQueryExecutorFn execute;
+  void (*destroy)(SelectQuery* q);
 };
 
 SelectQuery* qselect(SelectQuery* q, char* columns);

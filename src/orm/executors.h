@@ -1,7 +1,7 @@
 #ifndef CBANK_EXECUTORS_H
 #define CBANK_EXECUTORS_H
 
-#include "query.h"
+#include "select_query.h"
 
 ResultSet*   select_executor(SelectQuery*);
 void         insert_executor(SelectQuery* q);

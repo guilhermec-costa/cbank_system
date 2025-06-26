@@ -14,13 +14,15 @@
 
 void get_accounts_query() {
   SelectQuery* q       = new_select_query();
-  ResultSet*   results = q->select(q, "id,created_at")
+  ResultSet*   results = q->select(q, "id,created_at,user_id_fk")
                            ->from(q, DB_ACCOUNT_SECTION)
                            ->where(q, "id", "<=", "2")
+                           ->where(q, "user_id_fk", "=", "1")
                            ->execute(q);
 
   results->print(results);
   results->free(results);
+  q->destroy(q);
   return;
 };
 
