@@ -1,13 +1,13 @@
 #include "../../server/http_utils.h"
 #include "../../server/route_contants.h"
 #include "../../server/router.h"
-#include "../../server/templates_constants.h"
-#include "../validation_schemas.h"
+#include "../schemas/login_validation_schema.h"
+#include "../schemas/register_account_validation_schema.h"
 #include "handlers.h"
 
 #include <stdio.h>
 
-void handle_GET_register_account(struct HttpRequest* req, struct HttpResponse* res) {
+static void handle_GET_register_account(struct HttpRequest* req, struct HttpResponse* res) {
   get_path_template(res->body, sizeof(res->body), REGISTER_ACCOUNT_ROUTE_PATH);
 
   const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
@@ -21,12 +21,12 @@ void handle_GET_register_account(struct HttpRequest* req, struct HttpResponse* r
   make_res_first_line(res, HTTP_OK);
 };
 
-bool handle_POST_registe_account(struct HttpRequest* req, struct HttpResponse* res) {
-  LoginSchema     schema       = {0};
-  const char*     content_type = get_header(req, HEADER_CONTENT_TYPE);
-  LoginBodyParser parser       = strcmp(content_type, "application/json") == 0
-                                     ? parse_login_json_schema
-                                     : parse_login_xwf_urlencoded_schema;
+static bool handle_POST_register_account(struct HttpRequest* req, struct HttpResponse* res) {
+  RegisterAccountSchema     schema = {0};
+  RegisterAccountBodyParser parser =
+      strcmp(get_header(req, HEADER_CONTENT_TYPE), "application/json") == 0
+          ? parse_register_acc_json_schema
+          : parse_register_acc_xwf_urlencoded_schema;
 
   const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
   const char* plain_type       = get_content_type_string(CONTENT_TYPE_PLAIN);
@@ -37,16 +37,6 @@ bool handle_POST_registe_account(struct HttpRequest* req, struct HttpResponse* r
     strcpy(res->body, "Malformed JSON");
     return false;
   };
-
-  if (!validate_login_schema(&schema)) {
-    make_res_first_line(res, HTTP_BAD_REQUEST);
-    strcpy(res->body, "Invalid fields");
-    return false;
-  };
-
-  AuthCredentials auth = {0};
-  strcpy(auth.cpf, schema.cpf);
-  strcpy(auth.password, schema.password);
 
   make_res_first_line(res, HTTP_NO_CONTENT);
   return true;
@@ -59,7 +49,7 @@ void handle_register_acocunt(int fd, struct HttpRequest* req, struct HttpRespons
     return;
   }
   if (strcmp(req->method, "POST") == 0) {
-    bool success = handle_POST_registe_account(req, res);
+    bool success = handle_POST_register_account(req, res);
     if (!success) {
       send_http_response(fd, res);
       return;

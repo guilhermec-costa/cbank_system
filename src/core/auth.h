@@ -20,4 +20,11 @@ void            logout();
 
 bool trigger_login_process();
 
+struct LoginResponse {
+  BankUser user;
+  bool     success;
+};
+
+struct LoginResponse login(const char* cpf, const char* pwd);
+
 #endif /* CBANK_AUTH_H */
