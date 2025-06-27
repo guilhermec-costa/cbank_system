@@ -1,8 +1,8 @@
 #ifndef CBANK_AUTH_H
 #define CBANK_AUTH_H
 
+#include "../api/dtos/user_models.h"
 #include "../data/models.h"
-#include "../data/store.h"
 
 #include <stdbool.h>
 
@@ -14,7 +14,6 @@ extern BankUser logged_user;
 
 bool            try_login(AuthCredentials cred);
 CreateUserDTO   register_user_form();
-void            create_user(CreateUserDTO payload);
 AuthCredentials make_in_mem_creds(const char* id, const char* pwd);
 void            logout();
 

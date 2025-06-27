@@ -52,11 +52,20 @@ int insert_query_executor(InsertQuery* q) {
   return 0;
 }
 
+InsertQuery* insert_query_into(InsertQuery* q, const char* table) {
+  if (!q)
+    return q;
+
+  q->table = table;
+  return q;
+};
+
 InsertQuery* new_insert_query() {
   InsertQuery* q = calloc(1, sizeof(InsertQuery));
   q->insert_pair = calloc(MAX_INSERT_PAIRS, sizeof(InsertPair));
   q->set_count   = 0;
   q->set         = set_for_insert;
   q->destroy     = free_insert_query;
+  q->into        = insert_query_into;
   return q;
 }

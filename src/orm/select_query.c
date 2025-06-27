@@ -1,5 +1,9 @@
-#include "select_query.h"
 #define _POSIX_C_SOURCE 200809L
+
+#include "select_query.h"
+
+#include "../data/store.h"
+#include "filtering.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,4 +70,107 @@ ResultSet* make_result_set() {
   rs->print = print_result_set;
 
   return rs;
+}
+
+bool apply_select_where(SelectQuery* q, const char* line_buf) {
+  if (q->condition_count == 0)
+    return true;
+
+  char line_cp[1024];
+  strncpy(line_cp, line_buf, sizeof(line_cp) - 1);
+  line_cp[sizeof(line_cp) - 1] = '\0';
+
+  char* rest = line_cp;
+  char* token;
+
+  while ((token = strtok_r(rest, ";", &rest))) {
+    char* _eq_pos = strchr(token, '=');
+    if (!_eq_pos)
+      continue;
+    *_eq_pos          = '\0';
+    const char* key   = token;
+    const char* value = _eq_pos + 1;
+
+    for (int i = 0; i < q->condition_count; i++) {
+      WhereCondition clause = q->conditions[i];
+      if (strcmp(clause.column, key) == 0) {
+        if (!compare(value, clause.operator, clause.value)) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+};
+
+ResultSet* select_executor(SelectQuery* q) {
+  ResultSet* rs = make_result_set();
+  FILE*      f  = open_store_on_modes(q->table, "r");
+  if (!f)
+    return 0;
+
+  char    line_buf[1024];
+  char*** result_data = calloc(RS_MAX_ROWS, sizeof(char**));
+  int     line_count  = 0;
+
+  while (fgets(line_buf, sizeof(line_buf), f)) {
+    line_buf[strcspn(line_buf, "\n")] = '\0';
+
+    if (apply_select_where(q, line_buf)) {
+      char** columns   = calloc(RS_MAX_COLS, sizeof(char*));
+      int    col_count = 0;
+
+      char* rest = line_buf;
+      char* pair;
+
+      while ((pair = strtok_r(rest, ";", &rest))) {
+        char* sep_pos = strchr(pair, '=');
+        if (!sep_pos)
+          continue;
+
+        *sep_pos                = '\0';
+        const char* column_name = pair;
+        const char* value       = sep_pos + 1;
+
+        for (int i = 0; i < q->columns_count; i++) {
+          if (strcmp(q->columns[i], column_name) == 0) {
+            if (line_count == 0) {
+              rs->column_order[col_count] = strdup(pair);
+            }
+            columns[col_count++] = strdup(value);
+          }
+        }
+      }
+
+      rs->cols                  = col_count;
+      result_data[line_count++] = columns;
+    }
+  }
+
+  fclose(f);
+  rs->rows = line_count;
+  rs->data = result_data;
+  return rs;
+};
+
+static void destroy_select_query(SelectQuery* q) {
+  if (!q)
+    return;
+
+  for (int i = 0; i < q->columns_count; i++) {
+    free(q->columns[i]);
+  }
+  free(q);
+};
+
+SelectQuery* new_select_query() {
+  SelectQuery* q = calloc(1, sizeof(SelectQuery));
+  memset(q, 0, sizeof(SelectQuery));
+  q->select  = qselect;
+  q->where   = qwhere;
+  q->from    = qfrom;
+  q->execute = select_executor;
+  q->destroy = destroy_select_query;
+  return q;
 }

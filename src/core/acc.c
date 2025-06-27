@@ -3,6 +3,7 @@
 #include "../data/models.h"
 #include "../data/store.h"
 #include "../utils.h"
+#include "auth.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -54,11 +55,6 @@ const char* acc_to_line_buf(Account* restrict acc) {
            acc->user_id_fk, acc->balance, acc->created_at, acc->updated_at);
 
   return line_buf;
-}
-
-const char* acc_to_json_obj(Account* restrict acc) {
-  const char* json_start = "{";
-  const char* json_end   = "}";
 }
 
 double check_user_balance() {
@@ -177,4 +173,23 @@ Account* get_all_accounts(int* out_count) {
   fclose(acc_storage);
   *out_count = iter_idx;
   return acc_ptr;
+}
+
+#include "../orm/insert_query.h"
+
+Account make_new_account(BankUser user) {
+  InsertQuery* insert_acc = new_insert_query();
+
+  char        date_buf[100];
+  const char* _now = fmt_date(date_buf, sizeof(date_buf), now());
+  insert_acc->into(insert_acc, DB_ACCOUNT_SECTION)
+      ->set(insert_acc, "id", get_next_identity(DB_ACCOUNT_SECTION))
+      ->set(insert_acc, "user_id_fk", get_next_identity(DB_USER_SECTION))
+      ->set(insert_acc, "balance", "0.000")
+      ->set(insert_acc, "created_at", _now)
+      ->set(insert_acc, "updated_at", "NULL");
+  // id=0;user_id_fk=0;balance=400.00;created_at=2025-06-16 22:37:45;updated_at=NULL
+
+  // acc.balance = 0.0;
+  // strcpy(acc.user_id_fk, "0");
 }

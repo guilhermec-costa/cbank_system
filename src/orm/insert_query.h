@@ -9,6 +9,7 @@ typedef struct {
 typedef struct InsertQuery InsertQuery;
 
 typedef InsertQuery* (*SetFn)(InsertQuery* q, const char* column, const char* value);
+typedef InsertQuery* (*IntoFn)(InsertQuery* q, const char* table);
 typedef int (*InsertQueryExecutor)(InsertQuery* q);
 
 struct InsertQuery {
@@ -19,5 +20,8 @@ struct InsertQuery {
 
   SetFn               set;
   InsertQueryExecutor execute;
+  IntoFn              into;
   void (*destroy)(InsertQuery* q);
 };
+
+InsertQuery* new_insert_query();

@@ -39,7 +39,7 @@ bool pre_login_loop(int* stop_flag) {
       }
       case 2: {
         const CreateUserDTO user = register_user_form();
-        create_user(user);
+        // make_new_user(user);
         break;
       }
       case 3: {

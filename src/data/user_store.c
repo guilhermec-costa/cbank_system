@@ -82,24 +82,3 @@ BankUser get_user_by_cpf(const char* cpf) {
   }
   return user;
 }
-
-bool email_already_registered(const char* email) {
-  FILE* user_store = get_storage_for_reading(DB_USER_SECTION);
-  char  line_buf[256];
-
-  char* email_token = NULL;
-  while (fgets(line_buf, sizeof(line_buf), user_store)) {
-    terminate_str_by_newline(line_buf);
-    email_token = strstr(line_buf, "email=");
-    if (!email_token)
-      continue;
-
-    char _tmp_email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
-    sscanf(email_token, "email=%49[^;];", _tmp_email);
-
-    if (strcmp(_tmp_email, email) == 0) {
-      return true;
-    }
-  }
-  return false;
-}

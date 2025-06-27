@@ -1,6 +1,8 @@
+#include "../../core/user.h"
 #include "../../server/http_utils.h"
 #include "../../server/route_contants.h"
 #include "../../server/router.h"
+#include "../dtos/user_models.h"
 #include "../schemas/login_validation_schema.h"
 #include "../schemas/register_account_validation_schema.h"
 #include "handlers.h"
@@ -39,6 +41,8 @@ static bool handle_POST_register_account(struct HttpRequest* req, struct HttpRes
   };
 
   make_res_first_line(res, HTTP_NO_CONTENT);
+  CreateUserDTO user_data = user_dto_from_register_acc_schema(&schema);
+  make_new_user(user_data);
   return true;
 };
 

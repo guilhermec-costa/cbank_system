@@ -2,7 +2,6 @@
 
 #include "schema_utils.h"
 
-#include <stdio.h>
 #include <string.h>
 
 bool parse_register_acc_json_schema(const char* body, RegisterAccountSchema* out_schema) {

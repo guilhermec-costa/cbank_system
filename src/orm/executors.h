@@ -3,10 +3,9 @@
 
 #include "select_query.h"
 
-ResultSet*   select_executor(SelectQuery*);
-void         insert_executor(SelectQuery* q);
-void         update_executor(SelectQuery* q);
-void         delete_executor(SelectQuery* q);
-SelectQuery* new_select_query();
+ResultSet* select_executor(SelectQuery*);
+void       insert_executor(SelectQuery* q);
+void       update_executor(SelectQuery* q);
+void       delete_executor(SelectQuery* q);
 
 #endif /* CBANK_EXECUTORS_H */

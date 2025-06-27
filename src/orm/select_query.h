@@ -1,6 +1,8 @@
 #ifndef CBANK_QUERY_H
 #define CBANK_QUERY_H
 
+#include <stdbool.h>
+
 typedef struct SelectQuery SelectQuery;
 typedef struct ResultSet   ResultSet;
 
@@ -58,6 +60,8 @@ struct ResultSet {
   void (*print)(ResultSet*);
 };
 
-ResultSet* make_result_set();
+ResultSet*   make_result_set();
+SelectQuery* new_select_query();
+bool         apply_select_where(SelectQuery* q, const char* line_buf);
 
 #endif /* CBANK_QUERY_H */
