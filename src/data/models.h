@@ -24,7 +24,6 @@ typedef struct auth_credentails {
 
 typedef struct bank_user {
   char id[20];
-  char acc_id[ACC_ID_MAX_CHAR_CONSTRAINT];
   char name[REGISTRATION_NAME_MAX_CHAR_CONSTRAINT];
   char cpf[CPF_DIGITS];
   char email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];

@@ -61,13 +61,27 @@ static void print_result_set(ResultSet* rs) {
   }
 };
 
+static void full_line(ResultSet* result, int line_idx, char* buf, size_t buf_size) {
+  char** line   = result->data[line_idx];
+  int    offset = 0;
+
+  for (int i = 0; i < result->cols; i++) {
+    offset += snprintf(buf + offset, buf_size - offset, "%s", result->column_order[i]);
+    offset += snprintf(buf + offset, buf_size - offset, "%s", "=");
+    offset += snprintf(buf + offset, buf_size - offset, "%s", line[i]);
+    if (i < result->cols - 1)
+      offset += snprintf(buf + offset, buf_size - offset, "%s", ";");
+  };
+}
+
 ResultSet* make_result_set() {
   ResultSet* rs = malloc(sizeof(ResultSet));
   memset(rs, 0, sizeof(ResultSet));
-  rs->cols  = 0;
-  rs->rows  = 0;
-  rs->free  = free_result_set;
-  rs->print = print_result_set;
+  rs->cols      = 0;
+  rs->rows      = 0;
+  rs->free      = free_result_set;
+  rs->print     = print_result_set;
+  rs->full_line = full_line;
 
   return rs;
 }

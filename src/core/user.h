@@ -5,6 +5,7 @@
 #include "../api/schemas/register_account_validation_schema.h"
 
 CreateUserDTO user_dto_from_register_acc_schema(RegisterAccountSchema* schema);
+BankUser      mount_user_from_line_buf(const char* line_buf);
 BankUser      make_new_user(CreateUserDTO payload);
 bool          email_already_registered(const char* email);
 

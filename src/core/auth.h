@@ -12,10 +12,8 @@
 
 extern BankUser logged_user;
 
-bool            try_login(AuthCredentials cred);
-CreateUserDTO   register_user_form();
-AuthCredentials make_in_mem_creds(const char* id, const char* pwd);
-void            logout();
+bool try_login(AuthCredentials cred);
+void logout();
 
 bool trigger_login_process();
 

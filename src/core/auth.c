@@ -6,7 +6,6 @@
 #include "../utils.h"
 
 #include <crypt.h>
-#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -39,77 +38,4 @@ bool try_login(AuthCredentials c) {
 
   logged_user = user;
   return true;
-}
-
-AuthCredentials make_in_mem_creds(const char* acc_id, const char* pwd) {
-  AuthCredentials c;
-  strcpy(c.cpf, acc_id);
-  strcpy(c.password, pwd);
-  return c;
-}
-
-CreateUserDTO register_user_form() {
-  printf("\n%s==============================\n", COLOR_CYAN);
-  printf("        User Registration\n");
-  printf("==============================%s\n\n", COLOR_RESET);
-
-  char new_email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
-  char new_name[REGISTRATION_NAME_MAX_CHAR_CONSTRAINT];
-  char new_cpf[CPF_DIGITS];
-  char new_pwd[PWD_MAX_CHAR_CONSTRAINT];
-
-  printf("%sPlease fill in the following details:%s\n\n", COLOR_GREEN, COLOR_RESET);
-
-  ask_null_terminated_input_str(new_cpf, sizeof(new_cpf), COLOR_YELLOW "🪪  CPF: " COLOR_RESET);
-  ask_null_terminated_input_str(new_email, sizeof(new_email),
-                                COLOR_YELLOW "📧  Email: " COLOR_RESET);
-  ask_null_terminated_input_str(new_name, sizeof(new_name), COLOR_YELLOW "👤  Name: " COLOR_RESET);
-  ask_null_terminated_input_str(new_pwd, sizeof(new_pwd),
-                                COLOR_YELLOW "🔑  Password: " COLOR_RESET);
-
-  CreateUserDTO user = {};
-  RESET_ENTITY(user);
-  strcpy(user.email, new_email);
-  strcpy(user.password, new_pwd);
-  strcpy(user.name, new_name);
-  strcpy(user.cpf, new_cpf);
-
-  printf("\n%s✅ User registration form completed!%s\n", COLOR_GREEN, COLOR_RESET);
-  printf("%s--------------------------------------%s\n", COLOR_CYAN, COLOR_RESET);
-  return user;
-}
-
-bool trigger_login_process() {
-  char cpf[CPF_DIGITS];
-  char tmp_pwd[PWD_MAX_CHAR_CONSTRAINT];
-  bool logged      = false;
-  int  login_tries = 0;
-
-  printf("\n%s==============================\n", COLOR_CYAN);
-  printf("           User Login\n");
-  printf("==============================%s\n\n", COLOR_RESET);
-
-  while (!logged && login_tries < MAX_LOGIN_TRIES) {
-    printf("%s🔐 Attempt %d of %d%s\n", COLOR_MAGENTA, login_tries + 1, MAX_LOGIN_TRIES,
-           COLOR_RESET);
-    printf("%s------------------------------%s\n", COLOR_CYAN, COLOR_RESET);
-
-    ask_null_terminated_input_str(cpf, sizeof(cpf), COLOR_YELLOW "🆔  CPF: " COLOR_RESET);
-    ask_null_terminated_input_str(tmp_pwd, sizeof(tmp_pwd),
-                                  COLOR_YELLOW "🔑  Password: " COLOR_RESET);
-
-    const AuthCredentials user = make_in_mem_creds(cpf, tmp_pwd);
-    logged                     = try_login(user);
-    if (!logged) {
-      login_tries++;
-      printf("\n%s❌ Failed to login. Please try again.%s\n\n", COLOR_RED, COLOR_RESET);
-      continue;
-    }
-
-    printf("\n%s✅ Login successful! Welcome!%s\n", COLOR_GREEN, COLOR_RESET);
-    printf("%s--------------------------------------%s\n\n", COLOR_CYAN, COLOR_RESET);
-    return true;
-  }
-
-  return false;
 }

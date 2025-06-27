@@ -62,6 +62,7 @@ InsertQuery* insert_query_into(InsertQuery* q, const char* table) {
 
 InsertQuery* new_insert_query() {
   InsertQuery* q = calloc(1, sizeof(InsertQuery));
+  q->execute     = insert_query_executor;
   q->insert_pair = calloc(MAX_INSERT_PAIRS, sizeof(InsertPair));
   q->set_count   = 0;
   q->set         = set_for_insert;

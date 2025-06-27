@@ -5,10 +5,10 @@
 #include <string.h>
 
 bool parse_register_acc_json_schema(const char* body, RegisterAccountSchema* out_schema) {
-  const char* cpf_token   = strstr(body, "cpf");
-  const char* pwd_token   = strstr(body, "password");
-  const char* name_token  = strstr(body, "name");
-  const char* email_token = strstr(body, "email");
+  const char* cpf_token   = strstr(body, "\"cpf");
+  const char* pwd_token   = strstr(body, "\"password");
+  const char* name_token  = strstr(body, "\"name");
+  const char* email_token = strstr(body, "\"email");
 
   if (!cpf_token || !pwd_token || !name_token || !email_token) {
     return false;

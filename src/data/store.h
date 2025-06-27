@@ -32,10 +32,10 @@ void terminate_stores();
 
 BankUser get_user_by_cpf(const char* cpf);
 
-void        reset_entity_attr_mem(void* ent, size_t ent_s);
-void        updt_next_identity(const char* store_name);
-void        mov_store_cursor(const char* store_name, int pos);
-const char* get_next_identity(const char* store_name);
+void reset_entity_attr_mem(void* ent, size_t ent_s);
+void updt_next_identity(const char* store_name);
+void mov_store_cursor(const char* store_name, int pos);
+bool get_next_identity(const char* store_name, char* out_buf, size_t buf_size);
 
 bool  id_tracker_has_store(const char* store_name);
 void  initialize_id_tracker_if_needed(const char* store_name);

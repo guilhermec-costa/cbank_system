@@ -149,7 +149,7 @@ void updt_next_identity(const char* store_name) {
   }
 }
 
-const char* get_next_identity(const char* store_name) {
+bool get_next_identity(const char* store_name, char* out_buf, size_t buf_size) {
   FILE* id_storage = get_storage_for_reading(DB_ID_TRACKER_SECTION);
   if (id_storage == NULL)
     return false;
@@ -165,14 +165,16 @@ const char* get_next_identity(const char* store_name) {
     if (!curid_token || !store_token)
       continue;
 
-    char  _tmp_store_name[50];
-    char* cur_id = "";
+    char _tmp_store_name[50];
+    char cur_id[50];
     sscanf(store_token, "store=%49[^;];", _tmp_store_name);
     if (strcmp(_tmp_store_name, store_name) == 0) {
-      sscanf(curid_token, "cur_id=%s", cur_id);
-      return cur_id;
+      sscanf(curid_token, "cur_id=%s[^;];", cur_id);
+      strncpy(out_buf, cur_id, buf_size - 1);
+      out_buf[buf_size - 1] = '\0';
+      return true;
     }
   }
 
-  return "";
+  return false;
 }

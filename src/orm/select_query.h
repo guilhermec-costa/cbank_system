@@ -2,6 +2,7 @@
 #define CBANK_QUERY_H
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 typedef struct SelectQuery SelectQuery;
 typedef struct ResultSet   ResultSet;
@@ -56,6 +57,7 @@ struct ResultSet {
   int     cols;
   char*   column_order[RS_MAX_COLS];
 
+  void (*full_line)(ResultSet* rs, int line_idx, char* buf, size_t buf_size);
   void (*free)(ResultSet*);
   void (*print)(ResultSet*);
 };
