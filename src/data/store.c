@@ -126,7 +126,7 @@ void updt_next_identity(const char* store_name) {
     int  cur_id = 0;
 
     sscanf(store_token, "store=%49[^;];", _tmp_store_name);
-    sscanf(curid_token, "cur_id=%d", &cur_id);
+    sscanf(curid_token, "cur_id=%d[^;];", &cur_id);
 
     if (strcmp(_tmp_store_name, store_name) == 0) {
       cur_id += 1;
@@ -169,7 +169,7 @@ bool get_next_identity(const char* store_name, char* out_buf, size_t buf_size) {
     char cur_id[50];
     sscanf(store_token, "store=%49[^;];", _tmp_store_name);
     if (strcmp(_tmp_store_name, store_name) == 0) {
-      sscanf(curid_token, "cur_id=%s[^;];", cur_id);
+      sscanf(curid_token, "cur_id=%49[^;];", cur_id);
       strncpy(out_buf, cur_id, buf_size - 1);
       out_buf[buf_size - 1] = '\0';
       return true;

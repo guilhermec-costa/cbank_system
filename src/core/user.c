@@ -17,7 +17,7 @@ BankUser mount_user_from_line_buf(const char* line_buf) {
   char* id_token         = strstr(line_buf, "id=");
   char* name_token       = strstr(line_buf, "name=");
   char* cpf_token        = strstr(line_buf, "cpf=");
-  char* pwd_token        = strstr(line_buf, "pwd=");
+  char* pwd_token        = strstr(line_buf, "password=");
   char* is_active_token  = strstr(line_buf, "is_active=");
   char* created_at_token = strstr(line_buf, "created_at=");
   char* updated_at_token = strstr(line_buf, "updated_at=");
@@ -39,7 +39,7 @@ BankUser mount_user_from_line_buf(const char* line_buf) {
   sscanf(id_token, "id=%19[^;];", __id);
   sscanf(name_token, "name=%255[^;];", __name);
   sscanf(cpf_token, "cpf=%19[^;];", __cpf);
-  sscanf(pwd_token, "pwd=%255[^;];", __pwd);
+  sscanf(pwd_token, "password=%255[^;];", __pwd);
   sscanf(is_active_token, "is_active=%d;", &__is_active);
   sscanf(created_at_token, "created_at=%19[^;];", __created_at);
   sscanf(updated_at_token, "updated_at=%19[^;];", __updated_at);
@@ -90,7 +90,8 @@ BankUser make_new_user(CreateUserDTO payload) {
       ->set(q, "name", payload.name)
       ->set(q, "cpf", payload.cpf)
       ->set(q, "email", payload.email)
-      ->set(q, "pwd", pwd_hash)
+      ->set(q, "password", pwd_hash)
+      ->set(q, "is_active", "true")
       ->set(q, "created_at", get_fmt_now())
       ->set(q, "updated_at", "NULL");
 
@@ -100,7 +101,7 @@ BankUser make_new_user(CreateUserDTO payload) {
   fflush(stores.user_store.storage);
 
   SelectQuery* select_q = new_select_query();
-  select_q->select(select_q, "id,name,cpf,password,email,created_at,updated_at")
+  select_q->select(select_q, "id,name,cpf,password,email,is_active,created_at,updated_at")
       ->from(select_q, DB_USER_SECTION)
       ->where(select_q, "id", "=", next_id);
   ResultSet* result = select_q->execute(select_q);
@@ -114,4 +115,6 @@ BankUser make_new_user(CreateUserDTO payload) {
   result->free(result);
   make_new_account(user_data);
   printf("Your account has been created!");
+
+  return user_data;
 };

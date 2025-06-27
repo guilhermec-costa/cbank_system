@@ -11,7 +11,7 @@ BankUser mount_from_line_buf(const char* line_buf) {
   RESET_ENTITY(user);
 
   char* id_token         = strstr(line_buf, "id=");
-  char* pwd_token        = strstr(line_buf, "pwd=");
+  char* pwd_token        = strstr(line_buf, "password=");
   char* email_token      = strstr(line_buf, "email=");
   char* cpf_token        = strstr(line_buf, "cpf=");
   char* name_token       = strstr(line_buf, "name=");
@@ -35,7 +35,7 @@ BankUser mount_from_line_buf(const char* line_buf) {
   char __is_active[3];
 
   sscanf(id_token, "id=%19[^;];", __id);
-  sscanf(pwd_token, "pwd=%34[^;];", __pwd);
+  sscanf(pwd_token, "password=%34[^;];", __pwd);
   sscanf(email_token, "email=%49[^;];", __email);
   sscanf(name_token, "name=%49[^;];", __name);
   sscanf(cpf_token, "cpf=%10[^;];", __cpf);

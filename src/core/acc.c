@@ -28,13 +28,13 @@ Account mount_acc_from_line_buf(const char* line_buf) {
   }
 
   char   __id[20];
-  char   __user_id_fk[ACC_ID_MAX_CHAR_CONSTRAINT];
+  char   __user_id_fk[20];
   double __balance = 0.0;
   char   __created_at[sizeof(VALID_DATETIME_STR)];
   char   __updated_at[sizeof(VALID_DATETIME_STR)];
 
   sscanf(id_token, "id=%19[^;];", __id);
-  sscanf(user_id_fk_token, "user_id_fk=%9[^;];", __user_id_fk);
+  sscanf(user_id_fk_token, "user_id_fk=%19[^;];", __user_id_fk);
   sscanf(balance_token, "balance=%lf;", &__balance);
   sscanf(created_at_token, "created_at=%19[^;];", __created_at);
   sscanf(updated_at_token, "updated_at=%19[^;];", __updated_at);
