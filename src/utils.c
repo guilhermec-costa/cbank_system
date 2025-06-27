@@ -41,4 +41,11 @@ struct tm now() {
   struct tm tm = *localtime(&t);
   return tm;
 }
+
+const char* get_fmt_now() {
+  const struct tm at_now = now();
+  char            date_buf[100];
+  return fmt_date(date_buf, sizeof(date_buf), at_now);
+};
+
 #define RESET_ENTITY(entity) reset_entity_attr_mem(entity, sizeof(entity))

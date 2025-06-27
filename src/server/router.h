@@ -30,6 +30,8 @@ struct RouteValidationResponse {
 
 struct RouteValidationResponse get_route(struct HttpRequest* req, struct HttpResponse* res);
 void add_res_header(struct HttpResponse* res, const char* key, const char* value);
+void add_content_type(struct HttpResponse* res, ContentType type);
+void add_content_len(struct HttpResponse* res, size_t len);
 void send_http_response(int client_fd, const struct HttpResponse* res);
 void send_404_response(int fd, struct HttpResponse* res);
 void send_bad_request_response(int fd, struct HttpResponse* res);

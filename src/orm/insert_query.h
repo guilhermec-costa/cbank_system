@@ -1,4 +1,3 @@
-#include "executors.h"
 typedef struct {
   const char* col;
   const char* value;

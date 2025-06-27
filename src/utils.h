@@ -38,4 +38,6 @@ static inline void flush_stdin() {
     ;
 }
 
+const char* get_fmt_now();
+
 #endif /* CBANK_UTILS_H */

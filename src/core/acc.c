@@ -178,18 +178,19 @@ Account* get_all_accounts(int* out_count) {
 #include "../orm/insert_query.h"
 
 Account make_new_account(BankUser user) {
-  InsertQuery* insert_acc = new_insert_query();
+  Account      account = {0};
+  InsertQuery* q       = new_insert_query();
 
-  char        date_buf[100];
-  const char* _now = fmt_date(date_buf, sizeof(date_buf), now());
-  insert_acc->into(insert_acc, DB_ACCOUNT_SECTION)
-      ->set(insert_acc, "id", get_next_identity(DB_ACCOUNT_SECTION))
-      ->set(insert_acc, "user_id_fk", get_next_identity(DB_USER_SECTION))
-      ->set(insert_acc, "balance", "0.000")
-      ->set(insert_acc, "created_at", _now)
-      ->set(insert_acc, "updated_at", "NULL");
-  // id=0;user_id_fk=0;balance=400.00;created_at=2025-06-16 22:37:45;updated_at=NULL
+  q->into(q, DB_ACCOUNT_SECTION)
+      ->set(q, "id", get_next_identity(DB_ACCOUNT_SECTION))
+      ->set(q, "user_id_fk", user.id)
+      ->set(q, "balance", "0.000")
+      ->set(q, "created_at", get_fmt_now())
+      ->set(q, "updated_at", "NULL");
 
-  // acc.balance = 0.0;
-  // strcpy(acc.user_id_fk, "0");
+  const int inserted = q->execute(q);
+
+  updt_next_identity(stores.account_store.store_name);
+  fflush(stores.account_store.storage);
+  return account;
 }

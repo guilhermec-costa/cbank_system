@@ -4,19 +4,10 @@
 #include "../../server/router.h"
 #include "../schemas/login_validation_schema.h"
 
-#include <stdio.h>
-
 void handle_GET_login(struct HttpRequest* req, struct HttpResponse* res) {
   get_path_template(res->body, sizeof(res->body), LOGIN_ROUTE_PATH);
-
-  const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
-  const char* html_type        = get_content_type_string(CONTENT_TYPE_HTML);
-  add_res_header(res, content_type_str, html_type);
-
-  char        body_res_buf[32];
-  const char* content_length_str = get_header_field_name(HEADER_CONTENT_LENGTH);
-  snprintf(body_res_buf, sizeof(body_res_buf), "%zu", strlen(res->body));
-  add_res_header(res, content_length_str, body_res_buf);
+  add_content_type(res, CONTENT_TYPE_HTML);
+  add_content_len(res, strlen(res->body));
   make_res_first_line(res, HTTP_OK);
 };
 
@@ -26,10 +17,7 @@ bool handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
   LoginBodyParser parser       = strcmp(content_type, "application/json") == 0
                                      ? parse_login_json_schema
                                      : parse_login_xwf_urlencoded_schema;
-
-  const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
-  const char* plain_type       = get_content_type_string(CONTENT_TYPE_PLAIN);
-  add_res_header(res, content_type_str, plain_type);
+  add_content_type(res, CONTENT_TYPE_PLAIN);
 
   if (!parser(req->body, &schema)) {
     make_res_first_line(res, HTTP_BAD_REQUEST);

@@ -1,7 +1,6 @@
 #include "../../core/acc.h"
 #include "../../core/json_builder.h"
 #include "../../data/store.h"
-#include "../../orm/executors.h"
 #include "../../orm/select_query.h"
 #include "../../server/http_utils.h"
 #include "../../server/route_contants.h"
@@ -29,17 +28,9 @@ void get_accounts_query() {
 void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res) {
   get_accounts_query();
   get_path_template(res->body, sizeof(res->body), ACCOUNTS_ROUTE_PATH);
-
   make_res_first_line(res, HTTP_OK);
-  const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
-  const char* html_type        = get_content_type_string(CONTENT_TYPE_HTML);
-  add_res_header(res, content_type_str, html_type);
-
-  char        body_res_buf[32];
-  const char* content_length_str = get_header_field_name(HEADER_CONTENT_LENGTH);
-  snprintf(body_res_buf, sizeof(body_res_buf), "%zu", strlen(res->body));
-  add_res_header(res, content_length_str, body_res_buf);
-
+  add_content_type(res, CONTENT_TYPE_HTML);
+  add_content_len(res, strlen(res->body));
   send_http_response(fd, res);
 };
 

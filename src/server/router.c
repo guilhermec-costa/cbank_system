@@ -60,6 +60,19 @@ void send_404_response(int fd, struct HttpResponse* res) {
   send_http_response(fd, res);
 };
 
+void add_content_type(struct HttpResponse* res, ContentType type) {
+  const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
+  const char* html_type        = get_content_type_string(type);
+  add_res_header(res, content_type_str, html_type);
+};
+
+void add_content_len(struct HttpResponse* res, size_t len) {
+  char        body_res_buf[32];
+  const char* content_length_str = get_header_field_name(HEADER_CONTENT_LENGTH);
+  snprintf(body_res_buf, sizeof(body_res_buf), "%zu", len);
+  add_res_header(res, content_length_str, body_res_buf);
+}
+
 void send_not_allowed_response(int fd, struct HttpResponse* res) {
   make_res_first_line(res, HTTP_METHOD_NOT_ALLOWED);
   add_res_header(res, get_header_field_name(HEADER_CONTENT_TYPE),
