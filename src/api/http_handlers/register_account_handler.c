@@ -3,7 +3,6 @@
 #include "../../server/route_contants.h"
 #include "../../server/router.h"
 #include "../dtos/user_models.h"
-#include "../schemas/login_validation_schema.h"
 #include "../schemas/register_account_validation_schema.h"
 #include "handlers.h"
 
