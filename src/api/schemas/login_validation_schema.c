@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
-bool parse_login_json_schema(const char* body, LoginSchema* out_schema) {
+bool parse_login_json_schema(struct HttpRequest* req, LoginSchema* out_schema) {
+  const char* body      = req->body;
   const char* cpf_token = strstr(body, "cpf");
   const char* pwd_token = strstr(body, "\"password\"");
 
@@ -20,34 +21,22 @@ bool parse_login_json_schema(const char* body, LoginSchema* out_schema) {
   return true;
 };
 
-bool parse_login_xwf_urlencoded_schema(const char* body, LoginSchema* out_schema) {
-  char buf[256] = {0};
-  strncpy(buf, body, sizeof(buf) - 1);
-  buf[sizeof(buf) - 1] = '\0';
+bool parse_login_xwf_urlencoded_schema(struct HttpRequest* req, LoginSchema* out_schema) {
+  QueryParamList body_query_params = req->body_query_params_list;
+  if (body_query_params.params_count == 0) {
+    return true;
+  }
 
-  char* token;
-  char* rest = buf;
-
-  while ((token = strtok_r(rest, "&", &rest))) {
-    char* separator = strchr(token, '=');
-    if (separator) {
-      *separator        = '\0';
-      const char* key   = token;
-      const char* value = separator + 1;
-
-      if (strcmp(key, "cpf") == 0) {
-        strncpy(out_schema->cpf, value, sizeof(out_schema->cpf) - 1);
-        out_schema->cpf[sizeof(out_schema->cpf) - 1] = '\0';
-      };
-      if (strcmp(key, "password") == 0) {
-        strncpy(out_schema->password, value, sizeof(out_schema->password) - 1);
-        out_schema->password[sizeof(out_schema->password) - 1] = '\0';
-      };
-    } else {
-      return false;
+  for (int i = 0; i < body_query_params.params_count; i++) {
+    const char* key   = body_query_params.params[i].key;
+    const char* value = body_query_params.params[i].value;
+    if (strcmp(key, "cpf") == 0) {
+      snprintf(out_schema->cpf, sizeof(out_schema->cpf), "%s", value);
     };
-  };
-
+    if (strcmp(key, "password") == 0) {
+      snprintf(out_schema->password, sizeof(out_schema->password), "%s", value);
+    };
+  }
   return true;
 };
 

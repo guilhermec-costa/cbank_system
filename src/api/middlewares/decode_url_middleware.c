@@ -24,7 +24,7 @@ void decode_url_middleware(struct HttpRequest* req, struct HttpResponse* res) {
       memset(decoded_val, 0, value_len + 1);
       if (decoded_val) {
         char* dyn_key = strdup(key);
-        if(dyn_key) {
+        if (dyn_key) {
           urldecode(decoded_val, value);
           append_query_param(dyn_key, decoded_val, &req->body_query_params_list);
         } else {
@@ -48,7 +48,7 @@ void decode_url_middleware(struct HttpRequest* req, struct HttpResponse* res) {
         memset(decoded_val, 0, value_len + 1);
         if (decoded_val) {
           char* dyn_key = strdup(key);
-          if(dyn_key) {
+          if (dyn_key) {
             urldecode(decoded_val, value);
             append_query_param(dyn_key, decoded_val, &req->url_query_params_list);
           } else {

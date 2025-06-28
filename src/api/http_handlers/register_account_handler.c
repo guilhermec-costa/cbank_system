@@ -21,7 +21,7 @@ static bool handle_POST_register_account(struct HttpRequest* req, struct HttpRes
           ? parse_register_acc_json_schema
           : parse_register_acc_xwf_urlencoded_schema;
 
-  if (!parser(req->body, &schema)) {
+  if (!parser(req, &schema)) {
     add_content_type(res, CONTENT_TYPE_PLAIN);
     make_res_first_line(res, HTTP_BAD_REQUEST);
     add_body(res, "Malformed JSON request body");

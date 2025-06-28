@@ -19,7 +19,7 @@ bool handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
                                      : parse_login_xwf_urlencoded_schema;
   add_content_type(res, CONTENT_TYPE_PLAIN);
 
-  if (!parser(req->body, &schema)) {
+  if (!parser(req, &schema)) {
     make_res_first_line(res, HTTP_BAD_REQUEST);
     strcpy(res->body, "Malformed JSON");
     return false;

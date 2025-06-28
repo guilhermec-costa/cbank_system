@@ -1,2 +1,4 @@
 id=0;name=Guilherme+China;cpf=446.715.798;email=echina725%40gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-27 22:57:16;updated_at=NULL
 id=1;name=Gui+China;cpf=123456;email=teste%40email.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-28 01:41:13;updated_at=NULL
+id=2;name=Churros Augusto;cpf=123456;email=churros5@gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-28 14:31:24;updated_at=NULL
+id=3;name=Isabela China;cpf=446715;email=isachina@gmail.com;password=PHebSCr1S1LJk;is_active=true;created_at=2025-06-28 14:38:15;updated_at=NULL

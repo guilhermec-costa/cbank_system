@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
-bool parse_register_acc_json_schema(const char* body, RegisterAccountSchema* out_schema) {
+bool parse_register_acc_json_schema(struct HttpRequest* req, RegisterAccountSchema* out_schema) {
+  const char* body        = req->body;
   const char* cpf_token   = strstr(body, "\"cpf");
   const char* pwd_token   = strstr(body, "\"password");
   const char* name_token  = strstr(body, "\"name");
@@ -29,37 +30,29 @@ bool parse_register_acc_json_schema(const char* body, RegisterAccountSchema* out
   return true;
 };
 
-bool parse_register_acc_xwf_urlencoded_schema(const char* body, RegisterAccountSchema* out_schema) {
-  char buf[256] = {0};
-  snprintf(buf, sizeof(buf), "%s", body);
+bool parse_register_acc_xwf_urlencoded_schema(struct HttpRequest*    req,
+                                              RegisterAccountSchema* out_schema) {
+  QueryParamList body_query_params = req->body_query_params_list;
+  if (body_query_params.params_count == 0) {
+    return true;
+  }
 
-  char* token;
-  char* rest = buf;
-
-  while ((token = strtok_r(rest, "&", &rest))) {
-    char* separator = strchr(token, '=');
-    if (separator) {
-      *separator        = '\0';
-      const char* key   = token;
-      const char* value = separator + 1;
-
-      if (strcmp(key, "cpf") == 0) {
-        snprintf(out_schema->cpf, sizeof(out_schema->cpf), "%s", value);
-      };
-      if (strcmp(key, "name") == 0) {
-        snprintf(out_schema->name, sizeof(out_schema->name), "%s", value);
-      };
-      if (strcmp(key, "email") == 0) {
-        snprintf(out_schema->email, sizeof(out_schema->email), "%s", value);
-      };
-      if (strcmp(key, "password") == 0) {
-        snprintf(out_schema->password, sizeof(out_schema->password), "%s", value);
-      };
-    } else {
-      return false;
+  for (int i = 0; i < body_query_params.params_count; i++) {
+    const char* key   = body_query_params.params[i].key;
+    const char* value = body_query_params.params[i].value;
+    if (strcmp(key, "cpf") == 0) {
+      snprintf(out_schema->cpf, sizeof(out_schema->cpf), "%s", value);
     };
-  };
-
+    if (strcmp(key, "name") == 0) {
+      snprintf(out_schema->name, sizeof(out_schema->name), "%s", value);
+    };
+    if (strcmp(key, "email") == 0) {
+      snprintf(out_schema->email, sizeof(out_schema->email), "%s", value);
+    };
+    if (strcmp(key, "password") == 0) {
+      snprintf(out_schema->password, sizeof(out_schema->password), "%s", value);
+    };
+  }
   return true;
 }
 
