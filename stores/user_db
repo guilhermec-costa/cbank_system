@@ -1,4 +1,2 @@
-id=cur_id=0;name=Guilherme China;cpf=3245322sfd;email=testemail12383465;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-27 22:20:21;updated_at=NULL
-id=cur_id=1;name=Guilherme China;cpf=3245322sfd;email=echina725@gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-27 22:22:11;updated_at=NULL
-id=2;name=Guilherme China;cpf=3245322sfd;email=echina1@gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-27 22:40:33;updated_at=NULL
-id=3;name=Guilherme China;cpf=3245322sfd;email=echina112@gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-27 22:40:56;updated_at=NULL
+id=0;name=Guilherme+China;cpf=446.715.798;email=echina725%40gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-27 22:57:16;updated_at=NULL
+id=1;name=Gui+China;cpf=123456;email=teste%40email.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-28 01:41:13;updated_at=NULL

@@ -5,6 +5,7 @@
 #include "route_contants.h"
 #include "templates_constants.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -140,4 +141,34 @@ void get_route_render_template(char* template_content, size_t buf_size, const ch
   template_content[bytes_read] = '\0';
 
   fclose(template_file);
+}
+
+void urldecode(char* dst, const char* src) {
+  char a, b;
+
+  while (*src) {
+    if ((*src == '%') && // encoded special characters (?, &, @, =)
+        ((a = src[1]) && (b = src[2])) && (isxdigit(a) && isxdigit(b))) {
+      if (a >= 'a')
+        a -= 'a' - 'A'; // lowercase to uppercase
+      if (a >= 'A')
+        a = a - 'A' + 10;
+      else
+        a -= '0'; // A-F to 0..9
+      if (b >= 'a')
+        b -= 'a' - 'A'; // lowercase to uppercase
+      if (b >= 'A')
+        b = b - 'A' + 10;
+      else
+        b -= '0'; // A-F to 0..9
+      *dst++ = (16 * a) + b;
+      src += 3;
+    } else if (*src == '+') { // encoded blank space
+      *dst++ = ' ';
+      src++;
+    } else {
+      *dst++ = *src++; // normal character
+    }
+  }
+  *dst = '\0';
 }

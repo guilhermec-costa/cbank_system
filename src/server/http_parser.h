@@ -82,5 +82,6 @@ void        parse_req_body(const char* body_start, struct HttpRequest* http_req)
 void        get_route_render_template(char* template_content, size_t buf_size, const char* path);
 const char* get_header(struct HttpRequest* req, const HttpHeaderField header_field);
 const char* get_res_header(struct HttpResponse* res, HttpHeaderField header_field);
+void        urldecode(char* dst, const char* encoded_url);
 
 #endif /* CBANK_HTTP_PARSER_H */
