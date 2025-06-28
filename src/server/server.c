@@ -19,7 +19,7 @@
 void set_nonblocking(int fd) {}
 
 void start(const struct Server* server) {
-  GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Starting server");
+  GLOBAL_LOGGER->log(GLOBAL_LOGGER, INFO, "Starting server");
   char client_buf[CLIENT_BUFFER_SIZE] = {0};
   while (1) {
     int                client_fd;
@@ -129,7 +129,7 @@ struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Se
     exit(EXIT_FAILURE);
   }
 
-  GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Server listening on port %d", SERVER_PORT);
+  GLOBAL_LOGGER->log(GLOBAL_LOGGER, INFO, "Server listening on port %d", SERVER_PORT);
 
   server.start = start;
 

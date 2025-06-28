@@ -3,6 +3,7 @@
 #include "../data/store.h"
 #include "../orm/insert_query.h"
 #include "../orm/select_query.h"
+#include "../server/logger.h"
 #include "../utils.h"
 #include "acc.h"
 #include "auth.h"
@@ -74,11 +75,13 @@ bool email_already_registered(const char* email) {
   return result->rows > 0;
 }
 
-BankUser make_new_user(CreateUserDTO payload) {
+MakeNewUserResponse make_new_user(CreateUserDTO payload) {
   BankUser user_data = {0};
   if (email_already_registered(payload.email)) {
-    printf("Could not create user. Email already exists");
-    return user_data;
+    GLOBAL_LOGGER->log(GLOBAL_LOGGER, ERROR, "Could not create user. Email already exists");
+    return (MakeNewUserResponse){.user    = user_data,
+                                 .success = false,
+                                 .message = "Could not create user. Email already exists"};
   };
 
   const char* const pwd_hash = hash_str(payload.password, PWD_HASH_SALT);
@@ -114,7 +117,7 @@ BankUser make_new_user(CreateUserDTO payload) {
 
   result->free(result);
   make_new_account(user_data);
-  printf("Your account has been created!");
+  GLOBAL_LOGGER->log(GLOBAL_LOGGER, INFO, "Your account has been created!");
 
-  return user_data;
+  return (MakeNewUserResponse){.user = user_data, .success = true, .message = "User created"};
 };

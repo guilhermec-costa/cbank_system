@@ -1,3 +1,4 @@
+#include "../server/logger.h"
 #include "../utils.h"
 #include "store.h"
 
@@ -36,6 +37,6 @@ void initialize_id_tracker_if_needed(const char* store_name) {
 
     fprintf(id_storage, "store=%s;cur_id=0;\n", store_name);
     fflush(id_storage);
-    printf("✅ Initialized ID tracker for '%s'\n", store_name);
+    GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "✅ Initialized ID tracker for '%s'", store_name);
   }
 }

@@ -120,7 +120,7 @@ struct RoutePathTemplate route_path_template_map[] = {
     {ACCOUNTS_ROUTE_PATH, ACCOUNTS_TEMPLATE_PATH},
     {REGISTER_ACCOUNT_ROUTE_PATH, REGISTER_ACCOUNT_TEMPLATE_PATH}};
 
-void get_path_template(char* template_content, size_t buf_size, const char* path) {
+void get_route_render_template(char* template_content, size_t buf_size, const char* path) {
   FILE* template_file = NULL;
 
   for (size_t i = 0; i < sizeof(route_path_template_map) / sizeof(route_path_template_map[0]);

@@ -8,7 +8,7 @@
 #include "handlers.h"
 
 static void handle_GET_register_account(struct HttpRequest* req, struct HttpResponse* res) {
-  get_path_template(res->body, sizeof(res->body), REGISTER_ACCOUNT_ROUTE_PATH);
+  get_route_render_template(res->body, sizeof(res->body), REGISTER_ACCOUNT_ROUTE_PATH);
   add_content_type(res, CONTENT_TYPE_HTML);
   add_content_len(res, strlen(res->body));
   make_res_first_line(res, HTTP_OK);
@@ -30,8 +30,13 @@ static bool handle_POST_register_account(struct HttpRequest* req, struct HttpRes
   };
 
   make_res_first_line(res, HTTP_NO_CONTENT);
-  CreateUserDTO user_data = user_dto_from_register_acc_schema(&schema);
-  make_new_user(user_data);
+  CreateUserDTO       user_data = user_dto_from_register_acc_schema(&schema);
+  MakeNewUserResponse result    = make_new_user(user_data);
+  if (!result.success) {
+    make_res_first_line(res, HTTP_BAD_REQUEST);
+    add_body(res, result.message);
+    return false;
+  }
   return true;
 };
 

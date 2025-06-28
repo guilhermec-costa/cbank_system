@@ -56,7 +56,7 @@ void send_404_response(int fd, struct HttpResponse* res) {
   add_res_header(res, get_header_field_name(HEADER_CONTENT_TYPE),
                  get_content_type_string(CONTENT_TYPE_HTML));
 
-  get_path_template(res->body, sizeof(res->body), NOT_FOUND_ROUTE_PATH);
+  get_route_render_template(res->body, sizeof(res->body), NOT_FOUND_ROUTE_PATH);
   send_http_response(fd, res);
 };
 
@@ -71,6 +71,11 @@ void add_content_len(struct HttpResponse* res, size_t len) {
   const char* content_length_str = get_header_field_name(HEADER_CONTENT_LENGTH);
   snprintf(body_res_buf, sizeof(body_res_buf), "%zu", len);
   add_res_header(res, content_length_str, body_res_buf);
+}
+
+void add_body(struct HttpResponse* res, const char* body) {
+  strncpy(res->body, body, sizeof(res->body) - 1);
+  res->body[sizeof(res->body) - 1] = '\0';
 }
 
 void send_not_allowed_response(int fd, struct HttpResponse* res) {

@@ -5,7 +5,7 @@
 #include "../schemas/login_validation_schema.h"
 
 void handle_GET_login(struct HttpRequest* req, struct HttpResponse* res) {
-  get_path_template(res->body, sizeof(res->body), LOGIN_ROUTE_PATH);
+  get_route_render_template(res->body, sizeof(res->body), LOGIN_ROUTE_PATH);
   add_content_type(res, CONTENT_TYPE_HTML);
   add_content_len(res, strlen(res->body));
   make_res_first_line(res, HTTP_OK);

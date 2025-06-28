@@ -79,7 +79,7 @@ struct HttpResponse {
 int         parse_req_line(const char* raw_req, struct HttpRequest* http_req);
 const char* parse_req_headers(const char* header_start, struct HttpRequest* http_req);
 void        parse_req_body(const char* body_start, struct HttpRequest* http_req);
-void        get_path_template(char* template_content, size_t buf_size, const char* path);
+void        get_route_render_template(char* template_content, size_t buf_size, const char* path);
 const char* get_header(struct HttpRequest* req, const HttpHeaderField header_field);
 const char* get_res_header(struct HttpResponse* res, HttpHeaderField header_field);
 

@@ -1,6 +1,7 @@
 #include "store.h"
 
 #include "../colorization.h"
+#include "../orm/select_query.h"
 #include "../utils.h"
 
 #include <errno.h>
@@ -150,31 +151,11 @@ void updt_next_identity(const char* store_name) {
 }
 
 bool get_next_identity(const char* store_name, char* out_buf, size_t buf_size) {
-  FILE* id_storage = get_storage_for_reading(DB_ID_TRACKER_SECTION);
-  if (id_storage == NULL)
+  SelectQuery* q = new_select_query();
+  q->select(q, "cur_id")->from(q, DB_ID_TRACKER_SECTION)->where(q, "store", "=", store_name);
+  ResultSet* result = q->execute(q);
+  if (!result->data)
     return false;
-
-  char line_buf[256];
-
-  const char* store_token = NULL;
-  const char* curid_token = NULL;
-  while (fgets(line_buf, sizeof(line_buf), id_storage)) {
-    terminate_str_by_newline(line_buf);
-    store_token = strstr(line_buf, "store=");
-    curid_token = strstr(line_buf, "cur_id=");
-    if (!curid_token || !store_token)
-      continue;
-
-    char _tmp_store_name[50];
-    char cur_id[50];
-    sscanf(store_token, "store=%49[^;];", _tmp_store_name);
-    if (strcmp(_tmp_store_name, store_name) == 0) {
-      sscanf(curid_token, "cur_id=%49[^;];", cur_id);
-      strncpy(out_buf, cur_id, buf_size - 1);
-      out_buf[buf_size - 1] = '\0';
-      return true;
-    }
-  }
-
-  return false;
+  result->full_line(result, 0, out_buf, buf_size);
+  return true;
 }

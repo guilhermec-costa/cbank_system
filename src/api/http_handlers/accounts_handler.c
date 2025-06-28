@@ -19,7 +19,6 @@ void get_accounts_query() {
                            ->where(q, "user_id_fk", "=", "1")
                            ->execute(q);
 
-  results->print(results);
   results->free(results);
   q->destroy(q);
   return;
@@ -27,7 +26,7 @@ void get_accounts_query() {
 
 void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res) {
   get_accounts_query();
-  get_path_template(res->body, sizeof(res->body), ACCOUNTS_ROUTE_PATH);
+  get_route_render_template(res->body, sizeof(res->body), ACCOUNTS_ROUTE_PATH);
   make_res_first_line(res, HTTP_OK);
   add_content_type(res, CONTENT_TYPE_HTML);
   add_content_len(res, strlen(res->body));

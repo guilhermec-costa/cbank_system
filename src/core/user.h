@@ -6,7 +6,14 @@
 
 CreateUserDTO user_dto_from_register_acc_schema(RegisterAccountSchema* schema);
 BankUser      mount_user_from_line_buf(const char* line_buf);
-BankUser      make_new_user(CreateUserDTO payload);
-bool          email_already_registered(const char* email);
+
+typedef struct MakeNewUserResponse {
+  BankUser    user;
+  bool        success;
+  const char* message;
+} MakeNewUserResponse;
+
+MakeNewUserResponse make_new_user(CreateUserDTO payload);
+bool                email_already_registered(const char* email);
 
 #endif /* CBANK_USER_H */
