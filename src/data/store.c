@@ -156,6 +156,9 @@ bool get_next_identity(const char* store_name, char* out_buf, size_t buf_size) {
   ResultSet* result = q->execute(q);
   if (!result->data)
     return false;
-  result->full_line(result, 0, out_buf, buf_size);
+  const char* id = result->get_row_col_value(result, 0, "cur_id");
+  snprintf(out_buf, buf_size, "%s", id);
+  result->free(result);
+  q->destroy(q);
   return true;
 }

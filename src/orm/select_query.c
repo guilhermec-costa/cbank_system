@@ -74,14 +74,25 @@ static void full_line(ResultSet* result, int line_idx, char* buf, size_t buf_siz
   };
 }
 
+static const char* get_row_col_value(ResultSet* rs, int row_idx, const char* column) {
+  char** line = rs->data[row_idx];
+
+  for (int i = 0; i < rs->cols; i++) {
+    if (strcmp(rs->column_order[i], column) == 0) {
+      return line[i];
+    }
+  }
+}
+
 ResultSet* make_result_set() {
   ResultSet* rs = malloc(sizeof(ResultSet));
   memset(rs, 0, sizeof(ResultSet));
-  rs->cols      = 0;
-  rs->rows      = 0;
-  rs->free      = free_result_set;
-  rs->print     = print_result_set;
-  rs->full_line = full_line;
+  rs->cols              = 0;
+  rs->rows              = 0;
+  rs->free              = free_result_set;
+  rs->print             = print_result_set;
+  rs->full_line         = full_line;
+  rs->get_row_col_value = get_row_col_value;
 
   return rs;
 }

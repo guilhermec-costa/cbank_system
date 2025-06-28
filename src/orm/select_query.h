@@ -60,6 +60,7 @@ struct ResultSet {
   void (*full_line)(ResultSet* rs, int line_idx, char* buf, size_t buf_size);
   void (*free)(ResultSet*);
   void (*print)(ResultSet*);
+  const char* (*get_row_col_value)(ResultSet* rs, int row_idx, const char* column);
 };
 
 ResultSet*   make_result_set();
