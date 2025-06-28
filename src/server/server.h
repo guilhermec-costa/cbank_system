@@ -3,6 +3,8 @@
 
 #define CLIENT_BUFFER_SIZE 16000
 
+#include "http_parser.h"
+
 #include <netinet/in.h>
 
 #define PORT 8080
@@ -25,5 +27,6 @@ struct Server {
 
 struct Server make_server(struct ServerConfig config, void (*start)(const struct Server* server));
 void          start(const struct Server* server);
+void          end_client_conn(int client_fd, struct HttpRequest* req, struct HttpResponse* res);
 
 #endif /* CBANK_SERVER_H */

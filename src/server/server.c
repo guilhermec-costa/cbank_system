@@ -62,7 +62,7 @@ void start(const struct Server* server) {
           GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Method not allowed");
           send_not_allowed_response(client_fd, &res);
         }
-        close(client_fd);
+        end_client_conn(client_fd, &req, &res);
         GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Client connection closed");
         continue;
       }
@@ -79,7 +79,7 @@ void start(const struct Server* server) {
           send_http_response(client_fd, &res);
           GLOBAL_LOGGER->log(GLOBAL_LOGGER, INFO,
                              "Middleware responded with bad status code! closing connection");
-          close(client_fd);
+          end_client_conn(client_fd, &req, &res);
           break;
         }
       }
@@ -92,7 +92,7 @@ void start(const struct Server* server) {
     };
 
     GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Response sent! closing connection");
-    close(client_fd);
+    end_client_conn(client_fd, &req, &res);
   }
 
   close(server->socket_fd);
@@ -135,3 +135,9 @@ struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Se
 
   return server;
 };
+
+void end_client_conn(int client_fd, struct HttpRequest* req, struct HttpResponse* res) {
+  free_query_params_list(&req->body_query_params_list);
+  free_query_params_list(&req->url_query_params_list);
+  close(client_fd);
+}

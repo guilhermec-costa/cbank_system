@@ -57,6 +57,18 @@ struct HttpHeader {
   char value[MAX_VALUE_LEN];
 };
 
+typedef struct {
+  const char* key;
+  const char* value;
+} QueryParam;
+
+#define MAX_PARAMS 50
+
+typedef struct {
+  QueryParam params[MAX_PARAMS];
+  int        params_count;
+} QueryParamList;
+
 struct HttpRequest {
   char method[8];
   char path[256];
@@ -65,6 +77,9 @@ struct HttpRequest {
   struct HttpHeader headers[MAX_HEADERS];
   int               header_count;
   char              body[BODY_LEN];
+
+  QueryParamList body_query_params_list; // for x-www-form-urlencoded cases
+  QueryParamList url_query_params_list;
 };
 
 struct HttpResponse {
@@ -82,6 +97,8 @@ void        parse_req_body(const char* body_start, struct HttpRequest* http_req)
 void        get_route_render_template(char* template_content, size_t buf_size, const char* path);
 const char* get_header(struct HttpRequest* req, const HttpHeaderField header_field);
 const char* get_res_header(struct HttpResponse* res, HttpHeaderField header_field);
-void        urldecode(char* dst, const char* encoded_url);
+void        urldecode(char* dst, char* encoded_url);
+void        append_query_param(char* key, char* value, QueryParamList* params);
+void        free_query_params_list(QueryParamList* params);
 
 #endif /* CBANK_HTTP_PARSER_H */

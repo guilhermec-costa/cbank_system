@@ -143,7 +143,7 @@ void get_route_render_template(char* template_content, size_t buf_size, const ch
   fclose(template_file);
 }
 
-void urldecode(char* dst, const char* src) {
+void urldecode(char* dst, char* src) {
   char a, b;
 
   while (*src) {
@@ -171,4 +171,20 @@ void urldecode(char* dst, const char* src) {
     }
   }
   *dst = '\0';
+}
+
+void append_query_param(char* key, char* value, QueryParamList* query_params) {
+  if (query_params->params_count + 1 > MAX_PARAMS)
+    return;
+  query_params->params[query_params->params_count++] = (QueryParam){
+      .key   = key,
+      .value = value,
+  };
+};
+
+void free_query_params_list(QueryParamList* params) {
+  for (int i = 0; i < params->params_count; i++) {
+    free(params->params[i].key);
+    free(params->params[i].value);
+  };
 }

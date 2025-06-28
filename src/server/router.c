@@ -97,32 +97,49 @@ struct Route routes[] = {{.path            = INDEX_ROUTE_PATH,
                           .allowed_methods = {"GET"},
                           .middlewares =
                               {
-                                  // auth_middleware,
+                                  decode_url_middleware,
+                                  auth_middleware,
                               },
                           .method_count     = 1,
-                          .middleware_count = 0},
-                         {.path             = ACCOUNTS_ROUTE_PATH,
-                          .handler          = handle_accounts,
-                          .allowed_methods  = {"GET"},
-                          .middlewares      = {},
+                          .middleware_count = 2},
+                         {.path            = ACCOUNTS_ROUTE_PATH,
+                          .handler         = handle_accounts,
+                          .allowed_methods = {"GET"},
+                          .middlewares =
+                              {
+                                  decode_url_middleware,
+                                  auth_middleware,
+                              },
                           .method_count     = 1,
-                          .middleware_count = 0},
-                         {.path             = "/api/accounts",
-                          .handler          = handle_api_accounts,
-                          .allowed_methods  = {"GET", "POST"},
-                          .middlewares      = {},
+                          .middleware_count = 2},
+                         {.path            = "/api/accounts",
+                          .handler         = handle_api_accounts,
+                          .allowed_methods = {"GET", "POST"},
+                          .middlewares =
+                              {
+                                  decode_url_middleware,
+                                  auth_middleware,
+                              },
                           .method_count     = 1,
-                          .middleware_count = 0},
-                         {.path             = LOGIN_ROUTE_PATH,
-                          .handler          = handle_login,
-                          .allowed_methods  = {"GET", "POST"},
+                          .middleware_count = 2},
+                         {.path            = LOGIN_ROUTE_PATH,
+                          .handler         = handle_login,
+                          .allowed_methods = {"GET", "POST"},
+                          .middlewares =
+                              {
+                                  decode_url_middleware,
+                              },
                           .method_count     = 2,
-                          .middleware_count = 0},
-                         {.path             = REGISTER_ACCOUNT_ROUTE_PATH,
-                          .handler          = handle_register_acocunt,
-                          .allowed_methods  = {"GET", "POST"},
+                          .middleware_count = 1},
+                         {.path            = REGISTER_ACCOUNT_ROUTE_PATH,
+                          .handler         = handle_register_acocunt,
+                          .allowed_methods = {"GET", "POST"},
+                          .middlewares =
+                              {
+                                  decode_url_middleware,
+                              },
                           .method_count     = 2,
-                          .middleware_count = 0}};
+                          .middleware_count = 1}};
 
 struct RouteValidationResponse get_route(struct HttpRequest* req, struct HttpResponse* res) {
   const int routers_count = sizeof(routes) / sizeof(routes[0]);
