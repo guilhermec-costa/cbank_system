@@ -81,7 +81,7 @@ const char* get_header_field_name(const HttpHeaderField header) {
   }
 };
 
-const char* get_header(struct HttpRequest* req, HttpHeaderField header_field) {
+char* get_header(struct HttpRequest* req, HttpHeaderField header_field) {
   const char* header_name = get_header_field_name(header_field);
   for (int i = 0; i < req->header_count; i++) {
     if (strcasecmp(req->headers[i].key, header_name) == 0) {
@@ -91,7 +91,7 @@ const char* get_header(struct HttpRequest* req, HttpHeaderField header_field) {
   return NULL;
 };
 
-const char* get_res_header(struct HttpResponse* res, HttpHeaderField header_field) {
+char* get_res_header(struct HttpResponse* res, HttpHeaderField header_field) {
   const char* header_name = get_header_field_name(header_field);
   for (int i = 0; i < res->header_count; i++) {
     if (strcasecmp(res->headers[i].key, header_name) == 0) {

@@ -1,4 +1,3 @@
-#define _POSIX_C_SOURCE 200809L
 #include "../../server/http_parser.h"
 #include "middlewares.h"
 

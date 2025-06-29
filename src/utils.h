@@ -39,5 +39,6 @@ static inline void flush_stdin() {
 }
 
 const char* get_fmt_now();
+char*       ltrim(char* s);
 
 #endif /* CBANK_UTILS_H */

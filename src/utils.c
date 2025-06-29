@@ -48,4 +48,10 @@ const char* get_fmt_now() {
   return fmt_date(date_buf, sizeof(date_buf), at_now);
 };
 
+char* ltrim(char* c) {
+  while (*c == ' ')
+    c++;
+  return c;
+}
+
 #define RESET_ENTITY(entity) reset_entity_attr_mem(entity, sizeof(entity))

@@ -51,6 +51,7 @@ void start(const struct Server* server) {
     if (parse_req_line(client_buf, &req) == 0) {
       const char* headers_start = strstr(client_buf, CRLF) + 2;
       const char* body_start    = parse_req_headers(headers_start, &req);
+      parse_req_cookies(&req);
       parse_req_body(body_start, &req);
       const struct RouteValidationResponse _route = get_route(&req, &res);
       if (!_route.valid) {
@@ -140,5 +141,6 @@ struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Se
 void end_client_conn(int client_fd, struct HttpRequest* req, struct HttpResponse* res) {
   free_query_params_list(&req->body_query_params_list);
   free_query_params_list(&req->url_query_params_list);
+  free_cookies_list(&req->cookies_list);
   close(client_fd);
 }

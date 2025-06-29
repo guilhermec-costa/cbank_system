@@ -1,6 +1,8 @@
 #ifndef CBANK_HTTP_PARSER_H
 #define CBANK_HTTP_PARSER_H
 
+#define _POSIX_C_SOURCE 200809L
+
 #include <stddef.h>
 #include <string.h>
 #include <strings.h>
@@ -11,6 +13,7 @@
 #define MAX_KEY_LEN 128
 #define MAX_VALUE_LEN 512
 #define BODY_LEN 18000
+#define MAX_COOKIES 1000
 
 typedef enum {
   HEADER_HOST,
@@ -62,6 +65,16 @@ typedef struct {
   const char* value;
 } QueryParam;
 
+typedef struct {
+  const char* name;
+  const char* value;
+} Cookie;
+
+typedef struct {
+  Cookie* cookies;
+  int     cookies_count;
+} CookieList;
+
 #define MAX_PARAMS 50
 
 typedef struct {
@@ -80,6 +93,7 @@ struct HttpRequest {
 
   QueryParamList body_query_params_list; // for x-www-form-urlencoded cases
   QueryParamList url_query_params_list;
+  CookieList     cookies_list;
 };
 
 struct HttpResponse {
@@ -94,11 +108,11 @@ struct HttpResponse {
 int         parse_req_line(const char* raw_req, struct HttpRequest* http_req);
 const char* parse_req_headers(const char* header_start, struct HttpRequest* http_req);
 void        parse_req_body(const char* body_start, struct HttpRequest* http_req);
+void        parse_req_cookies(struct HttpRequest* req);
 void        get_route_render_template(char* template_content, size_t buf_size, const char* path);
-const char* get_header(struct HttpRequest* req, const HttpHeaderField header_field);
-const char* get_res_header(struct HttpResponse* res, HttpHeaderField header_field);
 void        urldecode(char* dst, char* encoded_url);
 void        append_query_param(char* key, char* value, QueryParamList* params);
 void        free_query_params_list(QueryParamList* params);
+void        free_cookies_list(CookieList* cookies);
 
 #endif /* CBANK_HTTP_PARSER_H */

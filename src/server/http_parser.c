@@ -1,7 +1,7 @@
-#define _POSIX_C_SOURCE 200809L
-
 #include "http_parser.h"
 
+#include "../utils.h"
+#include "http_utils.h"
 #include "route_contants.h"
 #include "templates_constants.h"
 
@@ -98,6 +98,61 @@ const char* parse_req_headers(const char* header_start, struct HttpRequest* http
   return req_line;
 };
 
+void parse_req_cookies(struct HttpRequest* req) {
+  if (req->header_count == 0)
+    return;
+
+  int cookies_alloc_size = 20;
+  int realloc_trigger    = cookies_alloc_size - 1;
+
+  Cookie* cookies = calloc(cookies_alloc_size, sizeof(Cookie));
+  if (!cookies) {
+    return;
+  }
+  CookieList _cookies;
+  _cookies.cookies  = cookies;
+  req->cookies_list = _cookies;
+
+  char* cookie_header = get_header(req, HEADER_COOKIE);
+  if (!cookie_header) {
+    free(cookies);
+    return;
+  }
+  int   cookies_idx = 0;
+  char* cookie_token;
+  char* rest = cookie_header;
+  while ((cookie_token = strtok_r(rest, ";", &rest))) {
+    char* sep_pos = strchr(cookie_token, '=');
+    if (sep_pos) {
+      *sep_pos                 = '\0';
+      const char* cookie_name  = ltrim(cookie_token);
+      const char* cookie_value = ltrim(sep_pos + 1);
+
+      if (cookies_idx >= MAX_COOKIES)
+        break;
+
+      if (cookies_idx == realloc_trigger) {
+        cookies_alloc_size += 20;
+        realloc_trigger          = cookies_alloc_size - 1;
+        Cookie* _tmp_reallocated = realloc(cookies, cookies_alloc_size);
+        if (!_tmp_reallocated) {
+          for (int i = 0; i < cookies_idx; i++) {
+            free_cookies_list(&req->cookies_list);
+          }
+          free(cookies);
+          return;
+        }
+        cookies          = _tmp_reallocated;
+        _cookies.cookies = cookies;
+      }
+      req->cookies_list.cookies[cookies_idx].name  = strdup(cookie_name);
+      req->cookies_list.cookies[cookies_idx].value = strdup(cookie_value);
+      req->cookies_list.cookies_count++;
+      cookies_idx++;
+    };
+  }
+};
+
 void parse_req_body(const char* req_start, struct HttpRequest* http_req) {
   const char* content_length = get_header(http_req, HEADER_CONTENT_LENGTH);
   if (content_length) {
@@ -187,4 +242,16 @@ void free_query_params_list(QueryParamList* params) {
     free(params->params[i].key);
     free(params->params[i].value);
   };
+}
+
+void free_cookies_list(CookieList* cookies) {
+  if (!cookies || cookies->cookies)
+    return;
+  for (int i = 0; i < cookies->cookies_count; i++) {
+    free(cookies->cookies[i].name);
+    free(cookies->cookies[i].value);
+  }
+  free(cookies->cookies);
+  cookies->cookies       = NULL;
+  cookies->cookies_count = 0;
 }
