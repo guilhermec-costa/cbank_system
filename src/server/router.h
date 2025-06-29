@@ -30,6 +30,7 @@ struct RouteValidationResponse {
 
 struct RouteValidationResponse get_route(struct HttpRequest* req, struct HttpResponse* res);
 void add_res_header(struct HttpResponse* res, const char* key, const char* value);
+void add_res_token_cookie(struct HttpResponse* res, const char* token);
 void add_content_type(struct HttpResponse* res, ContentType type);
 void add_content_len(struct HttpResponse* res, size_t len);
 void add_body(struct HttpResponse* res, const char* body);

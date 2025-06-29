@@ -78,6 +78,12 @@ void add_body(struct HttpResponse* res, const char* body) {
   res->body[sizeof(res->body) - 1] = '\0';
 }
 
+void add_res_token_cookie(struct HttpResponse* res, const char* token) {
+  char buf[1024] = {0};
+  snprintf(buf, sizeof(buf), "token=%s; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600", token);
+  add_res_header(res, "Set-Cookie", buf);
+}
+
 void send_not_allowed_response(int fd, struct HttpResponse* res) {
   make_res_first_line(res, HTTP_METHOD_NOT_ALLOWED);
   add_res_header(res, get_header_field_name(HEADER_CONTENT_TYPE),

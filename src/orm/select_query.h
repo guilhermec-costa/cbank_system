@@ -20,6 +20,7 @@ typedef struct {
 typedef SelectQuery* (*WhereFn)(SelectQuery* q, const char* column, const char* operator,
                                 const char* value);
 typedef SelectQuery* (*SelectFn)(SelectQuery* q, char* columns);
+typedef SelectQuery* (*SelectAllFn)(SelectQuery* q, const char* table);
 typedef SelectQuery* (*FromFn)(SelectQuery* q, const char* table);
 
 typedef struct {
@@ -39,6 +40,7 @@ struct SelectQuery {
   WhereCondition        conditions[CONDITION_COUNT];
   WhereFn               where;
   SelectFn              select;
+  SelectAllFn           select_all;
   FromFn                from;
   SelectQueryExecutorFn execute;
   void (*destroy)(SelectQuery* q);

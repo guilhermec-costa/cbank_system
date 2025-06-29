@@ -24,38 +24,40 @@ bool handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
   LoginBodyParser parser       = strcmp(content_type, "application/json") == 0
                                      ? parse_login_json_schema
                                      : parse_login_xwf_urlencoded_schema;
-  add_content_type(res, CONTENT_TYPE_PLAIN);
 
   if (!parser(req, &schema)) {
+    add_content_type(res, CONTENT_TYPE_PLAIN);
     make_res_first_line(res, HTTP_BAD_REQUEST);
     strcpy(res->body, "Malformed JSON");
+    add_body(res, "Malformed JSON");
     return false;
   };
 
   if (!validate_login_schema(&schema)) {
+    add_content_type(res, CONTENT_TYPE_PLAIN);
     make_res_first_line(res, HTTP_BAD_REQUEST);
-    strcpy(res->body, "Invalid fields");
+    add_body(res, "Invalid fields");
     return false;
   };
 
-  AuthCredentials auth = {0};
-  strcpy(auth.cpf, schema.cpf);
-  strcpy(auth.password, schema.password);
-
-  if (!try_login(auth)) {
+  const struct LoginResponse logged = login(schema.cpf, schema.password);
+  if (!logged.success) {
     make_res_first_line(res, HTTP_UNAUTHORIZED);
-    strcpy(res->body, "Invalid credentials");
+    add_body(res, "Invalid credentials");
+    return false;
+  }
+
+  char* token = create_jwt_for_user(logged.user.id, logged.user.name);
+  if (!token) {
+    make_res_first_line(res, HTTP_INTERNAL_SERVER_ERROR);
+    add_body(res, "Failed to generate token");
     return false;
   };
 
-  time_t now = time(NULL);
-  long   exp = now + 3600;
-  char   payload[512];
-
-  snprintf(payload, sizeof(payload), "{\"sub\":\"%s\",\"name\":\"%s\",\"exp\":%ld}", "1",
-           "Guilherme", exp);
-  char* token = generate_jwt(payload, "CHURROS");
-  make_res_first_line(res, HTTP_NO_CONTENT);
+  make_res_first_line(res, HTTP_OK);
+  add_content_type(res, CONTENT_TYPE_JSON);
+  add_res_token_cookie(res, token);
+  free(token);
   return true;
 };
 

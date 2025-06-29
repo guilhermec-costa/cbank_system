@@ -25,13 +25,9 @@ typedef struct _stores {
 extern Stores stores;
 
 FILE* db_instance(const char* f);
-FILE* open_store_on_modes(const char* f, const char* restrict modes);
 
 void setup_stores();
 void terminate_stores();
-
-BankUser get_user_by_cpf(const char* cpf);
-
 void reset_entity_attr_mem(void* ent, size_t ent_s);
 void updt_next_identity(const char* store_name);
 void mov_store_cursor(const char* store_name, int pos);

@@ -1,4 +1,6 @@
-#include "../utils.h"
+#include "user_store.h"
+
+#include "../orm/select_query.h"
 #include "models.h"
 #include "store.h"
 
@@ -6,75 +8,74 @@
 
 extern Stores stores;
 
-BankUser mount_from_line_buf(const char* line_buf) {
+BankUser mount_user_from_line_buf(const char* line_buf) {
   BankUser user;
-  RESET_ENTITY(user);
+  memset(&user, 0, sizeof(BankUser));
 
   char* id_token         = strstr(line_buf, "id=");
-  char* pwd_token        = strstr(line_buf, "password=");
-  char* email_token      = strstr(line_buf, "email=");
-  char* cpf_token        = strstr(line_buf, "cpf=");
   char* name_token       = strstr(line_buf, "name=");
+  char* cpf_token        = strstr(line_buf, "cpf=");
+  char* pwd_token        = strstr(line_buf, "password=");
+  char* is_active_token  = strstr(line_buf, "is_active=");
   char* created_at_token = strstr(line_buf, "created_at=");
   char* updated_at_token = strstr(line_buf, "updated_at=");
-  char* is_active_token  = strstr(line_buf, "is_active=");
 
-  if (!id_token || !pwd_token || !email_token || !name_token || !cpf_token || !created_at_token ||
-      !updated_at_token || !is_active_token) {
+  if (!id_token || !name_token || !cpf_token || !pwd_token || !is_active_token ||
+      !updated_at_token || !created_at_token) {
     strcpy(user.id, "");
     return user;
   }
 
   char __id[20];
-  char __pwd[PWD_MAX_CHAR_CONSTRAINT];
-  char __email[REGISTRATION_EMAIL_MAX_CHAR_CONSTRAINT];
-  char __name[50];
-  char __cpf[CPF_DIGITS];
-  char __created_at[sizeof(VALID_DATETIME_STR)];
-  char __updated_at[sizeof(VALID_DATETIME_STR)];
-  char __is_active[3];
+  char __name[256];
+  char __cpf[20];
+  char __pwd[256];
+  int  __is_active = 0;
+  char __created_at[20];
+  char __updated_at[20];
 
   sscanf(id_token, "id=%19[^;];", __id);
-  sscanf(pwd_token, "password=%34[^;];", __pwd);
-  sscanf(email_token, "email=%49[^;];", __email);
-  sscanf(name_token, "name=%49[^;];", __name);
-  sscanf(cpf_token, "cpf=%10[^;];", __cpf);
+  sscanf(name_token, "name=%255[^;];", __name);
+  sscanf(cpf_token, "cpf=%19[^;];", __cpf);
+  sscanf(pwd_token, "password=%255[^;];", __pwd);
+  sscanf(is_active_token, "is_active=%d;", &__is_active);
   sscanf(created_at_token, "created_at=%19[^;];", __created_at);
   sscanf(updated_at_token, "updated_at=%19[^;];", __updated_at);
-  sscanf(is_active_token, "is_active=%2[^;];", __is_active);
 
   strcpy(user.id, __id);
-  strcpy(user.email, __email);
   strcpy(user.name, __name);
   strcpy(user.cpf, __cpf);
   strcpy(user.password, __pwd);
-  user.is_active = *__is_active == 1 ? true : false;
+  user.is_active = __is_active;
   strcpy(user.created_at, __created_at);
   strcpy(user.updated_at, __updated_at);
 
   return user;
-}
+};
 
-BankUser get_user_by_cpf(const char* cpf) {
-  FILE*    user_store = get_storage_for_reading(DB_USER_SECTION);
-  char     line_buf[256];
-  BankUser user;
-  RESET_ENTITY(user);
+GetUserByCpfResponse get_user_by_cpf(const char* cpf) {
+  BankUser     user = {0};
+  SelectQuery* q    = new_select_query();
+  q->select_all(q, DB_USER_SECTION)->where(q, "cpf", "=", cpf);
+  ResultSet* result = q->execute(q);
 
-  char* cpf_token = NULL;
-  while (fgets(line_buf, sizeof(line_buf), user_store)) {
-    terminate_str_by_newline(line_buf);
-    cpf_token = strstr(line_buf, "cpf=");
-    if (!cpf_token)
-      continue;
+  q->destroy(q);
 
-    char __cpf[CPF_DIGITS];
-    sscanf(cpf_token, "cpf=%10[^;];", __cpf);
+  if (result->rows == 0) {
+    result->free(result);
+    return (GetUserByCpfResponse){
+        .user    = user,
+        .success = false,
+    };
+  };
 
-    if (strcmp(__cpf, cpf) == 0) {
-      user = mount_from_line_buf(line_buf);
-      break;
-    }
-  }
-  return user;
+  char buf[1024] = "";
+  result->full_line(result, 0, buf, sizeof(buf));
+  user = mount_user_from_line_buf(buf);
+
+  result->free(result);
+  return (GetUserByCpfResponse){
+      .user    = user,
+      .success = true,
+  };
 }

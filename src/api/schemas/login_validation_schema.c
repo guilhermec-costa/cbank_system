@@ -2,20 +2,22 @@
 
 #include "login_validation_schema.h"
 
+#include "schema_utils.h"
+
 #include <stdio.h>
 #include <string.h>
 
 bool parse_login_json_schema(struct HttpRequest* req, LoginSchema* out_schema) {
   const char* body      = req->body;
-  const char* cpf_token = strstr(body, "cpf");
-  const char* pwd_token = strstr(body, "\"password\"");
+  const char* cpf_token = strstr(body, "\"cpf");
+  const char* pwd_token = strstr(body, "\"password");
 
   if (!cpf_token || !pwd_token)
     return false;
 
-  if (sscanf(cpf_token, "\"cpf\" : \"%[^\"]\"", out_schema->cpf) != 1)
+  if (!parse_json_field(cpf_token, "cpf", out_schema->cpf))
     return false;
-  if (sscanf(cpf_token, "\"password\" : \"%[^\"]\"", out_schema->cpf) != 1)
+  if (!parse_json_field(pwd_token, "password", out_schema->password))
     return false;
 
   return true;

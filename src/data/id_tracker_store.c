@@ -35,7 +35,7 @@ void initialize_id_tracker_if_needed(const char* store_name) {
       return;
     }
 
-    fprintf(id_storage, "store=%s;cur_id=0;\n", store_name);
+    fprintf(id_storage, "store=%s;cur_id=0\n", store_name);
     fflush(id_storage);
     GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "✅ Initialized ID tracker for '%s'", store_name);
   }

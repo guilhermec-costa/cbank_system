@@ -18,11 +18,6 @@ FILE* db_instance(const char* f) {
   return store;
 }
 
-FILE* open_store_on_modes(const char* f, const char* restrict modes) {
-  FILE* store = fopen(f, modes);
-  return store;
-};
-
 void check_sucessfull_storage_creation(FILE* storage, const char* storage_name) {
   if (storage == NULL) {
     printf("\n%s❌ Failed to initialize storage \"%s\"%s\n", COLOR_RED, storage_name, COLOR_RESET);

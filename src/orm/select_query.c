@@ -26,6 +26,17 @@ SelectQuery* qselect(SelectQuery* q, char* columns) {
   return q;
 };
 
+SelectQuery* qselect_all_from(SelectQuery* q, const char* table) {
+  q->from(q, table);
+  if (strcmp(table, DB_USER_SECTION) == 0) {
+    q->select(q, "id,name,cpf,email,password,created_at,updated_at,is_active");
+  }
+  if (strcmp(table, DB_ACCOUNT_SECTION) == 0) {
+    q->select(q, "id,balance,user_fk_id,created_at,updated_at");
+  }
+  return q;
+}
+
 SelectQuery* qfrom(SelectQuery* q, const char* table) {
   q->table = table;
   return q;
@@ -131,7 +142,9 @@ bool apply_select_where(SelectQuery* q, const char* line_buf) {
 
 ResultSet* select_executor(SelectQuery* q) {
   ResultSet* rs = make_result_set();
-  FILE*      f  = open_store_on_modes(q->table, "r");
+  FILE*      f  = fopen(q->table, "r");
+
+  fseek(f, 0, SEEK_SET);
   if (!f)
     return 0;
 
@@ -192,10 +205,11 @@ static void destroy_select_query(SelectQuery* q) {
 SelectQuery* new_select_query() {
   SelectQuery* q = calloc(1, sizeof(SelectQuery));
   memset(q, 0, sizeof(SelectQuery));
-  q->select  = qselect;
-  q->where   = qwhere;
-  q->from    = qfrom;
-  q->execute = select_executor;
-  q->destroy = destroy_select_query;
+  q->select     = qselect;
+  q->select_all = qselect_all_from;
+  q->where      = qwhere;
+  q->from       = qfrom;
+  q->execute    = select_executor;
+  q->destroy    = destroy_select_query;
   return q;
 }

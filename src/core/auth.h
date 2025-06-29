@@ -12,7 +12,6 @@
 
 extern BankUser logged_user;
 
-bool try_login(AuthCredentials cred);
 void logout();
 
 bool trigger_login_process();
