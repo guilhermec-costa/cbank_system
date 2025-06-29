@@ -2,9 +2,11 @@
 #include "../../core/json_builder.h"
 #include "../../data/store.h"
 #include "../../orm/select_query.h"
+#include "../../render/engine.h"
 #include "../../server/http_utils.h"
 #include "../../server/route_contants.h"
 #include "../../server/router.h"
+#include "../../server/templates_constants.h"
 #include "../dtos/acc_models.h"
 
 #include <stdio.h>
@@ -26,7 +28,8 @@ void get_accounts_query() {
 
 void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res) {
   get_accounts_query();
-  get_route_render_template(res->body, sizeof(res->body), ACCOUNTS_ROUTE_PATH);
+  const char* template = load_template_to_string(ACCOUNTS_TEMPLATE_PATH);
+  add_body(res, render_template(template, NULL, 0));
   make_res_first_line(res, HTTP_OK);
   add_content_type(res, CONTENT_TYPE_HTML);
   add_content_len(res, strlen(res->body));

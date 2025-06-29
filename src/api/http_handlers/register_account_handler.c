@@ -1,13 +1,16 @@
 #include "../../core/user.h"
+#include "../../render/engine.h"
 #include "../../server/http_utils.h"
 #include "../../server/route_contants.h"
 #include "../../server/router.h"
+#include "../../server/templates_constants.h"
 #include "../dtos/user_models.h"
 #include "../schemas/register_account_validation_schema.h"
 #include "handlers.h"
 
 static void handle_GET_register_account(struct HttpRequest* req, struct HttpResponse* res) {
-  get_route_render_template(res->body, sizeof(res->body), REGISTER_ACCOUNT_ROUTE_PATH);
+  const char* template = load_template_to_string(REGISTER_ACCOUNT_TEMPLATE_PATH);
+  add_body(res, render_template(template, NULL, 0));
   add_content_type(res, CONTENT_TYPE_HTML);
   add_content_len(res, strlen(res->body));
   make_res_first_line(res, HTTP_OK);

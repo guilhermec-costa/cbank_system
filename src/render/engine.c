@@ -27,6 +27,8 @@ char* load_template_to_string(const char* path) {
 };
 
 char* render_template(const char* template, TemplateVar* vars, size_t var_count) {
+  if (!vars)
+    var_count = 0;
   size_t out_size = strlen(template) + 1024;
   char*  out_buf  = malloc(out_size);
   if (!out_buf)

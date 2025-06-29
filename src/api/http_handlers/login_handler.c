@@ -1,11 +1,18 @@
 #include "../../core/auth.h"
+#include "../../jwt/jwt.h"
+#include "../../render/engine.h"
 #include "../../server/http_utils.h"
 #include "../../server/route_contants.h"
 #include "../../server/router.h"
+#include "../../server/templates_constants.h"
 #include "../schemas/login_validation_schema.h"
+#include "time.h"
+
+#include <stdio.h>
 
 void handle_GET_login(struct HttpRequest* req, struct HttpResponse* res) {
-  get_route_render_template(res->body, sizeof(res->body), LOGIN_ROUTE_PATH);
+  const char* template = load_template_to_string(LOGIN_TEMPLATE_PATH);
+  add_body(res, render_template(template, NULL, 0));
   add_content_type(res, CONTENT_TYPE_HTML);
   add_content_len(res, strlen(res->body));
   make_res_first_line(res, HTTP_OK);
@@ -41,6 +48,13 @@ bool handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
     return false;
   };
 
+  time_t now = time(NULL);
+  long   exp = now + 3600;
+  char   payload[512];
+
+  snprintf(payload, sizeof(payload), "{\"sub\":\"%s\",\"name\":\"%s\",\"exp\":%ld}", "1",
+           "Guilherme", exp);
+  char* token = generate_jwt(payload, "CHURROS");
   make_res_first_line(res, HTTP_NO_CONTENT);
   return true;
 };

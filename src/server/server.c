@@ -72,6 +72,7 @@ void start(const struct Server* server) {
         _route.route.middlewares[i](&req, &res);
         if (res.status_code == HTTP_UNAUTHORIZED) {
           redirect(client_fd, &res, LOGIN_ROUTE_PATH);
+          end_client_conn(client_fd, &req, &res);
           break;
         }
         if (res.status_code >= 400) {
