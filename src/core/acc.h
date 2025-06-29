@@ -11,8 +11,6 @@ typedef enum _Transaction_Type {
 Account     mount_acc_from_line_buf(const char* line_buf);
 const char* acc_to_line_buf(Account* restrict acc);
 
-double   check_user_balance();
-int      make_transaction_op(double v, TransactionType ttype);
 Account* get_all_accounts(int* out_count);
 Account  make_new_account(BankUser user);
 

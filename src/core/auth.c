@@ -8,8 +8,6 @@
 #include <string.h>
 #include <unistd.h>
 
-BankUser logged_user;
-
 struct LoginResponse login(const char* cpf, const char* pwd) {
   GetUserByCpfResponse user = get_user_by_cpf(cpf);
   if (!user.success) {

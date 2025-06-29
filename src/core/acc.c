@@ -4,12 +4,9 @@
 #include "../data/store.h"
 #include "../orm/select_query.h"
 #include "../utils.h"
-#include "auth.h"
 
 #include <stdio.h>
 #include <string.h>
-
-extern BankUser logged_user;
 
 Account mount_acc_from_line_buf(const char* line_buf) {
   Account account;
@@ -56,87 +53,6 @@ const char* acc_to_line_buf(Account* restrict acc) {
            acc->user_id_fk, acc->balance, acc->created_at, acc->updated_at);
 
   return line_buf;
-}
-
-double check_user_balance() {
-  FILE*   acc_store = get_storage_for_reading(DB_ACCOUNT_SECTION);
-  Account account_entity;
-  RESET_ENTITY(account_entity);
-  account_entity.balance = 0.0;
-  char f_line_buf[256];
-
-  const char* user_id_fk_token = NULL;
-  while (fgets(f_line_buf, sizeof(f_line_buf), acc_store)) {
-    terminate_str_by_newline(f_line_buf);
-    user_id_fk_token = strstr(f_line_buf, "user_id_fk=");
-    if (!user_id_fk_token)
-      continue;
-
-    char __user_id_fk[20];
-    sscanf(user_id_fk_token, "user_id_fk=%19[^;];", __user_id_fk);
-    if (strcmp(__user_id_fk, logged_user.id) == 0) {
-      account_entity = mount_acc_from_line_buf(f_line_buf);
-    }
-  }
-
-  return account_entity.balance;
-}
-
-int make_transaction_op(double v, TransactionType ttype) {
-  bool    updated     = false;
-  FILE*   acc_storage = get_storage_for_reading(DB_ACCOUNT_SECTION);
-  Account account_entity;
-  RESET_ENTITY(account_entity);
-
-  const char* tmp_f_name = "acc_tmp_db";
-  FILE*       tmp_f      = fopen(tmp_f_name, "w");
-  if (tmp_f == NULL) {
-    printf("Failed to open temporary file for updating account.\n");
-    return 1;
-  }
-
-  char        f_line_buf[256];
-  const char* user_id_fk_token = NULL;
-  while (fgets(f_line_buf, sizeof(f_line_buf), acc_storage)) {
-    terminate_str_by_newline(f_line_buf);
-    user_id_fk_token = strstr(f_line_buf, "user_id_fk=");
-    if (!user_id_fk_token) {
-      fputs(f_line_buf, tmp_f);
-      continue;
-    }
-
-    account_entity = mount_acc_from_line_buf(f_line_buf);
-    if (strcmp(account_entity.user_id_fk, logged_user.id) == 0) {
-      switch (ttype) {
-        case DEPOSIT: {
-          account_entity.balance += v;
-          break;
-        }
-        case WITHDRAW: {
-          if (account_entity.balance < 0.000001) {
-          }
-          account_entity.balance -= v;
-          break;
-        }
-      }
-      updated = true;
-    }
-    fputs(acc_to_line_buf(&account_entity), tmp_f);
-  }
-
-  fclose(tmp_f);
-  remove(DB_ACCOUNT_SECTION);
-  rename(tmp_f_name, DB_ACCOUNT_SECTION);
-
-  fclose(acc_storage);
-  stores.account_store.storage = db_instance(DB_ACCOUNT_SECTION);
-
-  if (!updated) {
-    printf("⚠️  Account for user ID '%s' not found.\n", logged_user.id);
-    return 1;
-  }
-
-  return 0;
 }
 
 Account* get_all_accounts(int* out_count) {
