@@ -1,11 +1,13 @@
-#include "jwt.h"
+#define _POSIX_C_SOURCE 200809L
 
+#include <string.h>
+#include <stdlib.h>
+#include "jwt.h"
 #include "base64.h"
 
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include <stdio.h>
-#include <string.h>
 
 char* generate_jwt(const char* payload, const char* secret) {
   // token = b64url_encode(header).b64url_encode(payload).b64url_encode(signature)
@@ -51,4 +53,52 @@ char* create_jwt_for_user(const char* user_id, const char* name) {
            exp);
   char* token = generate_jwt(payload, "CHURROS");
   return token; // must free
+};
+
+char* jwt_validate(const char* token, const char* secret) {
+  char* token_cp = strdup(token);
+  if(!token_cp) return NULL;
+  
+  char* header_b64 = strtok(token_cp, ".");
+  char* payload_b64 = strtok(NULL, ".");
+  char* signature_b64 = strtok(NULL, ".");
+
+  if(!header_b64 || !payload_b64 || !signature_b64) {
+    free(token_cp);
+    return NULL;
+  }
+
+  // reconstruct message
+  size_t msg_len = strlen(header_b64) + 1 + strlen(payload_b64);
+  char* message = malloc(msg_len + 1);
+  if(!message) {
+    free(token_cp);
+    return NULL;
+  }
+  sprintf(message, "%s.%s", header_b64, payload_b64);
+
+  size_t sig_len = 0;
+  char* sig_input = strdup(signature_b64);
+  if(!sig_input) {
+    free(token_cp);
+    free(message);
+    return NULL;
+  }
+
+  unsigned char* signature = base64url_decode(sig_input, &sig_len);
+  free(sig_input);
+  if(!signature) {
+    free(token_cp);
+    free(message);
+    return NULL;
+  };
+
+  unsigned int hmac_len = 0;
+  unsigned char* hmac = HMAC(EVP_sha256(), secret, strlen(secret), (unsigned char*)message, strlen(message), NULL, &hmac_len);
+  if(!hmac) {
+    free(token_cp);
+    free(message);
+    free(signature);
+    return NULL;
+  }
 }

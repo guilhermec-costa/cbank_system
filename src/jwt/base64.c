@@ -72,3 +72,103 @@ void b64_to_b64url(char* b64) {
     len--;
   };
 }
+
+static const unsigned char b64_dec_table[256] = {
+    [0 ... 255] = 0x80, /* (bit 7=1 → 0x80) */['A'] = 0,
+    ['B'] = 1,          ['C'] = 2,
+    ['D'] = 3,          ['E'] = 4,
+    ['F'] = 5,          ['G'] = 6,
+    ['H'] = 7,          ['I'] = 8,
+    ['J'] = 9,          ['K'] = 10,
+    ['L'] = 11,         ['M'] = 12,
+    ['N'] = 13,         ['O'] = 14,
+    ['P'] = 15,         ['Q'] = 16,
+    ['R'] = 17,         ['S'] = 18,
+    ['T'] = 19,         ['U'] = 20,
+    ['V'] = 21,         ['W'] = 22,
+    ['X'] = 23,         ['Y'] = 24,
+    ['Z'] = 25,         ['a'] = 26,
+    ['b'] = 27,         ['c'] = 28,
+    ['d'] = 29,         ['e'] = 30,
+    ['f'] = 31,         ['g'] = 32,
+    ['h'] = 33,         ['i'] = 34,
+    ['j'] = 35,         ['k'] = 36,
+    ['l'] = 37,         ['m'] = 38,
+    ['n'] = 39,         ['o'] = 40,
+    ['p'] = 41,         ['q'] = 42,
+    ['r'] = 43,         ['s'] = 44,
+    ['t'] = 45,         ['u'] = 46,
+    ['v'] = 47,         ['w'] = 48,
+    ['x'] = 49,         ['y'] = 50,
+    ['z'] = 51,         ['0'] = 52,
+    ['1'] = 53,         ['2'] = 54,
+    ['3'] = 55,         ['4'] = 56,
+    ['5'] = 57,         ['6'] = 58,
+    ['7'] = 59,         ['8'] = 60,
+    ['9'] = 61,         ['+'] = 62,
+    ['/'] = 63,         ['='] = 0};
+
+void b64url_to_b64(char* str) {
+  while (*str) {
+    if (*str == '-')
+      *str = '+';
+    else if (*str == '_')
+      *str = '/';
+    str++;
+  }
+
+  size_t len     = strlen(str);
+  size_t pad_len = (4 - (len % 4)) % 4;
+  for (size_t i = 0; i < pad_len; i++) {
+    str[len + 1] = '=';
+  }
+  str[len + pad_len] = '\0';
+}
+
+unsigned char* b64decode(char* data, size_t input_length, size_t* output_length) {
+  if (input_length % 4 != 0)
+    return NULL;
+
+  size_t out_len = input_length / 4 * 3;
+  if (data[input_length - 1] == '=')
+    out_len--; // remove padding
+  if (data[input_length - 2] == '=')
+    out_len--;
+
+  unsigned char* decoded_data = malloc(out_len);
+  if (!decoded_data)
+    return NULL;
+
+  size_t        output_idx = 0;
+  unsigned char quad[4];
+
+  for (size_t i = 0; i < input_length;) {
+    for (size_t k = 0; k < 4; k++, i++) {
+      quad[k] = b64_dec_table[(unsigned char)data[i]];
+      if (quad[k] == 0x80) { // invalid character
+        free(decoded_data);
+        return NULL;
+      }
+    }
+
+    // byte 1
+    decoded_data[output_idx++] =
+        (quad[0] << 2) | (quad[1] >> 4); // 6 bits quad[0] + 2 high bits quad[1]
+    // byte 2
+    if (data[i - 2] != '=')
+      decoded_data[output_idx++] =
+          (quad[1] << 4) | (quad[2] >> 2); // 4 low bits quad[1] + 2 high bits quad[2]
+    // byte 3
+    if (data[i - 1] != '=')
+      decoded_data[output_idx++] = (quad[2] << 6) | quad[3]; // 2 low bits quad[2] + 6 bits quad[3]
+  };
+
+  if (output_length)
+    *output_length = output_idx;
+  return decoded_data;
+}
+
+unsigned char* base64url_decode(char* input, size_t* output_length) {
+  b64url_to_b64(input);
+  return b64decode(input, strlen(input), output_length);
+}
