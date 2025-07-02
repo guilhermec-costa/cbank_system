@@ -9,9 +9,16 @@
 #include <openssl/hmac.h>
 #include <stdio.h>
 
+static int constant_time_compare(const unsigned char* r, const unsigned char* l, size_t len) {
+  unsigned char result = 0;
+  for(size_t i=0; i<len;i++) {
+    result |= r[i] ^ l[i];
+  }
+
+  return result == 0;
+}
+
 char* generate_jwt(const char* payload, const char* secret) {
-  // token = b64url_encode(header).b64url_encode(payload).b64url_encode(signature)
-  // signature = HMAC_SHA256(secret, (b64url_encode(header).b64url_encode(payload)))
   const char* jwt_header     = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
   char*       header_b64url  = b64url_encode((const unsigned char*)jwt_header, strlen(jwt_header));
   char*       payload_b64url = b64url_encode((const unsigned char*)payload, strlen(payload));
@@ -94,6 +101,7 @@ char* jwt_validate(const char* token, const char* secret) {
   };
 
   unsigned int hmac_len = 0;
+  // hmac should be equal to the ascii version of the signature so the token is valid
   unsigned char* hmac = HMAC(EVP_sha256(), secret, strlen(secret), (unsigned char*)message, strlen(message), NULL, &hmac_len);
   if(!hmac) {
     free(token_cp);
@@ -101,4 +109,31 @@ char* jwt_validate(const char* token, const char* secret) {
     free(signature);
     return NULL;
   }
+
+  int valid = (hmac_len == sig_len) && constant_time_compare(hmac, signature, sig_len);
+
+  free(token_cp);
+  free(message);
+  free(signature);
+  
+  if(!valid) return NULL;
+
+  char* payload_cp = strdup(payload_b64);
+  if(!payload_cp) return NULL;
+
+  size_t payload_len = 0;
+  const unsigned char* decoded_payload = base64url_decode(payload_cp, &payload_len);
+  if(!decoded_payload) return NULL;
+
+  char* payload_str = malloc(payload_len + 1);
+  if(!payload_str) {
+    free(payload_cp);
+    return NULL;
+  }
+
+  memcpy(payload_str, decoded_payload, payload_len);
+  payload_str[payload_len] = '\0';
+  free(payload_cp);
+
+  return payload_str;
 }
