@@ -1,14 +1,12 @@
 #include "../../core/auth.h"
 #include "../../jwt/jwt.h"
 #include "../../render/engine.h"
+#include "../../secret/manager.h"
 #include "../../server/http_utils.h"
 #include "../../server/route_contants.h"
 #include "../../server/router.h"
 #include "../../server/templates_constants.h"
 #include "../schemas/login_validation_schema.h"
-#include "time.h"
-
-#include <stdio.h>
 
 void handle_GET_login(struct HttpRequest* req, struct HttpResponse* res) {
   const char* template = load_template_to_string(LOGIN_TEMPLATE_PATH);
@@ -63,6 +61,14 @@ bool handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
 
 void handle_login(int fd, struct HttpRequest* req, struct HttpResponse* res) {
   if (strcmp(req->method, "GET") == 0) {
+    const char* token = get_req_cookie(req, "token");
+    if (token) {
+      const char* payload = jwt_validate(token, get_env("JWT_SECRET"));
+      if (payload) {
+        redirect(fd, res, ACCOUNTS_ROUTE_PATH);
+        return;
+      }
+    }
     handle_GET_login(req, res);
     send_http_response(fd, res);
     return;

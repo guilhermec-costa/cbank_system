@@ -54,4 +54,35 @@ char* ltrim(char* c) {
   return c;
 }
 
+char* read_line(FILE* f) {
+  size_t size = 128;
+  char*  buf  = malloc(size);
+  if (!buf)
+    return NULL;
+
+  size_t len = 0;
+  int    c;
+
+  while ((c = fgetc(f)) != EOF && c != '\n') {
+    buf[len++] = (char)c;
+    if (len >= size) {
+      size *= 2;
+      char* _tmp = realloc(buf, size);
+      if (!_tmp) {
+        free(buf);
+        return NULL;
+      }
+      buf = _tmp;
+    }
+  }
+
+  if (len == 0 && c == EOF) {
+    free(buf);
+    return NULL;
+  }
+
+  buf[len] = '\0';
+  return buf;
+};
+
 #define RESET_ENTITY(entity) reset_entity_attr_mem(entity, sizeof(entity))

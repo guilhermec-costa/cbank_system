@@ -1,4 +1,5 @@
 #include "data/store.h"
+#include "secret/manager.h"
 #include "server/logger.h"
 #include "server/server.h"
 
@@ -7,6 +8,7 @@ enum APP_MODE { CLI, SERVER };
 int main() {
   GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Setting up data stores");
   setup_stores();
+  load_env(".env");
 
   struct ServerConfig server_cfg;
   server_cfg.domain      = AF_INET; // IPv4

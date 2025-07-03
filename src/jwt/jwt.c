@@ -2,6 +2,7 @@
 
 #include "jwt.h"
 
+#include "../secret/manager.h"
 #include "base64.h"
 
 #include <openssl/evp.h>
@@ -59,7 +60,7 @@ char* create_jwt_for_user(const char* user_id, const char* name) {
 
   snprintf(payload, sizeof(payload), "{\"sub\":\"%s\",\"name\":\"%s\",\"exp\":%ld}", user_id, name,
            exp);
-  char* token = generate_jwt(payload, "CHURROS");
+  char* token = generate_jwt(payload, get_env("CHURROS"));
   return token; // must free
 };
 

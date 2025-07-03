@@ -1,4 +1,5 @@
 #include "../../jwt/jwt.h"
+#include "../../secret/manager.h"
 #include "../../server/http_utils.h"
 #include "middlewares.h"
 
@@ -9,7 +10,7 @@ void auth_middleware(struct HttpRequest* req, struct HttpResponse* res) {
     return;
   };
 
-  char* payload = jwt_validate(token_cookie, "CHURROS");
+  char* payload = jwt_validate(token_cookie, get_env("JWT_SECRET"));
   if (!payload) {
     make_non_authorized(res);
     return;
