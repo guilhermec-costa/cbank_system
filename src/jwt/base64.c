@@ -42,21 +42,22 @@ char* base64_encode(const unsigned char* data, size_t input_length, size_t* cons
     };
   }
 
-  encoded_data[*output_len - 1] = '\0';
+  encoded_data[*output_len] = '\0';
 
   return encoded_data;
 };
 
-char* b64url_encode(const unsigned char* data, size_t input_length) {
+char* base64url_encode(const unsigned char* data, size_t input_length) {
   size_t enc_len = 0;
   char*  b64_enc = base64_encode(data, input_length, &enc_len);
   if (!b64_enc)
     return NULL;
 
+  base64_to_base64url(b64_enc);
   return b64_enc;
 }
 
-void b64_to_b64url(char* b64) {
+void base64_to_base64url(char* b64) {
   while (*b64) {
     if (*b64 == '+')
       *b64 = '-';
@@ -108,7 +109,7 @@ static const unsigned char b64_dec_table[256] = {
     ['9'] = 61,         ['+'] = 62,
     ['/'] = 63,         ['='] = 0};
 
-void b64url_to_b64(char* str) {
+void base64url_to_b64(char* str) {
   while (*str) {
     if (*str == '-')
       *str = '+';
@@ -120,12 +121,12 @@ void b64url_to_b64(char* str) {
   size_t len     = strlen(str);
   size_t pad_len = (4 - (len % 4)) % 4;
   for (size_t i = 0; i < pad_len; i++) {
-    str[len + 1] = '=';
+    str[len + i] = '=';
   }
   str[len + pad_len] = '\0';
 }
 
-unsigned char* b64decode(char* data, size_t input_length, size_t* output_length) {
+unsigned char* base64decode(char* data, size_t input_length, size_t* output_length) {
   if (input_length % 4 != 0)
     return NULL;
 
@@ -169,6 +170,6 @@ unsigned char* b64decode(char* data, size_t input_length, size_t* output_length)
 }
 
 unsigned char* base64url_decode(char* input, size_t* output_length) {
-  b64url_to_b64(input);
-  return b64decode(input, strlen(input), output_length);
+  base64url_to_b64(input);
+  return base64decode(input, strlen(input), output_length);
 }

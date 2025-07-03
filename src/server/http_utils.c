@@ -1,6 +1,7 @@
 #include "http_utils.h"
 
 #include "http_parser.h"
+#include "router.h"
 
 const char* get_content_type_string(ContentType type) {
   switch (type) {
@@ -91,6 +92,16 @@ char* get_header(struct HttpRequest* req, HttpHeaderField header_field) {
   return NULL;
 };
 
+char* get_req_cookie(struct HttpRequest* req, const char* cookie_name) {
+  for (int i = 0; i < req->cookies_list.cookies_count; i++) {
+    Cookie cookie = req->cookies_list.cookies[i];
+    if (strcmp(cookie_name, cookie.name) == 0) {
+      return strdup(cookie.value);
+    }
+  }
+  return NULL;
+}
+
 char* get_res_header(struct HttpResponse* res, HttpHeaderField header_field) {
   const char* header_name = get_header_field_name(header_field);
   for (int i = 0; i < res->header_count; i++) {
@@ -100,3 +111,9 @@ char* get_res_header(struct HttpResponse* res, HttpHeaderField header_field) {
   }
   return NULL;
 };
+
+void make_non_authorized(struct HttpResponse* res) {
+  make_res_first_line(res, HTTP_UNAUTHORIZED);
+  add_content_type(res, CONTENT_TYPE_PLAIN);
+  add_body(res, "Unauthorized");
+}

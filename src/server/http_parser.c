@@ -110,8 +110,9 @@ void parse_req_cookies(struct HttpRequest* req) {
     return;
   }
   CookieList _cookies;
-  _cookies.cookies  = cookies;
-  req->cookies_list = _cookies;
+  _cookies.cookies                = cookies;
+  req->cookies_list               = _cookies;
+  req->cookies_list.cookies_count = 0;
 
   char* cookie_header = get_header(req, HEADER_COOKIE);
   if (!cookie_header) {
@@ -121,6 +122,7 @@ void parse_req_cookies(struct HttpRequest* req) {
   int   cookies_idx = 0;
   char* cookie_token;
   char* rest = cookie_header;
+  printf("%s", rest);
   while ((cookie_token = strtok_r(rest, ";", &rest))) {
     char* sep_pos = strchr(cookie_token, '=');
     if (sep_pos) {
