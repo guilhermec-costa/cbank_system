@@ -1,3 +1,5 @@
+#include "id_tracker_store.h";
+
 #include "../server/logger.h"
 #include "../utils.h"
 #include "store.h"

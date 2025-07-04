@@ -11,24 +11,34 @@ typedef void (*Middleware)(struct HttpRequest*, struct HttpResponse*);
 #define MAX_METHODS 4
 #define MAX_MIDDLEWARES 10
 
-struct Route {
+typedef struct {
   const char*  path;
   RouteHandler handler;
   const char*  allowed_methods[MAX_METHODS];
   Middleware   middlewares[MAX_MIDDLEWARES];
   int          method_count;
   int          middleware_count;
-};
+} Route;
 
 enum HandlerErrorFlags { NO_ERROR_FLAG, NOT_FOUND_FLAG, METHOD_NOT_ALLOWED_FLAG };
 
 struct RouteValidationResponse {
-  const struct Route     route;
+  const Route            route;
   enum HandlerErrorFlags error_flag;
   bool                   valid;
 };
 
-struct RouteValidationResponse get_route(struct HttpRequest* req, struct HttpResponse* res);
+typedef struct {
+  Route* routes;
+  size_t count;
+  size_t capacity;
+} RouteRegistry;
+
+struct RouteValidationResponse get_route(RouteRegistry* registry, struct HttpRequest* req,
+                                         struct HttpResponse* res);
+void                           init_route_registry(RouteRegistry* registry);
+void                           free_route_registry(RouteRegistry* registry);
+int                            register_route(RouteRegistry* registry, Route route);
 void add_res_header(struct HttpResponse* res, const char* key, const char* value);
 void add_res_token_cookie(struct HttpResponse* res, const char* token);
 void add_content_type(struct HttpResponse* res, ContentType type);

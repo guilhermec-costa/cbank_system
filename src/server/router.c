@@ -1,12 +1,13 @@
 #include "router.h"
 
-#include "../api/http_handlers/handlers.h"
 #include "../api/middlewares/middlewares.h"
 #include "http_parser.h"
 #include "http_utils.h"
+#include "logger.h"
 #include "route_contants.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -98,58 +99,59 @@ void send_bad_request_response(int fd, struct HttpResponse* res) {
   send_http_response(fd, res);
 }
 
-struct Route routes[] = {{.path            = INDEX_ROUTE_PATH,
-                          .handler         = handle_home,
-                          .allowed_methods = {"GET"},
-                          .middlewares =
-                              {
-                                  decode_url_middleware,
-                              },
-                          .method_count     = 1,
-                          .middleware_count = 1},
-                         {.path            = ACCOUNTS_ROUTE_PATH,
-                          .handler         = handle_accounts,
-                          .allowed_methods = {"GET"},
-                          .middlewares =
-                              {
-                                  decode_url_middleware,
-                                  auth_middleware,
-                              },
-                          .method_count     = 1,
-                          .middleware_count = 2},
-                         {.path            = "/api/accounts",
-                          .handler         = handle_api_accounts,
-                          .allowed_methods = {"GET", "POST"},
-                          .middlewares =
-                              {
-                                  decode_url_middleware,
-                                  auth_middleware,
-                              },
-                          .method_count     = 1,
-                          .middleware_count = 2},
-                         {.path            = LOGIN_ROUTE_PATH,
-                          .handler         = handle_login,
-                          .allowed_methods = {"GET", "POST"},
-                          .middlewares =
-                              {
-                                  decode_url_middleware,
-                              },
-                          .method_count     = 2,
-                          .middleware_count = 1},
-                         {.path            = REGISTER_ACCOUNT_ROUTE_PATH,
-                          .handler         = handle_register_acocunt,
-                          .allowed_methods = {"GET", "POST"},
-                          .middlewares =
-                              {
-                                  decode_url_middleware,
-                              },
-                          .method_count     = 2,
-                          .middleware_count = 1}};
+void init_route_registry(RouteRegistry* registry) {
+  registry->routes   = NULL;
+  registry->capacity = 0;
+  registry->count    = 0;
+};
 
-struct RouteValidationResponse get_route(struct HttpRequest* req, struct HttpResponse* res) {
-  const int routers_count = sizeof(routes) / sizeof(routes[0]);
-  for (int i = 0; i < routers_count; i++) {
-    const struct Route route = routes[i];
+void free_route_registry(RouteRegistry* registry) {
+  free(registry->routes);
+  registry->routes   = NULL;
+  registry->capacity = 0;
+  registry->count    = 0;
+};
+
+int register_route(RouteRegistry* registry, Route route) {
+  int method_count = 0;
+  for (int i = 0; i < MAX_METHODS; i++) {
+    if (route.allowed_methods[i])
+      method_count++;
+    else
+      break;
+  }
+  route.method_count = method_count;
+
+  int middleware_count = 0;
+  for (int i = 0; i < MAX_MIDDLEWARES; i++) {
+    if (route.middlewares[i])
+      middleware_count++;
+    else
+      break;
+  }
+  route.middleware_count = middleware_count;
+
+  if (registry->count >= registry->capacity) {
+    size_t new_capacity = registry->capacity == 0 ? 8 : registry->capacity * 2;
+    Route* new_routes   = realloc(registry->routes, new_capacity * sizeof(Route));
+    if (!new_routes) {
+      return -1;
+    }
+
+    registry->routes   = new_routes;
+    registry->capacity = new_capacity;
+  }
+  registry->routes[registry->count++] = route;
+  GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG,
+                     "Registered route: path='%s', methods=%d, middlewares=%d", route.path,
+                     route.method_count, route.middleware_count);
+  return 0;
+};
+
+struct RouteValidationResponse get_route(RouteRegistry* registry, struct HttpRequest* req,
+                                         struct HttpResponse* res) {
+  for (size_t i = 0; i < registry->count; i++) {
+    const Route route = registry->routes[i];
     if (strcmp(req->path, route.path) == 0) {
       for (int i = 0; i < route.method_count; i++) {
         if (strcasecmp(req->method, route.allowed_methods[i]) == 0) {

@@ -33,8 +33,6 @@ void updt_next_identity(const char* store_name);
 void mov_store_cursor(const char* store_name, int pos);
 bool get_next_identity(const char* store_name, char* out_buf, size_t buf_size);
 
-bool  id_tracker_has_store(const char* store_name);
-void  initialize_id_tracker_if_needed(const char* store_name);
 FILE* get_storage_for_reading(const char* store_name);
 
 #define RESET_ENTITY(entity) reset_entity_attr_mem(&(entity), sizeof(entity))

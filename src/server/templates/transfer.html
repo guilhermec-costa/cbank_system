@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transferências - Banco C</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .bank-logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .page-title {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .page-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .transfer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .transfer-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .form-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .transfer-type-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #667eea;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .type-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .recent-transfers {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .recent-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .recent-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .recent-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .recent-item {
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .recent-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .recent-item:last-child {
+            border-bottom: none;
+        }
+
+        .recent-recipient {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .recent-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recent-amount {
+            font-weight: 600;
+            color: #e74c3c;
+        }
+
+        .recent-date {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .quick-actions-title {
+            color: #2c3e50;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-action {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            text-align: center;
+        }
+
+        .quick-action:hover {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .quick-action-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .empty-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .transfer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .transfer-type-buttons {
+                flex-direction: column;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="bank-logo">🏦 BANCO C</div>
+            <h1 class="page-title">Transferências</h1>
+            <p class="page-subtitle">Transfira dinheiro de forma rápida e segura, {{username}}</p>
+        </div>
+
+        <div class="navigation">
+            <div class="nav-links">
+                <a href="{{home_url}}" class="nav-link">🏠 Início</a>
+                <a href="{{accounts_url}}" class="nav-link">💳 Contas</a>
+                <a href="{{transfer_url}}" class="nav-link active">💸 Transferir</a>
+                <a href="{{payments_url}}" class="nav-link">📄 Pagamentos</a>
+                <a href="{{extract_url}}" class="nav-link">📊 Extrato</a>
+                <a href="{{cards_url}}" class="nav-link">💳 Cartões</a>
+            </div>
+        </div>
+
+        <div class="transfer-grid">
+            <div class="transfer-form">
+                <div class="form-header">
+                    <h2 class="form-title">💸 Nova Transferência</h2>
+                </div>
+                <div class="form-content">
+                    <form action="{{transfer_action_url}}" method="POST">
+                        <div class="transfer-type-buttons">
+                            <button type="button" class="type-btn active" data-type="ted">TED</button>
+                            <button type="button" class="type-btn" data-type="pix">PIX</button>
+                            <button type="button" class="type-btn" data-type="doc">DOC</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Conta de Origem</label>
+                            <select class="form-select" name="from_account" required>
+                                <option value="">Selecione uma conta</option>
+                                {{#for account in user_accounts}}
+                                <option value="{{account.id}}">{{account.name}} - {{account.number}} ({{account.balance}})</option>
+                                {{/for}}
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Banco</label>
+                                <input type="text" class="form-input" name="bank" placeholder="000" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Agência</label>
+                                <input type="text" class="form-input" name="agency" placeholder="0000" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Conta</label>
+                                <input type="text" class="form-input" name="account" placeholder="00000-0" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo</label>
+                                <select class="form-select" name="account_type" required>
+                                    <option value="">Selecione</option>
+                                    <option value="corrente">Corrente</option>
+                                    <option value="poupanca">Poupança</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Nome do Favorecido</label>
+                            <input type="text" class="form-input" name="recipient_name" placeholder="Digite o nome completo" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">CPF/CNPJ do Favorecido</label>
+                            <input type="text" class="form-input" name="recipient_document" placeholder="000.000.000-00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Valor</label>
+                            <input type="text" class="form-input" name="amount" placeholder="R$ 0,00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Descrição (opcional)</label>
+                            <input type="text" class="form-input" name="description" placeholder="Motivo da transferência">
+                        </div>
+
+                        <button type="submit" class="submit-btn">Realizar Transferência</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="recent-transfers">
+                <div class="recent-header">
+                    <h2 class="recent-title">🕐 Transferências Recentes</h2>
+                </div>
+                {{#if recent_transfers}}
+                <div class="recent-list">
+                    {{#for transfer in recent_transfers}}
+                    <div class="recent-item">
+                        <div class="recent-recipient">{{transfer.recipient_name}}</div>
+                        <div class="recent-details">
+                            <span class="recent-amount">{{transfer.amount}}</span>
+                            <span class="recent-date">{{transfer.date}}</span>
+                        </div>
+                    </div>
+                    {{/for}}
+                </div>
+                {{else}}
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <div>Nenhuma transferência realizada ainda</div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h3 class="quick-actions-title">Ações Rápidas</h3>
+            <div class="quick-actions-grid">
+                <a href="{{pix_url}}" class="quick-action">
+                    <div class="quick-action-icon">⚡</div>
+                    <div>PIX</div>
+                </a>
+                <a href="{{ted_url}}" class="quick-action">
+                    <div class="quick-action-icon">🏛️</div>
+                    <div>TED</div>
+                </a>
+                <a href="{{doc_url}}" class="quick-action">
+                    <div class="quick-action-icon">📄</div>
+                    <div>DOC</div>
+                </a>
+                <a href="{{favorites_url}}" class="quick-action">
+                    <div class="quick-action-icon">⭐</div>
+                    <div>Favoritos</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

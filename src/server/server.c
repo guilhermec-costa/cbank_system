@@ -53,7 +53,7 @@ void start(const struct Server* server) {
       const char* body_start    = parse_req_headers(headers_start, &req);
       parse_req_cookies(&req);
       parse_req_body(body_start, &req);
-      const struct RouteValidationResponse _route = get_route(&req, &res);
+      const struct RouteValidationResponse _route = get_route(&server->route_registry, &req, &res);
       if (!_route.valid) {
         if (_route.error_flag == NOT_FOUND_FLAG) {
           GLOBAL_LOGGER->log(GLOBAL_LOGGER, ERROR, "Not found");
@@ -102,7 +102,8 @@ void start(const struct Server* server) {
   close(server->socket_fd);
 }
 
-struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Server*)) {
+struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Server*),
+                          RouteRegistry*      registry) {
   struct Server server;
   server.cfg = cfg;
 

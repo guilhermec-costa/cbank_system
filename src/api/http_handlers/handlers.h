@@ -10,6 +10,9 @@ void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res);
 void handle_api_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res);
 void handle_register_acocunt(int fd, struct HttpRequest* req, struct HttpResponse* res);
 
+// TRANSFER HANDLERS
+void handle_transfer(int fd, struct HttpRequest* req, struct HttpResponse* res);
+
 void handle_login(int fd, struct HttpRequest* req, struct HttpResponse* res);
 
 #endif /* CBANK_HANDLERS_H */
