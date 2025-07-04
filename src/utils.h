@@ -40,6 +40,8 @@ static inline void flush_stdin() {
 
 const char* get_fmt_now();
 char*       ltrim(char* s);
+char*       remove_char(char* str, char find);
 
 char* read_line(FILE* f);
+
 #endif /* CBANK_UTILS_H */

@@ -53,17 +53,25 @@ BankUser mount_user_from_line_buf(const char* line_buf) {
   return user;
 };
 
-GetUserByCpfResponse get_user_by_cpf(const char* cpf) {
+GetUserByFieldResponse get_user_by_cpf(const char* cpf) {
+  return get_user_by_field("cpf", cpf);
+};
+
+GetUserByFieldResponse get_user_by_id(const char* id) {
+  return get_user_by_field("id", id);
+};
+
+GetUserByFieldResponse get_user_by_field(const char* field, const char* value) {
   BankUser     user = {0};
   SelectQuery* q    = new_select_query();
-  q->select_all(q, DB_USER_SECTION)->where(q, "cpf", "=", cpf);
+  q->select_all(q, DB_USER_SECTION)->where(q, field, "=", value);
   ResultSet* result = q->execute(q);
 
   q->destroy(q);
 
   if (result->rows == 0) {
     result->free(result);
-    return (GetUserByCpfResponse){
+    return (GetUserByFieldResponse){
         .user    = user,
         .success = false,
     };
@@ -74,7 +82,7 @@ GetUserByCpfResponse get_user_by_cpf(const char* cpf) {
   user = mount_user_from_line_buf(buf);
 
   result->free(result);
-  return (GetUserByCpfResponse){
+  return (GetUserByFieldResponse){
       .user    = user,
       .success = true,
   };

@@ -85,4 +85,18 @@ char* read_line(FILE* f) {
   return buf;
 };
 
+char* remove_char(char* str, char find) {
+  char* read  = str;
+  char* write = str;
+
+  while (*read) {
+    if (*read != find) {
+      *write++ = *read;
+    }
+    read++;
+  }
+  *write = '\0';
+  return str;
+}
+
 #define RESET_ENTITY(entity) reset_entity_attr_mem(entity, sizeof(entity))

@@ -15,4 +15,11 @@ void auth_middleware(struct HttpRequest* req, struct HttpResponse* res) {
     make_non_authorized(res);
     return;
   }
+
+  JwtData parsed_jwt = parse_jwt_payload(payload);
+  if (!parsed_jwt.exp || !parsed_jwt.name || !parsed_jwt.sub) {
+    make_non_authorized(res);
+    return;
+  };
+  req->authenticated_jwt = parsed_jwt;
 };

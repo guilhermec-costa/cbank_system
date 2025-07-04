@@ -3,6 +3,7 @@
 #include "jwt.h"
 
 #include "../secret/manager.h"
+#include "../utils.h"
 #include "base64.h"
 
 #include <openssl/evp.h>
@@ -157,4 +158,32 @@ char* jwt_validate(const char* token, const char* secret) {
 
   free(payload_cp);
   return payload_str;
+}
+
+JwtData parse_jwt_payload(char* payload) {
+  JwtData parsed_jwt = {0};
+
+  char* token;
+  char* payload_rest    = payload + 1;
+  char* close_brace_pos = strchr(payload, '}');
+  *close_brace_pos      = '\0';
+
+  while ((token = strtok_r(payload_rest, ",", &payload_rest))) {
+    char* colon_pos = strchr(token, ':');
+    if (colon_pos) {
+      *colon_pos        = '\0';
+      const char* key   = remove_char(token, '\"');
+      const char* value = remove_char(colon_pos + 1, '\"');
+      if (strcmp(key, "sub") == 0) {
+        parsed_jwt.sub = value;
+      }
+      if (strcmp(key, "name") == 0) {
+        parsed_jwt.name = value;
+      };
+      if (strcmp(key, "exp") == 0) {
+        parsed_jwt.exp = atol(value);
+      };
+    }
+  }
+  return parsed_jwt;
 }

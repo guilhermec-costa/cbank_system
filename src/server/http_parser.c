@@ -65,7 +65,6 @@ const char* parse_req_headers(const char* header_start, struct HttpRequest* http
   if (!headers_buf)
     return NULL;
 
-  // char        line_buf[2048];
   const char* req_line = header_start;
 
   while (1) {
@@ -130,7 +129,6 @@ void parse_req_cookies(struct HttpRequest* req) {
   int   cookies_idx = 0;
   char* cookie_token;
   char* rest = cookie_header;
-  printf("%s", rest);
   while ((cookie_token = strtok_r(rest, ";", &rest))) {
     char* sep_pos = strchr(cookie_token, '=');
     if (sep_pos) {

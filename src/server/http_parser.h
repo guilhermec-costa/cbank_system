@@ -3,6 +3,8 @@
 
 #define _POSIX_C_SOURCE 200809L
 
+#include "../jwt/jwt.h"
+
 #include <stddef.h>
 #include <string.h>
 #include <strings.h>
@@ -91,6 +93,7 @@ struct HttpRequest {
   int               header_count;
   char              body[BODY_LEN];
 
+  JwtData        authenticated_jwt;
   QueryParamList body_query_params_list; // for x-www-form-urlencoded cases
   QueryParamList url_query_params_list;
   CookieList     cookies_list;

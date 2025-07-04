@@ -1,5 +1,2 @@
-id=0;name=Guilherme China;cpf=123456;email=echina112@gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-06-29 16:40:15;updated_at=NULL
-id=1;name=Isabela China;cpf=1234567;email=isabelachina@gmail.com;password=PHYkjPHDYdZiU;is_active=true;created_at=2025-06-29 17:11:11;updated_at=NULL
-id=2;name=;cpf=;email=;password=PHGMLMvc/SMgw;is_active=true;created_at=2025-07-02 20:07:29;updated_at=NULL
-id=3;name=Guilherme China;cpf=123;email=china456@gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-07-02 21:01:29;updated_at=NULL
-id=4;name=Edson China Costa;cpf=132.127.638;email=echina1@gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-07-02 23:08:05;updated_at=NULL
+id=0;name=Isabela China;cpf=123;email=isa@gmail.com;password=PHr5pfOe.MGc.;is_active=true;created_at=2025-07-04 13:57:08;updated_at=NULL
+id=1;name=Churros Augusto;cpf=1234;email=churros@gmail.com;password=PHYkjPHDYdZiU;is_active=true;created_at=2025-07-04 13:57:44;updated_at=NULL

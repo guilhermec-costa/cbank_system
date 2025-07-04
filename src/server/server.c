@@ -73,21 +73,23 @@ void start(const struct Server* server) {
         _route.route.middlewares[i](&req, &res);
         if (res.status_code == HTTP_UNAUTHORIZED) {
           redirect(client_fd, &res, LOGIN_ROUTE_PATH);
-          end_client_conn(client_fd, &req, &res);
+          any_mw_fail = true;
           break;
         }
         if (res.status_code >= 400) {
-          any_mw_fail = true;
           send_http_response(client_fd, &res);
           GLOBAL_LOGGER->log(GLOBAL_LOGGER, INFO,
                              "Middleware responded with bad status code! closing connection");
-          end_client_conn(client_fd, &req, &res);
+          any_mw_fail = true;
           break;
         }
       }
-      if (!any_mw_fail) {
+
+      if (any_mw_fail) {
+        end_client_conn(client_fd, &req, &res);
+      } else {
         _route.route.handler(client_fd, &req, &res);
-      }
+      };
     } else {
       GLOBAL_LOGGER->log(GLOBAL_LOGGER, ERROR, "Failed to parse request line.");
       send_bad_request_response(client_fd, &res);

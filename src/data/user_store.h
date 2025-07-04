@@ -8,8 +8,10 @@ BankUser mount_user_from_line_buf(const char* line_buf);
 typedef struct {
   BankUser user;
   bool     success;
-} GetUserByCpfResponse;
+} GetUserByFieldResponse;
 
-GetUserByCpfResponse get_user_by_cpf(const char* cpf);
+GetUserByFieldResponse get_user_by_field(const char* field, const char* value);
+GetUserByFieldResponse get_user_by_cpf(const char* cpf);
+GetUserByFieldResponse get_user_by_id(const char* id);
 
 #endif /* CBANK_USER_STORE_H */
