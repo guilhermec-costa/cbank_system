@@ -24,12 +24,12 @@ struct Server {
   struct ServerConfig cfg;
   int                 socket_fd;
   struct sockaddr_in  sock_address;
-  void (*start)(const struct Server* server);
+  void (*start)(struct Server* server);
 };
 
-struct Server make_server(struct ServerConfig config, void (*start)(const struct Server* server),
-                          RouteRegistry*      registry);
-void          start(const struct Server* server);
+struct Server make_server(struct ServerConfig config, void (*start)(struct Server* server),
+                          RouteRegistry       registry);
+void          start(struct Server* server);
 void          end_client_conn(int client_fd, struct HttpRequest* req, struct HttpResponse* res);
 
 #endif /* CBANK_SERVER_H */

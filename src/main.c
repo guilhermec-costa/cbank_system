@@ -26,7 +26,7 @@ int main() {
     register_route(&route_registry, routes[i]);
   }
 
-  struct Server server = make_server(server_cfg, start, &route_registry);
+  struct Server server = make_server(server_cfg, start, route_registry);
   server.start(&server);
 
   terminate_stores();

@@ -18,7 +18,7 @@
 
 void set_nonblocking(int fd) {}
 
-void start(const struct Server* server) {
+void start(struct Server* server) {
   GLOBAL_LOGGER->log(GLOBAL_LOGGER, INFO, "Starting server");
   char client_buf[CLIENT_BUFFER_SIZE] = {0};
   while (1) {
@@ -102,10 +102,11 @@ void start(const struct Server* server) {
   close(server->socket_fd);
 }
 
-struct Server make_server(struct ServerConfig cfg, void (*start)(const struct Server*),
-                          RouteRegistry*      registry) {
+struct Server make_server(struct ServerConfig cfg, void (*start)(struct Server*),
+                          RouteRegistry       registry) {
   struct Server server;
-  server.cfg = cfg;
+  server.cfg            = cfg;
+  server.route_registry = registry;
 
   server.sock_address.sin_family      = cfg.domain;
   server.sock_address.sin_port        = htons(cfg.port);
