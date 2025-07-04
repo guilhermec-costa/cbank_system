@@ -1,5 +1,7 @@
 #include "acc_store.h"
 
+#include "../orm/select_query.h"
+#include "models.h"
 #include "store.h"
 
 #include <string.h>
@@ -49,4 +51,34 @@ const char* acc_to_line_buf(Account* restrict acc) {
            acc->user_id_fk, acc->balance, acc->created_at, acc->updated_at);
 
   return line_buf;
+}
+
+GetAccountByFieldResponse get_account_by_user_id(const char* user_id) {
+  return get_account_by_field("user_id_fk", user_id);
+}
+GetAccountByFieldResponse get_account_by_field(const char* field, const char* value) {
+  Account      account = {0};
+  SelectQuery* q       = new_select_query();
+  q->select_all(q, DB_ACCOUNT_SECTION)->where(q, field, "=", value);
+  ResultSet* result = q->execute(q);
+
+  q->destroy(q);
+
+  if (result->rows == 0) {
+    result->free(result);
+    return (GetAccountByFieldResponse){
+        .account = account,
+        .success = false,
+    };
+  };
+
+  char buf[1024] = "";
+  result->full_line(result, 0, buf, sizeof(buf));
+  account = mount_acc_from_line_buf(buf);
+
+  result->free(result);
+  return (GetAccountByFieldResponse){
+      .account = account,
+      .success = true,
+  };
 }

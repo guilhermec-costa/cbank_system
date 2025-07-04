@@ -99,4 +99,16 @@ char* remove_char(char* str, char find) {
   return str;
 }
 
+const char* double_to_ascii(double value, int precision) {
+  static char buf[64];
+
+  if (precision < 0)
+    precision = 6;
+  if (precision > 20)
+    precision = 20;
+
+  snprintf(buf, sizeof(buf), "%.*f", precision, value);
+  return buf;
+}
+
 #define RESET_ENTITY(entity) reset_entity_attr_mem(entity, sizeof(entity))

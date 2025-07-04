@@ -1,12 +1,12 @@
 #include "../../core/acc.h"
 #include "../../core/json_builder.h"
-#include "../../data/store.h"
+#include "../../data/acc_store.h"
 #include "../../data/user_store.h"
-#include "../../orm/select_query.h"
 #include "../../render/engine.h"
 #include "../../server/http_utils.h"
 #include "../../server/router.h"
 #include "../../server/templates_constants.h"
+#include "../../utils.h"
 #include "../dtos/acc_models.h"
 
 #include <stdio.h>
@@ -32,10 +32,13 @@ void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res) 
     }
   }
   free(accounts.accounts);
-  const char*            user_id   = req->authenticated_jwt.sub;
-  GetUserByFieldResponse user      = get_user_by_id(user_id);
-  const char*            template  = load_template_to_string(ACCOUNTS_TEMPLATE_PATH);
-  TemplateVar            context[] = {{"username", user.user.name}, {"total_balance", "20"}};
+  const char*               user_id      = req->authenticated_jwt.sub;
+  GetUserByFieldResponse    user         = get_user_by_id(user_id);
+  GetAccountByFieldResponse user_account = get_account_by_user_id(user_id);
+
+  const char* template  = load_template_to_string(ACCOUNTS_TEMPLATE_PATH);
+  const char* balance   = double_to_ascii(user_account.account.balance, 4);
+  TemplateVar context[] = {{"username", user.user.name}, {"total_balance", balance}};
   add_body(res, render_template(template, context, 2));
   make_res_first_line(res, HTTP_OK);
   add_content_type(res, CONTENT_TYPE_HTML);
