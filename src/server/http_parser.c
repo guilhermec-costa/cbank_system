@@ -59,7 +59,13 @@ int parse_req_line(const char* req_buf, struct HttpRequest* http_req) {
 
 const char* parse_req_headers(const char* header_start, struct HttpRequest* http_req) {
   http_req->header_count = 0;
-  char        line_buf[1024];
+  char*  end_of_headers  = strstr(header_start, CRLF CRLF);
+  size_t headers_len     = end_of_headers - header_start;
+  char*  headers_buf     = malloc(headers_len + 1);
+  if (!headers_buf)
+    return NULL;
+
+  // char        line_buf[2048];
   const char* req_line = header_start;
 
   while (1) {
@@ -72,15 +78,15 @@ const char* parse_req_headers(const char* header_start, struct HttpRequest* http
       return next_h + 2; // end of headers
     }
 
-    if (line_len >= sizeof(line_buf))
-      line_len = sizeof(line_buf) - 1; // minus one, so it has space to terminate the string
-    memcpy(line_buf, req_line, line_len);
-    line_buf[line_len] = '\0';
+    if (line_len >= headers_len)
+      line_len = headers_len - 1; // minus one, so it has space to terminate the string
+    memcpy(headers_buf, req_line, line_len);
+    headers_buf[line_len] = '\0';
 
-    char* colon = strchr(line_buf, ':');
+    char* colon = strchr(headers_buf, ':');
     if (colon) {
       *colon      = '\0';
-      char* key   = line_buf;
+      char* key   = headers_buf;
       char* value = colon + 1;
       while (*value == ' ')
         value++; // remove blank spaces
@@ -94,6 +100,8 @@ const char* parse_req_headers(const char* header_start, struct HttpRequest* http
 
     req_line = next_h + 2;
   };
+
+  free(headers_buf);
 
   return req_line;
 };

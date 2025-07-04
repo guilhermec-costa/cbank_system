@@ -12,5 +12,6 @@ typedef struct {
 
 void        load_env(const char* path);
 const char* get_env(const char* name);
+void        free_secrets();
 
 #endif /* BBANK_SECRET_MANAGER_H */

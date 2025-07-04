@@ -54,13 +54,14 @@ char* generate_jwt(const char* payload, const char* secret) {
 };
 
 char* create_jwt_for_user(const char* user_id, const char* name) {
-  time_t now = time(NULL);
-  long   exp = now + 3600;
-  char   payload[512];
+  time_t      now   = time(NULL);
+  const char* exp   = get_env("JWT_EXP");
+  long        l_exp = exp ? atoi(exp) : 3600;
+  char        payload[512];
 
   snprintf(payload, sizeof(payload), "{\"sub\":\"%s\",\"name\":\"%s\",\"exp\":%ld}", user_id, name,
-           exp);
-  char* token = generate_jwt(payload, get_env("CHURROS"));
+           now + l_exp);
+  char* token = generate_jwt(payload, get_env("JWT_SECRET"));
   return token; // must free
 };
 
@@ -140,7 +141,20 @@ char* jwt_validate(const char* token, const char* secret) {
 
   memcpy(payload_str, decoded_payload, payload_len);
   payload_str[payload_len] = '\0';
-  free(payload_cp);
 
+  const char* exp_token = strstr(payload_str, "\"exp\":");
+  if (!exp_token) {
+    free(payload_str);
+    return NULL;
+  }
+
+  long   exp = atol(exp_token + strlen("\"exp\":"));
+  time_t now = time(NULL);
+  if (exp < now) {
+    free(payload_str);
+    return NULL;
+  }
+
+  free(payload_cp);
   return payload_str;
 }

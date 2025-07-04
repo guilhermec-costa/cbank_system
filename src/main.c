@@ -3,8 +3,6 @@
 #include "server/logger.h"
 #include "server/server.h"
 
-enum APP_MODE { CLI, SERVER };
-
 int main() {
   GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Setting up data stores");
   setup_stores();
@@ -20,6 +18,8 @@ int main() {
 
   const struct Server server = make_server(server_cfg, start);
   server.start(&server);
+
   terminate_stores();
+  free_secrets();
   return 0;
 }

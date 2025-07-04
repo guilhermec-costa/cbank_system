@@ -11,7 +11,7 @@
 
 #define MAX_HEADERS 32
 #define MAX_KEY_LEN 128
-#define MAX_VALUE_LEN 512
+#define MAX_VALUE_LEN 1024
 #define BODY_LEN 18000
 #define MAX_COOKIES 1000
 
