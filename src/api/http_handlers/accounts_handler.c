@@ -1,6 +1,7 @@
 #include "../../core/acc.h"
 #include "../../core/json_builder.h"
 #include "../../data/store.h"
+#include "../../data/user_store.h"
 #include "../../orm/select_query.h"
 #include "../../render/engine.h"
 #include "../../server/http_utils.h"
@@ -11,6 +12,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+GetAccountDTO account_to_get_account_DTO(Account* acc) {
+  GetAccountDTO accountDTO;
+  strcpy(accountDTO.id, acc->id);
+  accountDTO.balance = acc->balance;
+  strcpy(accountDTO.created_at, acc->created_at);
+  strcpy(accountDTO.updated_at, acc->updated_at);
+  return accountDTO;
+};
 
 void get_accounts_query() {
   SelectQuery* q       = new_select_query();
@@ -26,22 +36,24 @@ void get_accounts_query() {
 };
 
 void handle_accounts(int fd, struct HttpRequest* req, struct HttpResponse* res) {
-  get_accounts_query();
-  const char* template = load_template_to_string(ACCOUNTS_TEMPLATE_PATH);
-  add_body(res, render_template(template, NULL, 0));
+  ListAccountsResponse accounts    = list_accounts();
+  GetAccountDTO*       accountsDTO = calloc(accounts.item_count, sizeof(GetAccountDTO));
+
+  if (accounts.accounts && accounts.item_count > 0) {
+    for (int i = 0; i < accounts.item_count; i++) {
+      accountsDTO[i] = account_to_get_account_DTO(&accounts.accounts[i]);
+    }
+  }
+  free(accounts.accounts);
+  const char*            user_id   = req->authenticated_jwt.sub;
+  GetUserByFieldResponse user      = get_user_by_id(user_id);
+  const char*            template  = load_template_to_string(ACCOUNTS_TEMPLATE_PATH);
+  TemplateVar            context[] = {{"username", user.user.name}, {"total_balance", "20"}};
+  add_body(res, render_template(template, context, 2));
   make_res_first_line(res, HTTP_OK);
   add_content_type(res, CONTENT_TYPE_HTML);
   add_content_len(res, strlen(res->body));
   send_http_response(fd, res);
-};
-
-GetAccountDTO account_to_get_account_DTO(Account* acc) {
-  GetAccountDTO accountDTO;
-  strcpy(accountDTO.id, acc->id);
-  accountDTO.balance = acc->balance;
-  strcpy(accountDTO.created_at, acc->created_at);
-  strcpy(accountDTO.updated_at, acc->updated_at);
-  return accountDTO;
 };
 
 const char* accountDTO_to_json_obj(JsonBuilder* jb, GetAccountDTO* acc_dto) {
@@ -55,16 +67,15 @@ const char* accountDTO_to_json_obj(JsonBuilder* jb, GetAccountDTO* acc_dto) {
 };
 
 static void handle_GET_api_accounts(struct HttpRequest* req, struct HttpResponse* res) {
-  int            items_count = 0;
-  Account*       accounts    = get_all_accounts(&items_count);
-  GetAccountDTO* accountsDTO = calloc(items_count, sizeof(GetAccountDTO));
+  ListAccountsResponse accounts    = list_accounts();
+  GetAccountDTO*       accountsDTO = calloc(accounts.item_count, sizeof(GetAccountDTO));
 
-  if (accounts && items_count + 0) {
-    for (int i = 0; i < items_count; i++) {
-      accountsDTO[i] = account_to_get_account_DTO(&accounts[i]);
+  if (accounts.accounts && accounts.item_count + 0) {
+    for (int i = 0; i < accounts.item_count; i++) {
+      accountsDTO[i] = account_to_get_account_DTO(&accounts.accounts[i]);
     }
   }
-  free(accounts);
+  free(accounts.accounts);
 
   const char* content_type_str = get_header_field_name(HEADER_CONTENT_TYPE);
   const char* json_type        = get_content_type_string(CONTENT_TYPE_JSON);
@@ -76,7 +87,7 @@ static void handle_GET_api_accounts(struct HttpRequest* req, struct HttpResponse
   json_start_object(&jb);
   json_start_array(&jb, "data");
 
-  for (int i = 0; i < items_count; i++) {
+  for (int i = 0; i < accounts.item_count; i++) {
     accountDTO_to_json_obj(&jb, &accountsDTO[i]);
   }
 

@@ -32,7 +32,7 @@ SelectQuery* qselect_all_from(SelectQuery* q, const char* table) {
     q->select(q, "id,name,cpf,email,password,created_at,updated_at,is_active");
   }
   if (strcmp(table, DB_ACCOUNT_SECTION) == 0) {
-    q->select(q, "id,balance,user_fk_id,created_at,updated_at");
+    q->select(q, "id,balance,user_id_fk,created_at,updated_at");
   }
   return q;
 }
@@ -83,6 +83,34 @@ static void full_line(ResultSet* result, int line_idx, char* buf, size_t buf_siz
     if (i < result->cols - 1)
       offset += snprintf(buf + offset, buf_size - offset, "%s", ";");
   };
+}
+
+char* get_line_from_resultset(ResultSet* rs, int line_idx) {
+  if (!rs || line_idx >= rs->rows)
+    return NULL;
+  char** line = rs->data[line_idx];
+
+  size_t line_len = 0;
+
+  for (int i = 0; i < rs->cols; i++) {
+    line_len += strlen(rs->column_order[i]) + 1; // '='
+    line_len += strlen(line[i]);
+    line_len += 1; // ';' '\0'
+  }
+
+  char* buf = malloc(line_len + 1);
+  if (!buf)
+    return NULL;
+
+  int offset = 0;
+  for (int i = 0; i < rs->cols; i++) {
+    offset += snprintf(buf + offset, line_len - offset, "%s=%s", rs->column_order[i], line[i]);
+    if (i < rs->cols - 1) {
+      offset += snprintf(buf + offset, line_len - offset, ";");
+    }
+  }
+  buf[offset + 1] = '\0';
+  return buf;
 }
 
 static const char* get_row_col_value(ResultSet* rs, int row_idx, const char* column) {

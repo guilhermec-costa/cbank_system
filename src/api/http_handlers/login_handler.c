@@ -41,6 +41,7 @@ bool handle_POST_login(struct HttpRequest* req, struct HttpResponse* res) {
   const struct LoginResponse logged = login(schema.cpf, schema.password);
   if (!logged.success) {
     make_res_first_line(res, HTTP_UNAUTHORIZED);
+    add_content_type(res, CONTENT_TYPE_PLAIN);
     add_body(res, "Invalid credentials");
     return false;
   }

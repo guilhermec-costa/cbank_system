@@ -347,16 +347,16 @@
         <div class="header">
             <div class="bank-logo">🏦 BANCO C</div>
             <h1 class="page-title">Minhas Contas</h1>
-            <p class="page-subtitle">Gerencie todas as suas contas em um só lugar</p>
+            <p class="page-subtitle">Gerencie todas as suas contas em um só lugar, {{username}}</p>
         </div>
 
         <div class="navigation">
             <div class="nav-links">
-                <a href="/" class="nav-link">🏠 Início</a>
-                <a href="/transfer" class="nav-link">💸 Transferir</a>
-                <a href="/payments" class="nav-link">📄 Pagamentos</a>
-                <a href="/extract" class="nav-link">📊 Extrato</a>
-                <a href="/cards" class="nav-link">💳 Cartões</a>
+                <a href="{{home_url}}" class="nav-link">🏠 Início</a>
+                <a href="{{transfer_url}}" class="nav-link">💸 Transferir</a>
+                <a href="{{payments_url}}" class="nav-link">📄 Pagamentos</a>
+                <a href="{{extract_url}}" class="nav-link">📊 Extrato</a>
+                <a href="{{cards_url}}" class="nav-link">💳 Cartões</a>
             </div>
         </div>
 
@@ -364,17 +364,17 @@
             <div class="summary-card">
                 <div class="summary-icon">💳</div>
                 <div class="summary-label">Total de Contas</div>
-                <div class="summary-value" id="totalAccounts">-</div>
+                <div class="summary-value">{{total_accounts}}</div>
             </div>
             <div class="summary-card">
                 <div class="summary-icon">💰</div>
                 <div class="summary-label">Saldo Total</div>
-                <div class="summary-value" id="totalBalance">R$ 0,00</div>
+                <div class="summary-value">{{total_balance}}</div>
             </div>
             <div class="summary-card">
                 <div class="summary-icon">📈</div>
                 <div class="summary-label">Conta Principal</div>
-                <div class="summary-value" id="mainAccount">-</div>
+                <div class="summary-value">{{main_account}}</div>
             </div>
         </div>
 
@@ -385,10 +385,11 @@
                 </div>
                 <div class="balance-summary">
                     <div class="balance-label">Saldo Consolidado</div>
-                    <div class="balance-value" id="consolidatedBalance">R$ 0,00</div>
+                    <div class="balance-value">{{consolidated_balance}}</div>
                 </div>
             </div>
 
+            {{#if accounts}}
             <table class="accounts-table">
                 <thead>
                     <tr>
@@ -398,31 +399,31 @@
                         <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody id="accountsTableBody">
-                    <!--ACCOUNTS-->
-                    <!-- Exemplo de como as contas aparecerão quando inseridas dinamicamente -->
-                    <tr style="display: none;">
+                <tbody>
+                    {{#for account in accounts}}
+                    <tr>
                         <td>
-                            <div class="account-name">João Silva</div>
-                            <div class="account-type">Conta Corrente</div>
+                            <div class="account-name">{{account.name}}</div>
+                            <div class="account-type">{{account.type}}</div>
                         </td>
                         <td>
-                            <span class="account-number">12345-6</span>
+                            <span class="account-number">{{account.number}}</span>
                         </td>
                         <td>
-                            <div class="balance positive">R$ 5.432,10</div>
+                            <div class="balance {{account.balance_class}}">{{account.balance}}</div>
                         </td>
                         <td>
                             <div class="account-actions">
-                                <a href="/account/12345" class="action-btn">Ver Detalhes</a>
-                                <a href="/extract/12345" class="action-btn secondary">Extrato</a>
+                                <a href="{{account.details_url}}" class="action-btn">Ver Detalhes</a>
+                                <a href="{{account.extract_url}}" class="action-btn secondary">Extrato</a>
                             </div>
                         </td>
                     </tr>
+                    {{/for}}
                 </tbody>
             </table>
-
-            <div class="empty-state" id="emptyState" style="display: none;">
+            {{else}}
+            <div class="empty-state">
                 <div class="empty-icon">📭</div>
                 <div class="empty-title">Nenhuma conta encontrada</div>
                 <div class="empty-description">
@@ -430,74 +431,8 @@
                     Entre em contato com sua agência para mais informações.
                 </div>
             </div>
+            {{/if}}
         </div>
     </div>
-
-    <script>
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            }).format(value);
-        }
-
-        function getBalanceClass(balance) {
-            if (balance > 0) return 'positive';
-            if (balance < 0) return 'negative';
-            return 'zero';
-        }
-
-        function updateSummary() {
-            const rows = document.querySelectorAll('#accountsTableBody tr:not([style*="display: none"])');
-            const totalAccounts = rows.length;
-            let totalBalance = 0;
-            let mainAccount = '-';
-
-            if (totalAccounts === 0) {
-                document.getElementById('emptyState').style.display = 'block';
-                document.querySelector('.accounts-table').style.display = 'none';
-            } else {
-                document.getElementById('emptyState').style.display = 'none';
-                document.querySelector('.accounts-table').style.display = 'table';
-
-                let highestBalance = -Infinity;
-                rows.forEach(row => {
-                    const balanceText = row.querySelector('.balance').textContent;
-                    const balance = parseFloat(balanceText.replace(/[^\d,-]/g, '').replace(',', '.'));
-                    totalBalance += balance;
-
-                    if (balance > highestBalance) {
-                        highestBalance = balance;
-                        mainAccount = row.querySelector('.account-number').textContent;
-                    }
-                });
-            }
-
-            document.getElementById('totalAccounts').textContent = totalAccounts;
-            document.getElementById('totalBalance').textContent = formatCurrency(totalBalance);
-            document.getElementById('consolidatedBalance').textContent = formatCurrency(totalBalance);
-            document.getElementById('mainAccount').textContent = mainAccount;
-        }
-
-        const observer = new MutationObserver(updateSummary);
-        observer.observe(document.getElementById('accountsTableBody'), {
-            childList: true,
-            subtree: true
-        });
-
-        document.addEventListener('DOMContentLoaded', updateSummary);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const tableRows = document.querySelectorAll('.accounts-table tbody tr');
-            tableRows.forEach(row => {
-                row.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.01)';
-                });
-                row.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1)';
-                });
-            });
-        });
-    </script>
 </body>
 </html>

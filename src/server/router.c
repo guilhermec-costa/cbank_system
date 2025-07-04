@@ -104,10 +104,9 @@ struct Route routes[] = {{.path            = INDEX_ROUTE_PATH,
                           .middlewares =
                               {
                                   decode_url_middleware,
-                                  auth_middleware,
                               },
                           .method_count     = 1,
-                          .middleware_count = 2},
+                          .middleware_count = 1},
                          {.path            = ACCOUNTS_ROUTE_PATH,
                           .handler         = handle_accounts,
                           .allowed_methods = {"GET"},

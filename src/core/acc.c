@@ -6,90 +6,45 @@
 #include "../utils.h"
 
 #include <stdio.h>
-#include <string.h>
 
-Account mount_acc_from_line_buf(const char* line_buf) {
-  Account account;
-  RESET_ENTITY(account);
-  account.balance = 0.0;
+ListAccountsResponse list_accounts() {
+  SelectQuery* q = new_select_query();
+  q->select_all(q, DB_ACCOUNT_SECTION);
+  ResultSet* result = q->execute(q);
 
-  char* id_token         = strstr(line_buf, "id=");
-  char* user_id_fk_token = strstr(line_buf, "user_id_fk=");
-  char* balance_token    = strstr(line_buf, "balance=");
-  char* created_at_token = strstr(line_buf, "created_at=");
-  char* updated_at_token = strstr(line_buf, "updated_at=");
+  q->destroy(q);
 
-  if (!id_token || !user_id_fk_token || !balance_token || !updated_at_token || !created_at_token) {
-    strcpy(account.id, "");
-    return account;
-  }
-
-  char   __id[20];
-  char   __user_id_fk[20];
-  double __balance = 0.0;
-  char   __created_at[sizeof(VALID_DATETIME_STR)];
-  char   __updated_at[sizeof(VALID_DATETIME_STR)];
-
-  sscanf(id_token, "id=%19[^;];", __id);
-  sscanf(user_id_fk_token, "user_id_fk=%19[^;];", __user_id_fk);
-  sscanf(balance_token, "balance=%lf;", &__balance);
-  sscanf(created_at_token, "created_at=%19[^;];", __created_at);
-  sscanf(updated_at_token, "updated_at=%19[^;];", __updated_at);
-
-  strcpy(account.id, __id);
-  strcpy(account.user_id_fk, __user_id_fk);
-  account.balance = __balance;
-  strcpy(account.created_at, __created_at);
-  strcpy(account.updated_at, __updated_at);
-
-  return account;
-};
-
-const char* acc_to_line_buf(Account* restrict acc) {
-  static char line_buf[256];
-
-  snprintf(line_buf, sizeof(line_buf),
-           "id=%s;user_id_fk=%s;balance=%.2lf;created_at=%s;updated_at=%s\n", acc->id,
-           acc->user_id_fk, acc->balance, acc->created_at, acc->updated_at);
-
-  return line_buf;
-}
-
-Account* get_all_accounts(int* out_count) {
-  FILE* acc_storage = get_storage_for_reading(DB_ACCOUNT_SECTION);
-  char  f_line_buf[256];
-  int   alloc_size      = 20;
-  int   realloc_trigger = alloc_size - 1;
-
-  Account* acc_ptr = (Account*)calloc(alloc_size, sizeof(Account));
-  if (!acc_ptr) {
-    *out_count = 0;
-    return NULL;
-  }
-
-  int iter_idx = 0;
-
-  while (fgets(f_line_buf, sizeof(f_line_buf), acc_storage)) {
-    f_line_buf[strcspn(f_line_buf, "\n")] = '\0';
-    Account acc_entity;
-    RESET_ENTITY(acc_entity);
-    if (iter_idx == realloc_trigger) {
-      alloc_size += 20;
-      realloc_trigger          = alloc_size - 1;
-      Account* _tmp_realoc_ptr = realloc(acc_ptr, alloc_size * sizeof(Account));
-      if (!_tmp_realoc_ptr) {
-        free(acc_ptr);
-        *out_count = 0;
-        return NULL;
-      }
-      acc_ptr = _tmp_realoc_ptr;
+  if (!result->data) {
+    result->free(result);
+    return (ListAccountsResponse){
+        .accounts   = NULL,
+        .item_count = 0,
     };
-    acc_ptr[iter_idx++] = mount_acc_from_line_buf(f_line_buf);
   }
 
-  fclose(acc_storage);
-  *out_count = iter_idx;
-  return acc_ptr;
+  Account* accounts = calloc(result->rows, sizeof(Account));
+  if (!accounts)
+    return (ListAccountsResponse){
+        .accounts   = NULL,
+        .item_count = 0,
+    };
+
+  int items_count = 0;
+  for (int i = 0; i < result->rows; i++) {
+    char* line_content = get_line_from_resultset(result, i);
+    if (!line_content) {
+      free(line_content);
+      continue;
+    }
+    Account acc = mount_acc_from_line_buf(line_content);
+    accounts[i] = acc;
+    items_count++;
+    free(line_content);
+  }
+  return (ListAccountsResponse){
+      .accounts   = accounts,
+      .item_count = items_count,
+  };
 }
 
 #include "../orm/insert_query.h"

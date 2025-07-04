@@ -68,5 +68,6 @@ struct ResultSet {
 ResultSet*   make_result_set();
 SelectQuery* new_select_query();
 bool         apply_select_where(SelectQuery* q, const char* line_buf);
+char*        get_line_from_resultset(ResultSet* rs, int line_idx);
 
 #endif /* CBANK_QUERY_H */
