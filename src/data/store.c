@@ -2,7 +2,9 @@
 
 #include "../colorization.h"
 #include "../orm/select_query.h"
+#include "../server/logger.h"
 #include "../utils.h"
+#include "id_tracker_store.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -35,6 +37,7 @@ void create_store(Store* store, const char* name) {
 };
 
 void setup_stores() {
+  GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Setting up data stores");
   if (mkdir("stores", 0777) == -1) {
     if (errno != EEXIST) {
       perror("Failed to create stores directory");

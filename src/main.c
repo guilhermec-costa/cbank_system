@@ -6,7 +6,6 @@
 #include "server/server.h"
 
 int main() {
-  GLOBAL_LOGGER->log(GLOBAL_LOGGER, DEBUG, "Setting up data stores");
   setup_stores();
   load_env(".env");
 

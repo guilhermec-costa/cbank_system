@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamentos | Banco C</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .bank-logo {
+            margin-bottom: 20px;
+        }
+
+        .bank-logo h1 {
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .bank-logo p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .welcome-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .welcome-text {
+            flex: 1;
+            text-align: left;
+        }
+
+        .welcome-text h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .welcome-text p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .balance-info {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .balance-info .balance-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .balance-info .balance-amount {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .balance-info .balance-account {
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #34495e;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(108, 117, 125, 0.2);
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+            border: 2px solid rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(108, 117, 125, 0.15);
+            border-color: rgba(108, 117, 125, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .recent-transfers {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .recent-transfers h3 {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .transfer-item {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transfer-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .transfer-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .transfer-info {
+            flex: 1;
+        }
+
+        .transfer-info .recipient-name {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .transfer-info .transfer-date {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .transfer-amount {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .quick-action {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quick-action-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .quick-action-desc {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        /* Elementos flutuantes de decoração */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.08;
+            animation: floatAround 25s infinite linear;
+            font-size: 2em;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 5s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 10s;
+        }
+
+        .floating-element:nth-child(4) {
+            bottom: 30%;
+            right: 25%;
+            animation-delay: 15s;
+        }
+
+        .floating-element:nth-child(5) {
+            top: 50%;
+            left: 50%;
+            animation-delay: 20s;
+        }
+
+        @keyframes floatAround {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg); 
+            }
+            25% { 
+                transform: translateY(-30px) rotate(90deg); 
+            }
+            50% { 
+                transform: translateY(0px) rotate(180deg); 
+            }
+            75% { 
+                transform: translateY(30px) rotate(270deg); 
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .welcome-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .welcome-text {
+                text-align: center;
+            }
+            
+            .balance-info {
+                width: 100%;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .recent-transfers {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-element">💳</div>
+        <div class="floating-element">💰</div>
+        <div class="floating-element">🏦</div>
+        <div class="floating-element">📊</div>
+        <div class="floating-element">🔒</div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="bank-logo">
+                <h1>🏦 BANCO C</h1>
+                <p>Internet Banking Seguro</p>
+            </div>
+
+            <div class="welcome-section">
+                <div class="welcome-text">
+                    <h2>Olá, {{user_name}}!</h2>
+                    <p>Gerencie seus pagamentos de forma segura e prática</p>
+                </div>
+                <div class="balance-info">
+                    <div class="balance-label">Saldo Disponível</div>
+                    <div class="balance-amount">R$ {{account_balance}}</div>
+                    <div class="balance-account">Conta: {{account_number}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <div class="quick-action">
+                <div class="quick-action-icon">💸</div>
+                <div class="quick-action-title">PIX</div>
+                <div class="quick-action-desc">Transferência instantânea</div>
+            </div>
+            <div class="quick-action">
+                <div class="quick-action-icon">🏢</div>
+                <div class="quick-action-title">TED/DOC</div>
+                <div class="quick-action-desc">Transferência bancária</div>
+            </div>
+            <div class="quick-action">
+                <div class="quick-action-icon">📋</div>
+                <div class="quick-action-title">Boletos</div>
+                <div class="quick-action-desc">Pagar contas</div>
+            </div>
+            <div class="quick-action">
+                <div class="quick-action-icon">📱</div>
+                <div class="quick-action-title">Recarga</div>
+                <div class="quick-action-desc">Celular e cartões</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💸</div>
+                    <h3 class="card-title">Nova Transferência PIX</h3>
+                </div>
+                
+                <form id="pixForm">
+                    <div class="form-group">
+                        <label for="pixKey">Chave PIX do Destinatário</label>
+                        <input type="text" id="pixKey" name="pixKey" placeholder="CPF, e-mail, telefone ou chave aleatória" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pixAmount">Valor (R$)</label>
+                        <input type="number" id="pixAmount" name="pixAmount" step="0.01" min="0.01" placeholder="0,00" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pixDescription">Descrição (opcional)</label>
+                        <input type="text" id="pixDescription" name="pixDescription" placeholder="Motivo da transferência">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        🚀 Enviar PIX
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <h3 class="card-title">Pagar Boleto</h3>
+                </div>
+                
+                <form id="boletoForm">
+                    <div class="form-group">
+                        <label for="boletoCode">Código de Barras ou Linha Digitável</label>
+                        <textarea id="boletoCode" name="boletoCode" rows="3" placeholder="Cole aqui o código do boleto" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paymentDate">Data de Pagamento</label>
+                        <input type="date" id="paymentDate" name="paymentDate" value="{{current_date}}" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-secondary">
+                        📄 Pagar Boleto
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="recent-transfers">
+            <h3>
+                📊 Transferências Recentes
+            </h3>
+            
+            {{#for transfer in recent_transfers}}
+            <div class="transfer-item">
+                <div class="transfer-info">
+                    <div class="recipient-name">{{transfer.recipient_name}}</div>
+                    <div class="transfer-date">{{transfer.date}}</div>
+                </div>
+                <div class="transfer-amount">R$ {{transfer.amount}}</div>
+            </div>
+            {{/for}}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('mousemove', function(e) {
+                const elements = document.querySelectorAll('.floating-element');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                elements.forEach((element, index) => {
+                    const speed = (index + 1) * 0.3;
+                    const xPos = (x - 0.5) * speed * 10;
+                    const yPos = (y - 0.5) * speed * 10;
+                    
+                    element.style.transform += ` translate(${xPos}px, ${yPos}px)`;
+                });
+            });
+
+            const quickActions = document.querySelectorAll('.quick-action');
+            quickActions.forEach(action => {
+                action.addEventListener('mouseenter', function() {
+                    this.style.animation = 'pulse 0.6s ease-in-out';
+                });
+                
+                action.addEventListener('animationend', function() {
+                    this.style.animation = '';
+                });
+            });
+
+            const amountInputs = document.querySelectorAll('input[type="number"]');
+            amountInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value) {
+                        this.value = parseFloat(this.value).toFixed(2);
+                    }
+                });
+            });
+
+            const pixKeyInput = document.getElementById('pixKey');
+            if (pixKeyInput) {
+                pixKeyInput.addEventListener('input', function() {
+                    const value = this.value.replace(/\D/g, '');
+                    if (value.length === 11) {
+                        this.value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                    }
+                });
+            }
+
+            document.getElementById('pixForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('PIX enviado com sucesso!');
+                this.reset();
+            });
+
+            document.getElementById('boletoForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Boleto pago com sucesso!');
+                this.reset();
+            });
+
+            const transferItems = document.querySelectorAll('.transfer-item');
+            transferItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.borderColor = '#667eea';
+                    this.style.backgroundColor = 'rgba(102, 126, 234, 0.1)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.borderColor = 'rgba(102, 126, 234, 0.1)';
+                    this.style.backgroundColor = 'linear-gradient(45deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05))';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

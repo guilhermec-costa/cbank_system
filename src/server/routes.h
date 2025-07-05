@@ -53,7 +53,25 @@ Route routes[] = {{
                   },
                   {
                       .path            = TRANSFER_ROUTE_PATH,
-                      .handler         = handle_register_acocunt,
+                      .handler         = handle_transfer,
+                      .allowed_methods = {"GET", "POST"},
+                      .middlewares     = {decode_url_middleware, auth_middleware},
+                  },
+                  {
+                      .path            = EXTRACT_ROUTE_PATH,
+                      .handler         = handle_extract,
+                      .allowed_methods = {"GET", "POST"},
+                      .middlewares     = {decode_url_middleware, auth_middleware},
+                  },
+                  {
+                      .path            = CARDS_ROUTE_PATH,
+                      .handler         = handle_cards,
+                      .allowed_methods = {"GET", "POST"},
+                      .middlewares     = {decode_url_middleware, auth_middleware},
+                  },
+                  {
+                      .path            = PAYMENTS_ROUTE_PATH,
+                      .handler         = handle_payments,
                       .allowed_methods = {"GET", "POST"},
                       .middlewares     = {decode_url_middleware, auth_middleware},
                   }};

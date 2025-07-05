@@ -2,9 +2,10 @@
 #include "../../server/http_utils.h"
 #include "../../server/router.h"
 #include "../../server/templates_constants.h"
+#include "handlers.h"
 
-void handle_home(int fd, struct HttpRequest* req, struct HttpResponse* res) {
-  const char* template = load_template_to_string(INDEX_TEMPLATE_PATH);
+void handle_cards(int fd, struct HttpRequest* req, struct HttpResponse* res) {
+  const char* template = load_template_to_string(CARDS_TEMPLATE_PATH);
   add_body(res, template);
   add_content_type(res, CONTENT_TYPE_HTML);
   add_content_len(res, strlen(res->body));

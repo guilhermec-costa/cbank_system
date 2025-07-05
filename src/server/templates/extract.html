@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrato - Banco C</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 25px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bank-logo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .bank-logo h1 {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            text-align: right;
+            color: #2c3e50;
+        }
+
+        .user-info .name {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .user-info .account {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .balance-section {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            animation: slideUp 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .balance-section h2 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .balance-amount {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .balance-date {
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+
+        .extrato-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.6s ease-out 0.4s both;
+        }
+
+        .extrato-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .extrato-header h2 {
+            color: #2c3e50;
+            font-size: 1.6em;
+        }
+
+        .period-info {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            text-align: right;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .transaction-list {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .transaction-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .transaction-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: white;
+            font-weight: bold;
+        }
+
+        .transaction-icon.credit {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+        }
+
+        .transaction-icon.debit {
+            background: linear-gradient(45deg, #e74c3c, #ec7063);
+        }
+
+        .transaction-icon.transfer {
+            background: linear-gradient(45deg, #3498db, #5dade2);
+        }
+
+        .transaction-icon.pix {
+            background: linear-gradient(45deg, #9b59b6, #bb8fce);
+        }
+
+        .transaction-details {
+            flex: 1;
+        }
+
+        .transaction-description {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .transaction-date {
+            color: #7f8c8d;
+            font-size: 0.85em;
+        }
+
+        .transaction-amount {
+            text-align: right;
+        }
+
+        .amount-value {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 3px;
+        }
+
+        .amount-value.credit {
+            color: #27ae60;
+        }
+
+        .amount-value.debit {
+            color: #e74c3c;
+        }
+
+        .transaction-id {
+            color: #7f8c8d;
+            font-size: 0.75em;
+        }
+
+        .no-transactions {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .no-transactions .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .summary {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+
+        .summary-value.credit {
+            color: #27ae60;
+        }
+
+        .summary-value.debit {
+            color: #e74c3c;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-btn.secondary {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary:hover {
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn.secondary:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        /* Scrollbar customizada */
+        .transaction-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .transaction-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .transaction-list::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+        }
+
+        .transaction-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+            }
+
+            .bank-logo {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .user-info {
+                text-align: center;
+            }
+
+            .balance-amount {
+                font-size: 2em;
+            }
+
+            .extrato-container {
+                padding: 20px;
+            }
+
+            .extrato-header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .filters {
+                justify-content: center;
+            }
+
+            .transaction-item {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .transaction-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="bank-logo">
+            <h1>🏦 BANCO C</h1>
+            <div class="user-info">
+                <div class="name">{{user_name}}</div>
+                <div class="account">Conta: {{account_number}}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="balance-section">
+        <h2>Saldo Atual</h2>
+        <div class="balance-amount">R$ {{current_balance}}</div>
+        <div class="balance-date">Atualizado em {{last_update}}</div>
+    </div>
+
+    <div class="extrato-container">
+        <div class="extrato-header">
+            <h2>Extrato da Conta</h2>
+            <div class="period-info">
+                <div>Período: {{period_start}} a {{period_end}}</div>
+                <div>{{total_transactions}} transações</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">Todas</button>
+            <button class="filter-btn" data-filter="credit">Crédito</button>
+            <button class="filter-btn" data-filter="debit">Débito</button>
+            <button class="filter-btn" data-filter="transfer">Transferências</button>
+            <button class="filter-btn" data-filter="pix">PIX</button>
+        </div>
+
+        <div class="transaction-list">
+            {{#for transaction in transactions}}
+            <div class="transaction-item" data-type="{{transaction.type}}">
+                <div class="transaction-info">
+                    <div class="transaction-icon {{transaction.type}}">
+                        {{transaction.icon}}
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-description">{{transaction.description}}</div>
+                        <div class="transaction-date">{{transaction.date}} às {{transaction.time}}</div>
+                    </div>
+                </div>
+                <div class="transaction-amount">
+                    <div class="amount-value {{transaction.type}}">
+                        {{transaction.amount_formatted}}
+                    </div>
+                    <div class="transaction-id">ID: {{transaction.id}}</div>
+                </div>
+            </div>
+            {{/for}}
+            
+            {{#if no_transactions}}
+            <div class="no-transactions">
+                <div class="icon">📋</div>
+                <h3>Nenhuma transação encontrada</h3>
+                <p>Não há transações para o período selecionado.</p>
+            </div>
+            {{/if}}
+        </div>
+
+        <div class="summary">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Total de Créditos</div>
+                    <div class="summary-value credit">R$ {{total_credits}}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Total de Débitos</div>
+                    <div class="summary-value debit">R$ {{total_debits}}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Saldo do Período</div>
+                    <div class="summary-value">R$ {{period_balance}}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Transações</div>
+                    <div class="summary-value">{{total_transactions}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="/dashboard" class="action-btn primary">
+                🏠 Voltar ao Dashboard
+            </a>
+            <button class="action-btn secondary" onclick="window.print()">
+                🖨️ Imprimir Extrato
+            </button>
+            <button class="action-btn secondary" onclick="exportPDF()">
+                📄 Exportar PDF
+            </button>
+            <button class="action-btn secondary" onclick="filterByDate()">
+                📅 Filtrar por Data
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                const transactions = document.querySelectorAll('.transaction-item');
+                
+                transactions.forEach(transaction => {
+                    if (filter === 'all' || transaction.dataset.type === filter) {
+                        transaction.style.display = 'flex';
+                    } else {
+                        transaction.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        function exportPDF() {
+            alert('Funcionalidade de exportação PDF será implementada.');
+        }
+
+        function filterByDate() {
+            const startDate = prompt('Data inicial (DD/MM/AAAA):');
+            const endDate = prompt('Data final (DD/MM/AAAA):');
+            
+            if (startDate && endDate) {
+                alert(`Filtrar transações de ${startDate} a ${endDate}`);
+            }
+        }
+
+        function animateTransactions() {
+            const transactions = document.querySelectorAll('.transaction-item');
+            transactions.forEach((transaction, index) => {
+                transaction.style.animationDelay = `${index * 0.1}s`;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', animateTransactions);
+
+        setInterval(function() {
+        }, 30000);
+    </script>
+</body>
+</html>
