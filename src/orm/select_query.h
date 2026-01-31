@@ -1,6 +1,8 @@
 #ifndef CBANK_QUERY_H
 #define CBANK_QUERY_H
 
+#include "filtering.h"
+
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -10,12 +12,6 @@ typedef struct ResultSet   ResultSet;
 typedef enum { QUERY_SELECT, QUERY_INSERT, QUERY_UPDATE, QUERY_DELETE } QueryType;
 
 #define CONDITION_COUNT 10
-
-typedef struct {
-  const char* column;
-  const char* operator;
-  const char* value;
-} WhereCondition;
 
 typedef SelectQuery* (*WhereFn)(SelectQuery* q, const char* column, const char* operator,
                                 const char* value);

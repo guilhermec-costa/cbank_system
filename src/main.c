@@ -1,6 +1,5 @@
 #include "data/store.h"
 #include "secret/manager.h"
-#include "server/logger.h"
 #include "server/router.h"
 #include "server/routes.h"
 #include "server/server.h"
